@@ -1,10 +1,5 @@
 export const photos = [
   {
-    src: "/galerie/1.jpg",
-    width: 4.5,
-    height: 3
-  },
-  {
     src: "/galerie/2.jpg",
     width: 4,
     height: 3

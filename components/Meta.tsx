@@ -5,7 +5,7 @@ const Meta: FC = () => {
   return (
     <Head>
       <meta charSet="utf-8" />
-      <link rel="shortcut icon" href="/logo_small_32.png" />
+      <link rel="shortcut icon" href="/logo_32.png" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
       <meta
         name="viewport"

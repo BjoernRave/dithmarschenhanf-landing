@@ -1,5 +1,6 @@
 import { ThemeProvider } from "styled-components";
 import { Normalize } from "styled-normalize";
+import Footer from "../components/Footer";
 import Meta from "../components/Meta";
 import Nav from "../components/Nav";
 import { GlobalStyles } from "../lib/styles";
@@ -14,6 +15,7 @@ const MyApp = ({ Component, pageProps }) => {
         <Meta />
         <Nav />
         <Component {...pageProps} />
+        <Footer />
       </>
     </ThemeProvider>
   );

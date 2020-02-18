@@ -9,14 +9,18 @@ const Title = styled.h1`
 `;
 
 const TopBanner = styled.img`
-  margin-top: 60px;
+  margin-top: 40px;
   width: 100%;
+
+  @media (max-width: 767px) {
+    width: 250%;
+  }
 `;
 
 const Home: NextPage<Props> = ({}) => {
   return (
     <>
-      <TopBanner src="/Header.jpg" />
+      <TopBanner alt="Hanffeld" src="/Header.jpg" />
       <Title>Willkommen in Dithmarschen, Willkommen im Hanf-Abenteuer! </Title>
     </>
   );

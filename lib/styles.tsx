@@ -16,4 +16,12 @@ export const Title = styled.h1`
   margin: 0 auto;
 `;
 
-export const Description = styled.p``;
+export const Description = styled.p`
+  font-size: 20px;
+  line-height: 36px;
+`;
+
+export const PageWrapper = styled.div`
+  padding-top: 120px;
+  margin: 0 10%;
+`;

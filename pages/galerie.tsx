@@ -1,22 +1,12 @@
 import { NextPage } from "next";
 import React from "react";
-import styled from "styled-components";
 import ImageGallery from "../components/ImageGallery";
 import { photos } from "../lib/photos";
-import { Description, Title } from "../lib/styles";
-
-const GalerieWrapper = styled.div`
-  padding-top: 200px;
-  margin: 0 10%;
-
-  img {
-    border-radius: 10px !important;
-  }
-`;
+import { Description, PageWrapper, Title } from "../lib/styles";
 
 const Galerie: NextPage<Props> = ({}) => {
   return (
-    <GalerieWrapper>
+    <PageWrapper>
       <Title>Impressionen aus Dithmarschen</Title>
       <Description>
         Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -26,7 +16,7 @@ const Galerie: NextPage<Props> = ({}) => {
         centuries,
       </Description>
       <ImageGallery photos={photos} />
-    </GalerieWrapper>
+    </PageWrapper>
   );
 };
 
