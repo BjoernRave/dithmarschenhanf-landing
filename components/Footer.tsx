@@ -81,9 +81,8 @@ const Footer: FC<Props> = ({}) => {
         <FooterWave src="/FooterWave.png" />
         <LeftSection>
           <SocialLink
-            style={{ color: "white" }}
             target="_blank"
-            href="https://www.linkedin.com/company/inventhora"
+            href="https://www.instagram.com/dithmarschenhanf/"
           >
             <SocialIcon alt="instagram" src="/instagram.svg" />
           </SocialLink>
@@ -98,7 +97,7 @@ const Footer: FC<Props> = ({}) => {
         </RightSection>
       </TopSection>
       <Copyright>
-        Copyright © 2020 Dithmarschenhanf, Inc. All rights reserved.
+        Copyright © 2020 Dithmarschenhanf, Inc. Alle Rechte vorbehalten
       </Copyright>
     </FooterWrapper>
   );

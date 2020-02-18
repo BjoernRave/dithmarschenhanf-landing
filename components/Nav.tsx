@@ -119,9 +119,9 @@ const Navigation = () => (
     <Link href="/wir">
       <NavItem>Über Uns</NavItem>
     </Link>
-    <Link href="/aktuelles">
+    {/* <Link href="/aktuelles">
       <NavItem>Aktuelles</NavItem>
-    </Link>
+    </Link> */}
     <ExLink href=" mailto:info@dithmarschenhanf.de">
       <NavItem>Kontakt</NavItem>
     </ExLink>
