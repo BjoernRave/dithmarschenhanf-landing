@@ -8,31 +8,16 @@ const Title = styled.h1`
   text-align: center;
 `;
 
-const Kontakt = styled.span`
-  margin: 0 auto;
-  display: table;
-`;
-
-const Logo = styled.img`
-  width: 40%;
-  height: auto;
-  display: table;
-  margin: 0 auto;
-
-  @media (max-width: 767px) {
-    width: 90%;
-  }
+const TopBanner = styled.img`
+  margin-top: 60px;
+  width: 100%;
 `;
 
 const Home: NextPage<Props> = ({}) => {
   return (
     <>
-      <Title>Die Website befindet sich gerade im Aufbau</Title>
-      <Kontakt>
-        Schreibt uns gerne unter{" "}
-        <a href="mailto:info@dithmarschenhanf.de">info@dithmarschenhanf.de</a>
-      </Kontakt>
-      <Logo src="/logo.png" />
+      <TopBanner src="/Header.jpg" />
+      <Title>Willkommen in Dithmarschen, Willkommen im Hanf-Abenteuer! </Title>
     </>
   );
 };
