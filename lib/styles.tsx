@@ -3,11 +3,12 @@ import styled, { createGlobalStyle } from "styled-components";
 export const GlobalStyles = createGlobalStyle`
 
 body {
-    font-family: "Roboto"
+    font-family: "Roboto";
+    overflow-x: hidden;
   }
 
   .headroom-wrapper {
-    position: absolute;
+    position: relative;
   }
 `;
 
@@ -24,4 +25,8 @@ export const Description = styled.p`
 export const PageWrapper = styled.div`
   padding-top: 120px;
   margin: 0 10%;
+
+  @media (max-width: 767px) {
+    margin: 0 10px;
+  }
 `;

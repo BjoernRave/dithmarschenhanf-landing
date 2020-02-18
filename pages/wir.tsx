@@ -8,6 +8,10 @@ const Image = styled.img`
   margin: 20px auto;
   border-radius: 10px;
   display: table;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 `;
 
 const VerticalImage = styled.img`
@@ -16,10 +20,19 @@ const VerticalImage = styled.img`
   display: table;
   height: 500px;
   margin-right: 20px;
+
+  @media (max-width: 767px) {
+    margin: 0;
+    width: 100%;
+  }
 `;
 
 const MarenSection = styled.div`
   display: flex;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 const Wir: NextPage<Props> = ({}) => {

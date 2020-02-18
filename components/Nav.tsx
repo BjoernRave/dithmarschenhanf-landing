@@ -21,9 +21,7 @@ const TopWave = styled.img`
   }
 `;
 
-const NavWrapper = styled.header`
-  position: relative;
-`;
+const NavWrapper = styled.header``;
 
 const NavItem = styled.span`
   font-size: 20px;
@@ -60,7 +58,7 @@ const Actions = styled.nav`
 const MenuButton = styled.img`
   cursor: pointer;
   position: absolute;
-  right: 52.5%;
+  right: 5%;
   top: 5%;
   display: none;
   height: 30px;
