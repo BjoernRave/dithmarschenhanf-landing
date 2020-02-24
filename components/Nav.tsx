@@ -5,23 +5,19 @@ import styled from "styled-components";
 
 const Logo = styled.img`
   width: auto;
-  height: 45%;
+  height: 70px;
   cursor: pointer;
-  position: absolute;
-  top: 5%;
-  left: 1%;
+  padding: 10px 0;
 `;
 
-const TopWave = styled.img`
-  width: 100vw;
-  height: 200px;
-
-  @media (max-width: 767px) {
-    width: 200vw;
-  }
+const NavWrapper = styled.header`
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: ${({ theme }) => theme.boxShadows.normal};
+  padding: 0 20px;
 `;
-
-const NavWrapper = styled.header``;
 
 const NavItem = styled.span`
   font-size: 20px;
@@ -42,13 +38,6 @@ const Actions = styled.nav`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  position: absolute;
-  top: 8%;
-  right: 8%;
-
-  @media (max-width: 1300px) {
-    right: 0%;
-  }
 
   @media (max-width: 767px) {
     display: none;
@@ -57,9 +46,6 @@ const Actions = styled.nav`
 
 const MenuButton = styled.img`
   cursor: pointer;
-  position: absolute;
-  right: 5%;
-  top: 5%;
   display: none;
   height: 30px;
   width: 30px;
@@ -135,7 +121,6 @@ const Nav: FC<Props> = ({}) => {
     <>
       <Headroom>
         <NavWrapper>
-          <TopWave src="/TopWave.png" />
           <Link href="/">
             <Logo src="/logo.png" alt="logo" />
           </Link>

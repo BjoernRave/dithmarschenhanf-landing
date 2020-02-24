@@ -97,7 +97,7 @@ const Footer: FC<Props> = ({}) => {
         </RightSection>
       </TopSection>
       <Copyright>
-        Copyright © 2020 Dithmarschenhanf, Inc. Alle Rechte vorbehalten
+        Copyright © 2020 Dithmarschenhanf, Alle Rechte vorbehalten
       </Copyright>
     </FooterWrapper>
   );

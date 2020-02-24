@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "name": "dithmarschenhanf",
+  "regions": ["bru"],
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
+  "env": {
+    "GA_ID": "@dithmarschenhanf_ga_id"
+  },
+  "build": {
+    "env": {
+      "GA_ID": "@dithmarschenhanf_ga_id"
+    }
+  }
+}

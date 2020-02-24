@@ -7,14 +7,11 @@ body {
     overflow-x: hidden;
   }
 
-  .headroom-wrapper {
-    position: relative;
-  }
 `;
 
 export const Title = styled.h1`
   display: table;
-  margin: 0 auto;
+  margin: 20px auto;
 `;
 
 export const Description = styled.p`
@@ -23,7 +20,7 @@ export const Description = styled.p`
 `;
 
 export const PageWrapper = styled.div`
-  padding-top: 120px;
+  padding-top: 50px;
   margin: 0 10%;
 
   @media (max-width: 767px) {
