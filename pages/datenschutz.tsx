@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import Link from "next/link";
 import React from "react";
 import { PageWrapper, Title } from "../lib/styles";
 
@@ -15,7 +16,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website
-        ist im <a href="/impressum">Impressum</a> zu finden.
+        ist im <Link href="/impressum">Impressum</Link> zu finden.
       </p>
       <p>
         Die verantwortliche Stelle entscheidet allein oder gemeinsam mit anderen
