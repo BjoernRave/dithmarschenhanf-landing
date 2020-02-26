@@ -14,7 +14,7 @@ const Meta: FC = () => {
       <title>Dithmarschenhanf</title>
       <meta
         name="description"
-        content="An inventory management system focussed on small warehouses and wholesalers"
+        content="Dithmarschenhanf ist ein junges Projekt, welches Hanf als Nutzprodukt neu entdeckt und neu erfindet. Wir bauen den Nutzhanf auf unserem eigenen Feld an."
       />
 
       <link

@@ -37,10 +37,6 @@ const ErstesJahr: NextPage<Props> = ({}) => {
       </Description>
       <Image src="/erstejahr/5.jpg" />
       <Description>
-        Das Bild von den trocken Blüten hätte ich gerne in der Bildersammlung
-        und hier raus, oder nach unten...
-        <br />
-        <br />
         Und schließlich folgte wochenendweise die Ernte durch viele fleißige
         Hände.
       </Description>
