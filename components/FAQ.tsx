@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   max-width: 1200px;
-  margin: 20px;
+  margin: 50px 0;
 `;
 
 const Title = styled.h2`
