@@ -15,18 +15,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website
-        ist:
+        ist im <a href="/impressum">Impressum</a> zu finden.
       </p>
-      <p>
-        <span id="s3-t-firma">Name der Firma</span>
-        <br />
-        <span id="s3-t-ansprechpartner">Ansprechpartner</span>
-        <br />
-        <span id="s3-t-strasse">Straße und Hausnummer</span>
-        <br />
-        <span id="s3-t-plz">PLZ</span> <span id="s3-t-ort">Ort</span>
-      </p>
-      <p></p>
       <p>
         Die verantwortliche Stelle entscheidet allein oder gemeinsam mit anderen
         über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten
