@@ -21,9 +21,11 @@ export const Description = styled.p`
 
 export const PageWrapper = styled.div`
   padding-top: 50px;
-  margin: 0 10%;
+  padding: 0 10%;
+  max-width: 1200px;
+  margin: 0 auto;
 
   @media (max-width: 767px) {
-    margin: 0 10px;
+    padding: 0 10px;
   }
 `;

@@ -9,11 +9,11 @@ const Galerie: NextPage<Props> = ({}) => {
     <PageWrapper>
       <Title>Impressionen aus Dithmarschen</Title>
       <Description style={{ padding: "0 10px" }}>
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries,
+        Dithmarschen - ein Landkreis in Schleswig-Holstein, dem nördlichsten
+        Bundesland Deutschlands. Geprägt von der Nordseeküste, dem Wattenmeer
+        und dem Geestland. Hier gedeihen unzählige Salzwiesenlämmer und
+        Kohlköpfe und auch eine der ältesten Kulturpflanzen der Menschheit:
+        <b> Hanf</b>.
       </Description>
       <ImageGallery photos={photos} />
     </PageWrapper>

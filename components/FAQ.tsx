@@ -28,13 +28,6 @@ const FAQ: FC<Props> = ({}) => {
         reifen Pflanzenteilen. Die Einhalltung der Grenzwerte wird jährlich
         überprüft.
       </Answer>
-      <Title>Wo werden die Produkte angebaut und hergestellt?</Title>
-      <Answer>
-        Dithmarschen Hanf ... das ist in im Norden Deutschlands, in
-        Schleswig-Holstein, so ca. 80 km nördlich von Hamburg (nein, da ist
-        nicht schon Dänemark!?) da, wo die Elbe sich in die Nordsee ergießt, wo
-        es eigentlich immer windig ist - aber das macht den Kopf auch frei...
-      </Answer>
     </Wrapper>
   );
 };

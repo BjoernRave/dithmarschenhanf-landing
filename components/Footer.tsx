@@ -3,30 +3,33 @@ import { FC } from "react";
 import styled from "styled-components";
 
 const FooterWrapper = styled.footer`
-  position: relative;
   margin-top: 150px;
-`;
-
-const FooterWave = styled.img`
-  width: 100vw;
+  position: relative;
+  background: url("/FooterWave.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
 
 const TopSection = styled.div`
   display: flex;
-  width: 100%;
-  height: 360px;
+  padding-top: 150px;
+  padding-bottom: 100px;
+  justify-content: space-between;
+  margin: 0 20%;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  position: absolute;
-  right: 20%;
-  bottom: 20%;
 
   @media (max-width: 840px) {
-    right: 5%;
+    margin-top: 20px;
+    align-items: center;
   }
 `;
 
@@ -58,10 +61,10 @@ const FooterLink = styled.a`
 `;
 
 const LeftSection = styled.div`
-  position: absolute;
   color: white;
-  bottom: 20%;
-  left: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const SocialLink = styled.a`
@@ -70,22 +73,35 @@ const SocialLink = styled.a`
 `;
 
 const SocialIcon = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+`;
+
+const EmailLink = styled.a`
+  color: white;
+  cursor: pointer;
+  margin-top: 20px;
 `;
 
 const Footer: FC<Props> = ({}) => {
   return (
     <FooterWrapper>
       <TopSection>
-        <FooterWave src="/FooterWave.png" />
+        {/* <FooterWave src="/FooterWave.svg" /> */}
         <LeftSection>
           <SocialLink
             target="_blank"
             href="https://www.instagram.com/dithmarschenhanf/"
           >
-            <SocialIcon alt="instagram" src="/instagram.svg" />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <SocialIcon alt="instagram" src="/instagram.svg" />
+              @Dithmarschenhanf
+            </div>
           </SocialLink>
+          <EmailLink href="mailto:info@dithmarschenhanf.de">
+            info@dithmarschenhanf.de
+          </EmailLink>
         </LeftSection>
         <RightSection>
           <Link href="/datenschutz">

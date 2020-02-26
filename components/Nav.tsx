@@ -100,18 +100,21 @@ const CloseIcon = styled.img`
 
 const Navigation = () => (
   <>
+    <Link href="/erstesjahr">
+      <NavItem>Das erste Jahr</NavItem>
+    </Link>
     <Link href="/wir">
       <NavItem>Über Uns</NavItem>
     </Link>
     {/* <Link href="/aktuelles">
       <NavItem>Aktuelles</NavItem>
     </Link> */}
-    <ExLink href=" mailto:info@dithmarschenhanf.de">
-      <NavItem>Kontakt</NavItem>
-    </ExLink>
     <Link href="/galerie">
       <NavItem>Galerie</NavItem>
     </Link>
+    <ExLink href=" mailto:info@dithmarschenhanf.de">
+      <NavItem>Kontakt</NavItem>
+    </ExLink>
   </>
 );
 

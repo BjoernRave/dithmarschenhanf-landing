@@ -2,18 +2,14 @@ import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
 import FAQ from "../components/FAQ";
+import VerkaufsStellen from "../components/Verkaufssstellen";
+import { Description, PageWrapper } from "../lib/styles";
 
 const Title = styled.h1`
   margin: 30px auto 10px auto;
   display: table;
   text-align: center;
   font-size: 36px;
-`;
-
-const HomeWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
 
 const TopBanner = styled.img`
@@ -28,15 +24,15 @@ const Home: NextPage<Props> = ({}) => {
   return (
     <>
       <TopBanner alt="Hanffeld" src="/Header.jpg" />
-      <HomeWrapper>
+      <PageWrapper>
         <Title>Willkommen in Dithmarschen, Willkommen im Hanf-Abenteuer</Title>
-        <iframe
-          src="https://www.google.com/maps/d/u/0/embed?mid=1xn6ZzHCOuPlj34-LGkDYucuQ3eEZY8dB&hl=de"
-          width="640"
-          height="480"
-        />
+        <Description style={{ fontSize: "22px" }}>
+          Schön, dass Sie vorbeischauen! Wenn Sie möchten, laden wie Sie gerne
+          ein, an unserem Abenteuer und unseren Produkten teilzuhaben
+        </Description>
+        <VerkaufsStellen />
         <FAQ />
-      </HomeWrapper>
+      </PageWrapper>
     </>
   );
 };
