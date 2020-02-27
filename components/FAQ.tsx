@@ -21,10 +21,10 @@ const FAQ: FC<Props> = ({}) => {
       <Title>Ist das legal?</Title>
       <Answer>
         Ja, das ist total legal! <br /> Der Anbau von Nutzhanf unterliegt in
-        Deutschland strengen Kriterien, er muss beim Bundesministerium für
+        Deutschland strengen Kriterien. Er muss beim Bundesministerium für
         Landwirtschaft und Ernährung angezeigt und genehmigt werden. Es dürfen
-        dürfen ausnahmslos EU zugelassene Nutzhanfsorten im Freiland (und nur
-        dort) ausgesät werden, welche den maximalen THC Gehalt von > 0,2% in
+        ausnahmslos EU zugelassene Nutzhanfsorten im Freiland (und nur dort)
+        ausgesät werden, welche den maximalen THC Gehalt von > 0,2% in
         getrockneten, reifen Pflanzenteilen nicht überschreiten. Die Einhalltung
         der Grenzwerte wird jährlich überprüft.
       </Answer>
