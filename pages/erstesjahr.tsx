@@ -5,12 +5,16 @@ import { Description, PageWrapper, Title } from "../lib/styles";
 
 const Image = styled.img`
   width: auto;
-  height: auto;
   border-radius: 10px;
   max-height: 600px;
   margin: 0 auto;
   display: table;
   padding: 20px 0;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: auto;
+  }
 `;
 
 const ErstesJahr: NextPage<Props> = ({}) => {
