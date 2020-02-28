@@ -25,7 +25,9 @@ const Home: NextPage<Props> = ({}) => {
     <>
       <TopBanner alt="Hanffeld" src="/Header.jpg" />
       <PageWrapper>
-        <Title>Willkommen in Dithmarschen, Willkommen im Hanf-Abenteuer</Title>
+        <Title>
+          Willkommen bei Dithmarschenhanf, Willkommen im Hanf-Abenteuer
+        </Title>
         <Description style={{ fontSize: "22px", textAlign: "center" }}>
           Schön, dass Sie vorbeischauen! Wenn Sie möchten, laden wie Sie gerne
           ein, an unserem Abenteuer und unseren Produkten teilzuhaben
