@@ -24,7 +24,7 @@ const FAQ: FC<Props> = ({}) => {
         Deutschland strengen Kriterien. Er muss beim Bundesministerium für
         Landwirtschaft und Ernährung angezeigt und genehmigt werden. Es dürfen
         ausnahmslos EU zugelassene Nutzhanfsorten im Freiland (und nur dort)
-        ausgesät werden, welche den maximalen THC Gehalt von > 0,2% in
+        ausgesät werden, welche den maximalen THC Gehalt von 0,2% in
         getrockneten, reifen Pflanzenteilen nicht überschreiten. Die Einhaltung
         der Grenzwerte wird jährlich überprüft.
       </Answer>

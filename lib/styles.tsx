@@ -12,6 +12,7 @@ body {
 export const Title = styled.h1`
   display: table;
   margin: 20px auto;
+  text-align: center;
 `;
 
 export const Description = styled.p`

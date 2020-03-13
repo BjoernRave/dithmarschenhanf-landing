@@ -17,13 +17,23 @@ const ImageWrapper = styled.div`
   }
 `;
 
+const MiddleImage = styled(Image)`
+  margin: 0 20px;
+
+  @media (max-width: 767px) {
+    margin: 20px 0;
+  }
+`;
+
+export const config = { amp: "hybrid" };
+
 const Wir: NextPage<Props> = ({}) => {
   return (
     <PageWrapper>
       <Title>Über Uns</Title>
       <ImageWrapper>
         <Image src="/nis.jpg" />
-        <Image style={{ margin: "0 20px" }} src="/wilm.jpg" />
+        <MiddleImage src="/wilm.jpg" />
         <Image src="/maren.jpg" />
       </ImageWrapper>
       <Description>

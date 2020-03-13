@@ -20,6 +20,8 @@ const TopBanner = styled.img`
   }
 `;
 
+export const config = { amp: "hybrid" };
+
 const Home: NextPage<Props> = ({}) => {
   return (
     <>

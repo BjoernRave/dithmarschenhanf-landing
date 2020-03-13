@@ -91,13 +91,11 @@ const Footer: FC<Props> = ({}) => {
         {/* <FooterWave src="/FooterWave.svg" /> */}
         <LeftSection>
           <SocialLink
+            rel="noreferrer"
             target="_blank"
             href="https://www.instagram.com/dithmarschenhanf/"
           >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <SocialIcon alt="instagram" src="/instagram.svg" />
-              @Dithmarschenhanf
-            </div>
+            <SocialIcon alt="instagram" src="/instagram.svg" />
           </SocialLink>
           <EmailLink href="mailto:info@dithmarschenhanf.de">
             info@dithmarschenhanf.de

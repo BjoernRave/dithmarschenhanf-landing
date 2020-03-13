@@ -49,6 +49,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         Datenschutzbeauftragten sowie deren Kontaktdaten bereit:{" "}
         <a
           href="[https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)"
+          rel="noreferrer"
           target="_blank"
         >
           [https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)
@@ -323,6 +324,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
           Quelle: Datenschutz-Konfigurator von{" "}
           <a
             href="[http://www.mein-datenschutzbeauftragter.de](http://www.mein-datenschutzbeauftragter.de/)"
+            rel="noreferrer"
             target="_blank"
           >
             mein-datenschutzbeauftragter.de

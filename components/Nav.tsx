@@ -30,7 +30,7 @@ const NavItem = styled.span`
   }
 
   @media (max-width: 767px) {
-    margin: 10px 0;
+    margin: 20px 0;
   }
 `;
 
@@ -65,6 +65,7 @@ const Menu = styled.nav`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px 0;
 
   box-shadow: ${({ theme }) => theme.boxShadows.normal};
 `;
@@ -139,7 +140,7 @@ const Nav: FC<Props> = ({}) => {
       </Headroom>
       {isMenu && (
         <>
-          <Menu>
+          <Menu onClick={() => setIsMenu(false)}>
             <CloseIcon
               onClick={() => setIsMenu(false)}
               src="/x.svg"
