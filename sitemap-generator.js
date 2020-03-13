@@ -1,7 +1,7 @@
 const path = require("path");
 const sitemapGenerator = require("nextjs-sitemap-generator");
 
-const baseUrl = "https://www.dithmarschenhanf.de";
+const baseUrl = "https://dithmarschenhanf.de";
 
 sitemapGenerator({
   baseUrl,

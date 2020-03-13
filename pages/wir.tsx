@@ -25,8 +25,6 @@ const MiddleImage = styled(Image)`
   }
 `;
 
-export const config = { amp: "hybrid" };
-
 const Wir: NextPage<Props> = ({}) => {
   return (
     <PageWrapper>
