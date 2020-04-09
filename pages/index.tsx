@@ -13,10 +13,6 @@ const Title = styled.h1`
 
 const TopBanner = styled.img`
   width: 100%;
-
-  @media (max-width: 767px) {
-    width: 250%;
-  }
 `
 const Images = styled.div`
   display: flex;
@@ -29,12 +25,13 @@ const Images = styled.div`
 `
 
 const Image = styled.img`
-  height: 400px;
+  width: 300px;
   margin: 0 50px;
-  width: auto;
+  height: auto;
 
   @media (max-width: 767px) {
-    margin: 20px 0;
+    margin: 20px;
+    width: 100%;
   }
 `
 

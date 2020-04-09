@@ -51,7 +51,6 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
-
           <TextBlock>Weitere Verkaufsstellen folgen in Kürze...</TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>

@@ -1,13 +1,13 @@
-import { NextPage } from "next";
-import React from "react";
-import styled from "styled-components";
-import { Description, PageWrapper, Title } from "../lib/styles";
+import { NextPage } from 'next'
+import React from 'react'
+import styled from 'styled-components'
+import { Description, PageWrapper, Title } from '../lib/styles'
 
 const Image = styled.img`
   width: 100%;
   border-radius: 10px;
   display: table;
-`;
+`
 
 const ImageWrapper = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const ImageWrapper = styled.div`
   @media (max-width: 767px) {
     flex-direction: column;
   }
-`;
+`
 
 const MiddleImage = styled(Image)`
   margin: 0 20px;
@@ -23,16 +23,16 @@ const MiddleImage = styled(Image)`
   @media (max-width: 767px) {
     margin: 20px 0;
   }
-`;
+`
 
 const Wir: NextPage<Props> = ({}) => {
   return (
     <PageWrapper>
       <Title>Über Uns</Title>
       <ImageWrapper>
-        <Image src="/nis.jpg" />
-        <MiddleImage src="/wilm.jpg" />
-        <Image src="/maren.jpg" />
+        <Image src='/nis.jpg' />
+        <MiddleImage src='/wilm.jpg' />
+        <Image src='/maren.jpg' />
       </ImageWrapper>
       <Description>
         Wir, das sind Nis mit Bruder Wilm und Mutter Maren Thomassek. Wir leben
@@ -43,14 +43,14 @@ const Wir: NextPage<Props> = ({}) => {
         Aus einer Idee am Küchentisch wurde ein Herzensprojekt.
         <br />
         Mit der Arbeit vieler fleißiger Hände ernteten wir den EU zugelassenen
-        Nuthanf, angebaut nach EU Bio Richtlinien, denn wir sind ein
-        Umstellungsbetrieb. Die Begeisterung wuchs mit den Planzen und das
-        wollen wir gerne mit euch teilen!
+        Nutzhanf, angebaut nach EU Bio Richtlinien, denn wir sind ein
+        Umstellungsbetrieb. Die Begeisterung wuchs mit den Pflanzen und das
+        wollen wir gerne mit ihnen teilen!
       </Description>
     </PageWrapper>
-  );
-};
+  )
+}
 
-export default Wir;
+export default Wir
 
 interface Props {}
