@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyles = createGlobalStyle`
 
@@ -7,18 +7,25 @@ body {
     overflow-x: hidden;
   }
 
-`;
+  table, th, td {
+  border: 1px solid black;
+}
+
+td {
+  padding: 5px;
+}
+`
 
 export const Title = styled.h1`
   display: table;
   margin: 20px auto;
   text-align: center;
-`;
+`
 
 export const Description = styled.p`
   font-size: 20px;
   line-height: 36px;
-`;
+`
 
 export const PageWrapper = styled.div`
   padding-top: 50px;
@@ -29,4 +36,4 @@ export const PageWrapper = styled.div`
   @media (max-width: 767px) {
     padding: 0 10px;
   }
-`;
+`

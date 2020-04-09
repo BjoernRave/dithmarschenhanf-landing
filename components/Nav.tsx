@@ -1,14 +1,14 @@
-import Link from "next/link";
-import { FC, useState } from "react";
-import Headroom from "react-headroom";
-import styled from "styled-components";
+import Link from 'next/link'
+import { FC, useState } from 'react'
+import Headroom from 'react-headroom'
+import styled from 'styled-components'
 
 const Logo = styled.img`
   width: auto;
   height: 70px;
   cursor: pointer;
   padding: 10px 0;
-`;
+`
 
 const NavWrapper = styled.header`
   background-color: white;
@@ -17,7 +17,7 @@ const NavWrapper = styled.header`
   justify-content: space-between;
   box-shadow: ${({ theme }) => theme.boxShadows.normal};
   padding: 0 20px;
-`;
+`
 
 const NavItem = styled.span`
   font-size: 20px;
@@ -32,7 +32,7 @@ const NavItem = styled.span`
   @media (max-width: 767px) {
     margin: 20px 0;
   }
-`;
+`
 
 const Actions = styled.nav`
   display: flex;
@@ -42,7 +42,7 @@ const Actions = styled.nav`
   @media (max-width: 767px) {
     display: none;
   }
-`;
+`
 
 const MenuButton = styled.img`
   cursor: pointer;
@@ -53,7 +53,7 @@ const MenuButton = styled.img`
   @media (max-width: 767px) {
     display: block;
   }
-`;
+`
 
 const Menu = styled.nav`
   position: fixed;
@@ -68,7 +68,7 @@ const Menu = styled.nav`
   padding: 20px 0;
 
   box-shadow: ${({ theme }) => theme.boxShadows.normal};
-`;
+`
 
 const Dimmer = styled.div`
   position: fixed;
@@ -79,7 +79,7 @@ const Dimmer = styled.div`
   top: 0;
   left: 0;
   opacity: 0.3;
-`;
+`
 
 const ExLink = styled.a`
   text-decoration: none;
@@ -87,7 +87,7 @@ const ExLink = styled.a`
   @media (max-width: 767px) {
     margin: 10px 0;
   }
-`;
+`
 
 const CloseIcon = styled.img`
   height: 30px;
@@ -97,44 +97,50 @@ const CloseIcon = styled.img`
   top: 10px;
   right: 12px;
   cursor: pointer;
-`;
+`
 
 const Navigation = () => (
   <>
-    <Link href="/erstesjahr">
+    <Link href='/verkaufstellen'>
+      <NavItem>Verkaufstellen</NavItem>
+    </Link>
+    <Link href='/produkte'>
+      <NavItem>Produkte</NavItem>
+    </Link>
+    <Link href='/erstesjahr'>
       <NavItem>Das erste Jahr</NavItem>
     </Link>
-    <Link href="/wir">
+    <Link href='/wir'>
       <NavItem>Über Uns</NavItem>
     </Link>
     {/* <Link href="/aktuelles">
       <NavItem>Aktuelles</NavItem>
     </Link> */}
-    <Link href="/galerie">
+    <Link href='/galerie'>
       <NavItem>Galerie</NavItem>
     </Link>
-    <ExLink href=" mailto:info@dithmarschenhanf.de">
+    <ExLink href=' mailto:info@dithmarschenhanf.de'>
       <NavItem>Kontakt</NavItem>
     </ExLink>
   </>
-);
+)
 
 const Nav: FC<Props> = ({}) => {
-  const [isMenu, setIsMenu] = useState(false);
+  const [isMenu, setIsMenu] = useState(false)
   return (
     <>
       <Headroom>
         <NavWrapper>
-          <Link href="/">
-            <Logo src="/logo.png" alt="logo" />
+          <Link href='/'>
+            <Logo src='/logo.png' alt='logo' />
           </Link>
           <Actions>
             <Navigation />
           </Actions>
           <MenuButton
             onClick={() => setIsMenu(true)}
-            alt="open-mobile-menu"
-            src="/menu.svg"
+            alt='open-mobile-menu'
+            src='/menu.svg'
           />
         </NavWrapper>
       </Headroom>
@@ -143,8 +149,8 @@ const Nav: FC<Props> = ({}) => {
           <Menu onClick={() => setIsMenu(false)}>
             <CloseIcon
               onClick={() => setIsMenu(false)}
-              src="/x.svg"
-              alt="menu-close-button"
+              src='/x.svg'
+              alt='menu-close-button'
             />
             <Navigation />
           </Menu>
@@ -152,9 +158,9 @@ const Nav: FC<Props> = ({}) => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Nav;
+export default Nav
 
 interface Props {}
