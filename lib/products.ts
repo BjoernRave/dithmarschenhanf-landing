@@ -6,7 +6,7 @@ export const products: Product[] = [
     slug: 'hanfblaettertee',
     description:
       'Handgepflückte Nutzhanfblätter der Sorte Uso 31 (EU zugelassenen Nutzhanf Sorte). \n Angebaut  nach EU Biorichtlinien im gesunden Klima des westlichen Schleswig-Holsteins. \n Schonend getrocknet und handvermahlen.',
-    images: ['/hanfblaettertee1.jpg'],
+    images: ['/produkte/hanfblaettertee1.jpg'],
     mhd: '2 Jahre ab Ernte',
   },
   {
@@ -14,7 +14,7 @@ export const products: Product[] = [
     slug: 'hanfbluettentee',
     description:
       'Handverlesene Blüten der Sorte Fedora 17 (EU zugelassenen Nutzhanf Sorte) \n  Angebaut  nach EU Biorichtlinien im gesunden Klima des westlichen Schleswig-Holsteins. \n Schonend getrocknet.',
-    images: ['/hanfbluetentee1.jpg', '/buds.jpg'],
+    images: ['/produkte/hanfbluetentee2.jpg', '/produkte/hanfbluetentee1.jpg'],
     mhd: '2 Jahre ab Ernte',
   },
   {
@@ -22,7 +22,11 @@ export const products: Product[] = [
     slug: 'blattbluetetee',
     description:
       'Geerntet im späten Bühstadium zur vollen Ausprägung der Cannabinoide \n  Angebaut  nach EU Biorichtlinien im gesunden Klima des westlichen Schleswig-Holsteins. \n Schonend getrocknet.',
-    images: ['/blattbluetetee1.jpg', '/buds.jpg'],
+    images: [
+      '/produkte/blattbluetetee2.jpg',
+      '/produkte/blattbluetetee1.jpg',
+      '/produkte/blattbluetetee3.jpg',
+    ],
     mhd: '2 Jahre ab Ernte',
   },
   {
@@ -30,7 +34,7 @@ export const products: Product[] = [
     slug: 'hanfmehlblattbluete',
     description:
       'Feinster Staub mit feinsten Inhalten; Bei der Verarbeitung unserer getrockneten Hanfprodukte ergibt sich immer auch eine kleine aber feine Staubfraktion. Dabei reden wir nicht von Hausstaub sondern von Pflanzenstaub voll mit wertvollen Pflanzeninhaltsstoffen.',
-    images: ['/hanfmehlblattbluete1.jpg', '/buds.jpg'],
+    images: ['/produkte/hanfmehlblattbluete1.jpg'],
     mhd: '2 Jahre ab Ernte',
   },
   {
@@ -38,7 +42,7 @@ export const products: Product[] = [
     slug: 'hanfsamenpur',
     description:
       "Hanfsamen sind das regionale Superfood. Reich an Omega3 und 6 Fettsäuren in der optimalen 1:3 Verteilung, mit allen für den Menschen essentiellen Aminosäuren, leicht verwertbaren Eiweißen und Ballststoffen - und OHNE GLUTEN! \n Sie eignen sich nicht nur als Back- und Müsli Zutat sondern auch ganz hervorragend zur Herstellung von 'Milchersatz'. Das Rezept verraten wir gerne! Auch da muss es nicht Soja sein... \n Natürlich sind unsere Hanfsamen (Hanfnüsse) auch nach EU Bio Richtlinien angebaut und auch die sind händisch geerntet und gedroschen in 2019 - DAS wollen wir gerne ändern, die handverlesene Qualität wird bleiben!",
-    images: ['/hanfsamenpur1.jpg', '/hanfsamenpur2.jpg'],
+    images: ['/produkte/hanfsamenpur2.jpg', '/produkte/hanfsamenpur1.jpg'],
     nutrients: [
       { name: 'Brennwert', value: '433 kcal/ 1768 kJ' },
       { name: 'Fett', value: '30,2g' },
@@ -57,7 +61,7 @@ export const products: Product[] = [
     slug: 'knusperhanf',
     description:
       "Krokant war gestern! \n Ernährungsphysiologisch wertvoll und genial lecker - für Süßmäuler eine echte 'geheime Zutat'. \n Die nach EU Bio Richtlinien angebauten Hanfsamen werden mit Zucker und Gewürzen schonend kandiert.",
-    images: ['/knusperhanf1.jpg', '/knusperhanf2.jpg'],
+    images: ['/produkte/knusperhanf2.jpg', '/produkte/knusperhanf1.jpg'],
     nutrients: [
       { name: 'Brennwert', value: '419 kcal/ 1732 kJ' },
       { name: 'Fett', value: '15,1g' },
@@ -76,7 +80,7 @@ export const products: Product[] = [
     slug: 'wuerzsalzhanf',
     description:
       'Handverlesene Hanfsamen, kontrolliert in kleinen Portionen geröstet und mit Tiefensalz deutscher Mittelgebirge (Steinsalz) ohne weitere Zutaten vermahlen. \n Salzgehalt (lt Leitsätzen deutsches Lebensmittelbuch) 40%',
-    images: ['/wuerzsalzhanf1.jpg', '/wuerzsalzhanf2.jpg', '/buds.jpg'],
+    images: ['/produkte/wuerzsalzhanf2.jpg', '/produkte/wuerzsalzhanf1.jpg'],
     nutrients: [
       { name: 'Brennwert', value: '259,8 kcal/ 530,4 kJ' },
       { name: 'Fett', value: '9,1g' },

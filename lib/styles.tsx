@@ -20,6 +20,7 @@ export const Title = styled.h1`
   display: table;
   margin: 20px auto;
   text-align: center;
+  font-size: 48px;
 `
 
 export const Description = styled.p`

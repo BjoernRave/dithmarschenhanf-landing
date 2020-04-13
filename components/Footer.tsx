@@ -1,14 +1,14 @@
-import Link from "next/link";
-import { FC } from "react";
-import styled from "styled-components";
+import Link from 'next/link'
+import { FC } from 'react'
+import styled from 'styled-components'
 
 const FooterWrapper = styled.footer`
   margin-top: 150px;
   position: relative;
-  background: url("/FooterWave.svg");
+  background: url('/FooterWave.svg');
   background-repeat: no-repeat;
   background-size: cover;
-`;
+`
 
 const TopSection = styled.div`
   display: flex;
@@ -20,7 +20,7 @@ const TopSection = styled.div`
   @media (max-width: 767px) {
     flex-direction: column;
   }
-`;
+`
 
 const RightSection = styled.div`
   display: flex;
@@ -31,7 +31,7 @@ const RightSection = styled.div`
     margin-top: 20px;
     align-items: center;
   }
-`;
+`
 
 const Copyright = styled.span`
   color: white;
@@ -47,7 +47,7 @@ const Copyright = styled.span`
   @media (max-width: 840px) {
     width: 300px;
   }
-`;
+`
 
 const FooterLink = styled.a`
   color: white;
@@ -58,31 +58,35 @@ const FooterLink = styled.a`
   :hover {
     text-decoration: underline;
   }
-`;
+`
 
 const LeftSection = styled.div`
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
+`
 
 const SocialLink = styled.a`
   color: white;
   margin: 0 10px;
-`;
+`
 
 const SocialIcon = styled.img`
   width: 40px;
   height: 40px;
   margin-right: 10px;
-`;
+`
 
 const EmailLink = styled.a`
   color: white;
   cursor: pointer;
   margin-top: 20px;
-`;
+`
+
+const Socials = styled.div`
+  display: flex;
+`
 
 const Footer: FC<Props> = ({}) => {
   return (
@@ -90,22 +94,29 @@ const Footer: FC<Props> = ({}) => {
       <TopSection>
         {/* <FooterWave src="/FooterWave.svg" /> */}
         <LeftSection>
-          <SocialLink
-            rel="noreferrer"
-            target="_blank"
-            href="https://www.instagram.com/dithmarschenhanf/"
-          >
-            <SocialIcon alt="instagram" src="/instagram.svg" />
-          </SocialLink>
-          <EmailLink href="mailto:info@dithmarschenhanf.de">
+          <Socials>
+            <SocialLink
+              rel='noreferrer'
+              target='_blank'
+              href='https://www.facebook.com/Dithmarschenhanf.de'>
+              <SocialIcon alt='facebook' src='/facebook.svg' />
+            </SocialLink>
+            <SocialLink
+              rel='noreferrer'
+              target='_blank'
+              href='https://www.instagram.com/dithmarschenhanf/'>
+              <SocialIcon alt='instagram' src='/instagram.svg' />
+            </SocialLink>
+          </Socials>
+          <EmailLink href='mailto:info@dithmarschenhanf.de'>
             info@dithmarschenhanf.de
           </EmailLink>
         </LeftSection>
         <RightSection>
-          <Link href="/datenschutz">
+          <Link href='/datenschutz'>
             <FooterLink>Datenschutzerklärung</FooterLink>
           </Link>
-          <Link href="/impressum">
+          <Link href='/impressum'>
             <FooterLink>Impressum</FooterLink>
           </Link>
         </RightSection>
@@ -114,9 +125,9 @@ const Footer: FC<Props> = ({}) => {
         Copyright © 2020 Dithmarschenhanf, Alle Rechte vorbehalten
       </Copyright>
     </FooterWrapper>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
 
 interface Props {}

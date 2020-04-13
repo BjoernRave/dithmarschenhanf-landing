@@ -5,9 +5,9 @@ import styled from 'styled-components'
 
 const Logo = styled.img`
   width: auto;
-  height: 70px;
+  height: 80px;
   cursor: pointer;
-  padding: 10px 0;
+  padding: 5px 0;
 `
 
 const NavWrapper = styled.header`

@@ -6,22 +6,20 @@ import { products } from '../../lib/products'
 import { Description, Title } from '../../lib/styles'
 
 const ProductsWrapper = styled.div`
-  display: grid;
-  align-items: center;
-  width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   margin: 20px 50px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 `
 
 const ProductWrapper = styled.div`
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
-  padding: 10px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px;
-  height: 400px;
+  margin: 20px;
+  height: 300px;
   width: 300px;
   cursor: pointer;
   transition: all ease-in-out 0.2s;
@@ -32,7 +30,10 @@ const ProductWrapper = styled.div`
 `
 
 const ProductImage = styled.img`
-  max-width: 300px;
+  width: 100%;
+  height: 200px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 `
 
 const ProductName = styled.span`
@@ -45,6 +46,7 @@ const ProductName = styled.span`
 const StyledText = styled(Description)`
   display: table;
   margin: 10px auto;
+  text-align: center;
 `
 
 const Products: NextPage<Props> = ({}) => {
@@ -52,7 +54,7 @@ const Products: NextPage<Props> = ({}) => {
     <>
       <Title>Produkte</Title>
       <StyledText>
-        Diese Produkte können wir Ihnen derzeit anbieten, bei Interesse nehmen
+        Diese Produkte können wir Ihnen derzeit anbieten. Bei Interesse nehmen
         Sie gerne <a href='mailto:info@dithmarschenhanf.de'>Kontakt</a> zu uns
         auf.
       </StyledText>
