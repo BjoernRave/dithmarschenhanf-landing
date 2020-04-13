@@ -48,8 +48,8 @@ const Home: NextPage<Props> = ({}) => {
           ein, an unserem Abenteuer und unseren Produkten teilzuhaben
         </Description>
         <Images>
-          <Image src='/samen.png' />
-          <Image src='/teetasse.png' />
+          <Image alt='Hanfsamen' src='/samen.png' />
+          <Image alt='Teetasse' src='/teetasse.png' />
         </Images>
         <FAQ />
       </PageWrapper>

@@ -62,7 +62,7 @@ const Products: NextPage<Props> = ({}) => {
         {products.map((product) => (
           <Link key={product.slug} href={`/produkte/${product.slug}`}>
             <ProductWrapper>
-              <ProductImage src={product.images[0]} />
+              <ProductImage alt='Produkt Bild' src={product.images[0]} />
               <ProductName>{product.name}</ProductName>
             </ProductWrapper>
           </Link>

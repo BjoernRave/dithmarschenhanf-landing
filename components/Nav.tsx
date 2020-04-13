@@ -132,7 +132,7 @@ const Nav: FC<Props> = ({}) => {
       <Headroom>
         <NavWrapper>
           <Link href='/'>
-            <Logo src='/logo.png' alt='logo' />
+            <Logo src='/logo.png' alt='Dithmarschenhanf Logo' />
           </Link>
           <Actions>
             <Navigation />

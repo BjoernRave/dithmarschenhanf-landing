@@ -30,9 +30,9 @@ const Wir: NextPage<Props> = ({}) => {
     <PageWrapper>
       <Title>Über Uns</Title>
       <ImageWrapper>
-        <Image src='/nis.jpg' />
-        <MiddleImage src='/wilm.jpg' />
-        <Image src='/maren.jpg' />
+        <Image alt='Nis' src='/nis.jpg' />
+        <MiddleImage alt='Wilm' src='/wilm.jpg' />
+        <Image src='/maren.jpg' alt='Maren' />
       </ImageWrapper>
       <Description>
         Wir, das sind Nis mit Bruder Wilm und Mutter Maren Thomassek. Wir leben
