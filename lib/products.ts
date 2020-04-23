@@ -21,7 +21,7 @@ export const products: Product[] = [
     name: 'Blatt & Blüte Tee',
     slug: 'blattbluetetee',
     description:
-      'Geerntet im späten Bühstadium zur vollen Ausprägung der Cannabinoide \n  Angebaut  nach EU Biorichtlinien im gesunden Klima des westlichen Schleswig-Holsteins. \n Schonend getrocknet.',
+      'Geerntet im späten Blühstadium zur vollen Ausprägung der Cannabinoide \n  angebaut  nach EU Biorichtlinien im gesunden Klima des westlichen Schleswig-Holsteins. \n Schonend getrocknet.',
     images: [
       '/produkte/blattbluetetee2.jpg',
       '/produkte/blattbluetetee1.jpg',
