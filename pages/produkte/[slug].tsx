@@ -5,6 +5,14 @@ import React from 'react'
 import { Carousel } from 'react-responsive-carousel'
 import styled from 'styled-components'
 
+const Haltbarkeit = styled.span`
+  padding: 40px 0;
+`
+
+const Info = styled.span`
+  color: #6c6c6c;
+`
+
 const ProductWrapper = styled.div`
   margin: 20px 20%;
 `
@@ -45,9 +53,7 @@ const Product: NextPage<Props> = ({ product }) => {
       </Carousel>
       <Description>{description}</Description>
       {product.mhd && (
-        <span style={{ fontSize: 20, padding: '40px 0' }}>
-          Mindesthaltbarkeitsdatum: {product.mhd}
-        </span>
+        <Haltbarkeit>Mindesthaltbarkeitsdatum: {product.mhd}</Haltbarkeit>
       )}
       {nutrients && (
         <NutrientWrapper>
@@ -68,9 +74,7 @@ const Product: NextPage<Props> = ({ product }) => {
               ))}
             </tbody>
           </table>
-          <span style={{ color: '#6c6c6c', margin: 20 }}>
-            Nährwerte können natürlichen Schwankungen unterliegen
-          </span>
+          <Info>Nährwerte können natürlichen Schwankungen unterliegen</Info>
         </NutrientWrapper>
       )}
     </ProductWrapper>
