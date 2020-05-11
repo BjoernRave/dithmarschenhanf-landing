@@ -1,6 +1,6 @@
+import { PageWrapper } from 'lib/styles'
 import { NextPage } from 'next'
 import styled from 'styled-components'
-import { PageWrapper } from '../lib/styles'
 
 const VerkaufsStellenWrapper = styled.div`
   display: flex;

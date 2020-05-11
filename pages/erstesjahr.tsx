@@ -1,7 +1,7 @@
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { NextPage } from 'next'
 import React from 'react'
 import styled from 'styled-components'
-import { Description, PageWrapper, Title } from '../lib/styles'
 
 const Image = styled.img`
   width: auto;

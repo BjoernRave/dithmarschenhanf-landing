@@ -1,7 +1,7 @@
-import { NextPage } from "next";
-import Link from "next/link";
-import React from "react";
-import { PageWrapper, Title } from "../lib/styles";
+import { PageWrapper, Title } from 'lib/styles'
+import { NextPage } from 'next'
+import Link from 'next/link'
+import React from 'react'
 
 const DatenSchutz: NextPage<Props> = ({}) => {
   return (
@@ -16,7 +16,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website
-        ist im <Link href="/impressum">Impressum</Link> zu finden.
+        ist im <Link href='/impressum'>Impressum</Link> zu finden.
       </p>
       <p>
         Die verantwortliche Stelle entscheidet allein oder gemeinsam mit anderen
@@ -46,12 +46,11 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         Zuständige Aufsichtsbehörde bezüglich datenschutzrechtlicher Fragen ist
         der Landesdatenschutzbeauftragte des Bundeslandes, in dem sich der Sitz
         unseres Unternehmens befindet. Der folgende Link stellt eine Liste der
-        Datenschutzbeauftragten sowie deren Kontaktdaten bereit:{" "}
+        Datenschutzbeauftragten sowie deren Kontaktdaten bereit:{' '}
         <a
-          href="[https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)"
-          rel="noreferrer"
-          target="_blank"
-        >
+          href='[https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)'
+          rel='noreferrer'
+          target='_blank'>
           [https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)
         </a>
         .
@@ -194,8 +193,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten finden Sie in der
-        Datenschutzerklärung von YouTube unter:{" "}
-        <a href="[https://www.google.de/intl/de/policies/privacy](https://www.google.de/intl/de/policies/privacy)">
+        Datenschutzerklärung von YouTube unter:{' '}
+        <a href='[https://www.google.de/intl/de/policies/privacy](https://www.google.de/intl/de/policies/privacy)'>
           [https://www.google.de/intl/de/policies/privacy](https://www.google.de/intl/de/policies/privacy)
         </a>
         .
@@ -207,7 +206,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       <p>
         Unsere Website verwendet Cookies. Das sind kleine Textdateien, die Ihr
         Webbrowser auf Ihrem Endgerät speichert. Cookies helfen uns dabei, unser
-        Angebot nutzerfreundlicher, effektiver und sicherer zu machen.{" "}
+        Angebot nutzerfreundlicher, effektiver und sicherer zu machen.{' '}
       </p>
       <p>
         Einige Cookies sind “Session-Cookies.” Solche Cookies werden nach Ende
@@ -279,8 +278,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         Website-Nutzung einschließlich Ihrer IP-Adresse mitsamt anschließender
         Verarbeitung durch Google unterbinden. Dies ist möglich, indem Sie das
         über folgenden Link erreichbare Browser-Plugin herunterladen und
-        installieren:{" "}
-        <a href="[https://tools.google.com/dlpage/gaoptout?hl=de](https://tools.google.com/dlpage/gaoptout?hl=de)">
+        installieren:{' '}
+        <a href='[https://tools.google.com/dlpage/gaoptout?hl=de](https://tools.google.com/dlpage/gaoptout?hl=de)'>
           [https://tools.google.com/dlpage/gaoptout?hl=de](https://tools.google.com/dlpage/gaoptout?hl=de)
         </a>
         .
@@ -294,8 +293,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten bei Google Analytics finden Sie
-        in der Datenschutzerklärung von Google:{" "}
-        <a href="[https://support.google.com/analytics/answer/6004245?hl=de](https://support.google.com/analytics/answer/6004245?hl=de)">
+        in der Datenschutzerklärung von Google:{' '}
+        <a href='[https://support.google.com/analytics/answer/6004245?hl=de](https://support.google.com/analytics/answer/6004245?hl=de)'>
           [https://support.google.com/analytics/answer/6004245?hl=de](https://support.google.com/analytics/answer/6004245?hl=de)
         </a>
         .
@@ -321,20 +320,19 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       </p>
       <p>
         <small>
-          Quelle: Datenschutz-Konfigurator von{" "}
+          Quelle: Datenschutz-Konfigurator von{' '}
           <a
-            href="[http://www.mein-datenschutzbeauftragter.de](http://www.mein-datenschutzbeauftragter.de/)"
-            rel="noreferrer"
-            target="_blank"
-          >
+            href='[http://www.mein-datenschutzbeauftragter.de](http://www.mein-datenschutzbeauftragter.de/)'
+            rel='noreferrer'
+            target='_blank'>
             mein-datenschutzbeauftragter.de
           </a>
         </small>
       </p>
     </PageWrapper>
-  );
-};
+  )
+}
 
-export default DatenSchutz;
+export default DatenSchutz
 
 interface Props {}

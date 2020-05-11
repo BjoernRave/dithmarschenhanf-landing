@@ -1,9 +1,9 @@
+import { products } from 'lib/products'
+import { Description, Title } from 'lib/styles'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
-import { products } from '../../lib/products'
-import { Description, Title } from '../../lib/styles'
 
 const ProductsWrapper = styled.div`
   margin: 20px 50px;

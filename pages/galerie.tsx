@@ -1,8 +1,8 @@
+import ImageGallery from 'components/ImageGallery'
+import { photos } from 'lib/photos'
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { NextPage } from 'next'
 import React from 'react'
-import ImageGallery from '../components/ImageGallery'
-import { photos } from '../lib/photos'
-import { Description, PageWrapper, Title } from '../lib/styles'
 
 const Galerie: NextPage<Props> = ({}) => {
   return (

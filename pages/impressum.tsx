@@ -1,18 +1,18 @@
-import { NextPage } from "next";
-import React from "react";
-import styled from "styled-components";
-import { Description, PageWrapper, Title } from "../lib/styles";
+import { Description, PageWrapper, Title } from 'lib/styles'
+import { NextPage } from 'next'
+import React from 'react'
+import styled from 'styled-components'
 
 const ImpressumWrapper = styled(PageWrapper)`
   display: flex;
   align-items: center;
   flex-direction: column;
-`;
+`
 
 const Text = styled(Description)`
   margin-top: 50px;
   font-size: 24px;
-`;
+`
 
 const Impressum: NextPage<Props> = ({}) => {
   return (
@@ -32,9 +32,9 @@ const Impressum: NextPage<Props> = ({}) => {
         Email: info@dithmarschenhanf.de
       </Text>
     </ImpressumWrapper>
-  );
-};
+  )
+}
 
-export default Impressum;
+export default Impressum
 
 interface Props {}

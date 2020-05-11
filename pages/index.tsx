@@ -1,11 +1,11 @@
+import FAQ from 'components/FAQ'
+import { Description, PageWrapper } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
-import FAQ from '../components/FAQ'
-import { Description, PageWrapper } from '../lib/styles'
 
 const Title = styled.h1`
   margin: 30px auto 10px auto;
@@ -42,8 +42,8 @@ const Home: NextPage<Props> = ({ file }) => {
   const formOptions = {
     label: 'Home Page',
     fields: [
-      { name: 'title', component: 'text' },
-      { name: 'description', component: 'markdown' },
+      { name: 'title', label: 'Titel', component: 'text' },
+      { name: 'description', label: 'Beschreibung', component: 'markdown' },
     ],
   }
 

@@ -1,9 +1,9 @@
+import { products } from 'lib/products'
+import { Product as ProductType } from 'lib/types'
 import { NextPage } from 'next'
 import React from 'react'
 import { Carousel } from 'react-responsive-carousel'
 import styled from 'styled-components'
-import { products } from '../../lib/products'
-import { Product as ProductType } from '../../lib/types'
 
 const ProductWrapper = styled.div`
   margin: 20px 20%;
