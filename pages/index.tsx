@@ -1,5 +1,8 @@
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
+import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
+import ReactMarkdown from 'react-markdown'
+import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
 import FAQ from '../components/FAQ'
 import { Description, PageWrapper } from '../lib/styles'
@@ -35,17 +38,25 @@ const Image = styled.img`
   }
 `
 
-const Home: NextPage<Props> = ({}) => {
+const Home: NextPage<Props> = ({ file }) => {
+  const formOptions = {
+    label: 'Home Page',
+    fields: [
+      { name: 'title', component: 'text' },
+      { name: 'description', component: 'markdown' },
+    ],
+  }
+
+  // Registers a JSON Tina Form
+  const [data, form] = useGithubJsonForm(file, formOptions)
+
   return (
     <>
       <TopBanner alt='Hanffeld' src='/Header.jpg' />
       <PageWrapper>
-        <Title>
-          Willkommen bei Dithmarschenhanf, Willkommen im Hanf-Abenteuer
-        </Title>
+        <Title>{data.title}</Title>
         <Description style={{ fontSize: '22px', textAlign: 'center' }}>
-          Schön, dass Sie vorbeischauen! Wenn Sie möchten, laden wie Sie gerne
-          ein, an unserem Abenteuer und unseren Produkten teilzuhaben
+          <ReactMarkdown source={data.description} />
         </Description>
         <Images>
           <Image alt='Hanfsamen' src='/samen.png' />
@@ -59,4 +70,33 @@ const Home: NextPage<Props> = ({}) => {
 
 export default Home
 
-interface Props {}
+interface Props {
+  file: any
+}
+
+/**
+ * Fetch data with getStaticProps based on 'preview' mode
+ */
+export const getStaticProps: GetStaticProps = async function ({
+  preview,
+  previewData,
+}) {
+  if (preview) {
+    return getGithubPreviewProps({
+      ...previewData,
+      fileRelativePath: 'content/home.json',
+      parse: parseJson,
+    })
+  }
+  return {
+    props: {
+      sourceProvider: null,
+      error: null,
+      preview: false,
+      file: {
+        fileRelativePath: 'content/home.json',
+        data: (await import('../content/home.json')).default,
+      },
+    },
+  }
+}
