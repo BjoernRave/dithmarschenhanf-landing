@@ -119,6 +119,9 @@ const Navigation = () => (
     <Link href='/galerie'>
       <NavItem>Galerie</NavItem>
     </Link>
+    <Link href='/warumhanf'>
+      <NavItem>Warum Hanf?</NavItem>
+    </Link>
     <ExLink href=' mailto:info@dithmarschenhanf.de'>
       <NavItem>Kontakt</NavItem>
     </ExLink>

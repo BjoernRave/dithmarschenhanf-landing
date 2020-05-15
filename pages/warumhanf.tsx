@@ -2,7 +2,19 @@ import { PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
+import ReactMarkdown from 'react-markdown'
 import { useGithubJsonForm } from 'react-tinacms-github'
+import styled from 'styled-components'
+
+const SectionWrapper = styled.section`
+  padding: 20px 0;
+`
+
+const SectionTitle = styled.h2`
+  display: table;
+  margin: 0 auto;
+  font-size: 28px;
+`
 
 const Warumhanf: NextPage<Props> = ({ file }) => {
   const formOptions = {
@@ -19,7 +31,7 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
         component: 'group-list',
         itemProps: (item) => ({
           key: item.id,
-          label: item.name,
+          label: item.title,
         }),
         fields: [
           {
@@ -30,7 +42,7 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
           {
             label: 'Beschreibung',
             name: 'description',
-            component: 'textarea',
+            component: 'markdown',
           },
         ],
       },
@@ -43,10 +55,12 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
     <PageWrapper>
       <Title>{data.title}</Title>
       {data.advantages.map((advantage) => (
-        <>
-          <h2>{advantage.title}</h2>
-          <p>{advantage.description}</p>
-        </>
+        <SectionWrapper>
+          <SectionTitle>{advantage.title}</SectionTitle>
+          <p>
+            <ReactMarkdown source={advantage.description} />
+          </p>
+        </SectionWrapper>
       ))}
     </PageWrapper>
   )
