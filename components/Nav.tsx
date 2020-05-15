@@ -113,9 +113,7 @@ const Navigation = () => (
     <Link href='/wir'>
       <NavItem>Über Uns</NavItem>
     </Link>
-    {/* <Link href="/aktuelles">
-      <NavItem>Aktuelles</NavItem>
-    </Link> */}
+
     <Link href='/galerie'>
       <NavItem>Galerie</NavItem>
     </Link>
