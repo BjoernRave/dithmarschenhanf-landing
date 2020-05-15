@@ -5,7 +5,7 @@ import styled from 'styled-components'
 const EditButton = styled.button`
   position: fixed;
   left: 0;
-  bottom: 100px;
+  top: 100px;
   padding: 15px;
   pointer-events: all;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 2px 6px rgba(0, 0, 0, 0.2);
