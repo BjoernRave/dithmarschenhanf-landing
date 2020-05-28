@@ -5,6 +5,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
+import { useCMS } from 'tinacms'
 
 const Entry = styled.section`
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
@@ -53,6 +54,14 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
     ],
   }
 
+  const cms = useCMS()
+
+  React.useEffect(() => {
+    import('react-tinacms-editor').then(({ MarkdownFieldPlugin }) => {
+      cms.plugins.add(MarkdownFieldPlugin as any)
+    })
+  }, [])
+
   const [data, form] = useGithubJsonForm(file, formOptions)
 
   return (
@@ -61,7 +70,9 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
       {data?.entries?.map((entry, ind) => (
         <Entry key={ind}>
           <EntryTitle>{entry.title}</EntryTitle>
-          <EntryText>{entry.description}</EntryText>
+          <EntryText>
+            <ReactMarkdown source={entry.description} />
+          </EntryText>
         </Entry>
       ))}
     </PageWrapper>

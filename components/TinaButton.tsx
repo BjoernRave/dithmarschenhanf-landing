@@ -4,13 +4,13 @@ import styled from 'styled-components'
 
 const EditButton = styled.button`
   position: fixed;
-  left: 0;
+  right: 0;
   z-index: 999;
   top: 200px;
   padding: 15px;
   pointer-events: all;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 2px 6px rgba(0, 0, 0, 0.2);
-  border-radius: 0 24px 24px 0;
+  border-radius: 24px 0 0 24px;
   color: white;
   border: 0;
   outline: none;
