@@ -5,7 +5,7 @@ import styled from 'styled-components'
 const EditButton = styled.button`
   position: fixed;
   left: 0;
-  z-index: 9999;
+  z-index: 999;
   top: 200px;
   padding: 15px;
   pointer-events: all;
@@ -27,7 +27,7 @@ const TinaButton: FC<Props> = ({ editMode }) => {
 
   return (
     <EditButton onClick={editMode ? github.exitEditMode : github.enterEditMode}>
-      {editMode ? 'Exit Edit Mode' : 'Edit This Site'}
+      {editMode ? 'Bearbeiten beenden' : 'Seite bearbeiten'}
     </EditButton>
   )
 }

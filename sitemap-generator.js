@@ -1,10 +1,13 @@
-const path = require("path");
-const sitemapGenerator = require("nextjs-sitemap-generator");
+const sitemapGenerator = require('nextjs-sitemap-generator')
+const fs = require('fs')
 
-const baseUrl = "https://dithmarschenhanf.de";
+const BUILD_ID = fs.readFileSync('.next/BUILD_ID').toString()
+
+const baseUrl = 'https://dithmarschenhanf.de'
 
 sitemapGenerator({
   baseUrl,
-  pagesDirectory: path.join(__dirname, "pages"),
-  targetDirectory: "public/"
-});
+  pagesDirectory: __dirname + '/.next/server/static/' + BUILD_ID + '/pages',
+  targetDirectory: 'public/',
+  ignoredPaths: ['[fallback]'],
+})

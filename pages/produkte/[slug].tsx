@@ -27,11 +27,6 @@ const Description = styled.p`
   font-size: 20px;
 `
 
-const Image = styled.img`
-  height: 400px;
-  width: auto !important;
-`
-
 const NutrientHeader = styled.h2``
 
 const NutrientWrapper = styled.div`
@@ -46,9 +41,13 @@ const Product: NextPage<Props> = ({ product }) => {
   return (
     <ProductWrapper>
       <Title>{name}</Title>
-      <Carousel dynamicHeight={true}>
+      <Carousel showThumbs={false} dynamicHeight={true}>
         {images.map((image, index) => (
-          <Image alt={`${name}_${index}`} src={image} />
+          <img
+            style={{ height: 400, width: 'auto' }}
+            alt={`${name}_${index}`}
+            src={image}
+          />
         ))}
       </Carousel>
       <Description>{description}</Description>
