@@ -101,9 +101,9 @@ const CloseIcon = styled.img`
 
 const Navigation = () => (
   <>
-    <Link href='/aktuelles'>
+    {/* <Link href='/aktuelles'>
       <NavItem>Aktuelles</NavItem>
-    </Link>
+    </Link> */}
     <Link href='/verkaufstellen'>
       <NavItem>Verkaufstellen</NavItem>
     </Link>
