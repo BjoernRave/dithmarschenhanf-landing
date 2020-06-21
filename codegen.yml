@@ -1,0 +1,16 @@
+overwrite: true
+schema: 'http://localhost:3000/api/graphql'
+documents:
+  - './pages/**/*.{ts,tsx}'
+  - './components/**/*.{ts,tsx}'
+  - './lib/*.{ts,tsx}'
+generates:
+  generated/index.tsx:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-urql'
+    config:
+      withHooks: true
+      withComponent: false
+      skipTypename: true

@@ -1,6 +1,13 @@
 import 'next'
 import 'styled-components'
 import { borderRadiusType, boxShadowsType, colorType } from './theme'
+import { Client as UrqlClient } from 'urql'
+
+declare module 'next' {
+  export interface NextPageContext {
+    urqlClient: UrqlClient
+  }
+}
 
 declare module 'styled-components' {
   export interface DefaultTheme {
