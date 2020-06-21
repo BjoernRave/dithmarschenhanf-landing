@@ -108,7 +108,7 @@ const Product: NextPage<Props> = ({ product }) => {
 
 export default withUrqlClient(
   () => ({
-    url: 'http://localhost:3000/api/graphql',
+    url: `${process.env.API_URL}/api/graphql`,
   }),
   { ssr: true }
 )(Product)
