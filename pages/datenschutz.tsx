@@ -194,7 +194,10 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten finden Sie in der
         Datenschutzerklärung von YouTube unter:{' '}
-        <a href='https://www.google.de/intl/de/policies/privacy'>
+        <a
+          rel='noreferrer'
+          target='_blank'
+          href='https://www.google.de/intl/de/policies/privacy'>
           https://www.google.de/intl/de/policies/privacy
         </a>
         .
@@ -279,7 +282,10 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         Verarbeitung durch Google unterbinden. Dies ist möglich, indem Sie das
         über folgenden Link erreichbare Browser-Plugin herunterladen und
         installieren:{' '}
-        <a href='https://tools.google.com/dlpage/gaoptout?hl=de'>
+        <a
+          rel='noreferrer'
+          target='_blank'
+          href='https://tools.google.com/dlpage/gaoptout?hl=de'>
           https://tools.google.com/dlpage/gaoptout?hl=de
         </a>
         .
@@ -294,7 +300,10 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten bei Google Analytics finden Sie
         in der Datenschutzerklärung von Google:{' '}
-        <a href='https://support.google.com/analytics/answer/6004245?hl=de'>
+        <a
+          rel='noreferrer'
+          target='_blank'
+          href='https://support.google.com/analytics/answer/6004245?hl=de'>
           https://support.google.com/analytics/answer/6004245?hl=de
         </a>
         .
