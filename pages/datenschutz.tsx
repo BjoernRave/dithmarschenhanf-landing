@@ -48,10 +48,10 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         unseres Unternehmens befindet. Der folgende Link stellt eine Liste der
         Datenschutzbeauftragten sowie deren Kontaktdaten bereit:{' '}
         <a
-          href='[https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)'
+          href='https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html'
           rel='noreferrer'
           target='_blank'>
-          [https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html](https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html)
+          https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html
         </a>
         .
       </p>
@@ -194,8 +194,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten finden Sie in der
         Datenschutzerklärung von YouTube unter:{' '}
-        <a href='[https://www.google.de/intl/de/policies/privacy](https://www.google.de/intl/de/policies/privacy)'>
-          [https://www.google.de/intl/de/policies/privacy](https://www.google.de/intl/de/policies/privacy)
+        <a href='https://www.google.de/intl/de/policies/privacy'>
+          https://www.google.de/intl/de/policies/privacy
         </a>
         .
       </p>
@@ -279,8 +279,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         Verarbeitung durch Google unterbinden. Dies ist möglich, indem Sie das
         über folgenden Link erreichbare Browser-Plugin herunterladen und
         installieren:{' '}
-        <a href='[https://tools.google.com/dlpage/gaoptout?hl=de](https://tools.google.com/dlpage/gaoptout?hl=de)'>
-          [https://tools.google.com/dlpage/gaoptout?hl=de](https://tools.google.com/dlpage/gaoptout?hl=de)
+        <a href='https://tools.google.com/dlpage/gaoptout?hl=de'>
+          https://tools.google.com/dlpage/gaoptout?hl=de
         </a>
         .
       </p>
@@ -294,8 +294,8 @@ const DatenSchutz: NextPage<Props> = ({}) => {
       <p>
         Einzelheiten zum Umgang mit Nutzerdaten bei Google Analytics finden Sie
         in der Datenschutzerklärung von Google:{' '}
-        <a href='[https://support.google.com/analytics/answer/6004245?hl=de](https://support.google.com/analytics/answer/6004245?hl=de)'>
-          [https://support.google.com/analytics/answer/6004245?hl=de](https://support.google.com/analytics/answer/6004245?hl=de)
+        <a href='https://support.google.com/analytics/answer/6004245?hl=de'>
+          https://support.google.com/analytics/answer/6004245?hl=de
         </a>
         .
       </p>
@@ -322,7 +322,7 @@ const DatenSchutz: NextPage<Props> = ({}) => {
         <small>
           Quelle: Datenschutz-Konfigurator von{' '}
           <a
-            href='[http://www.mein-datenschutzbeauftragter.de](http://www.mein-datenschutzbeauftragter.de/)'
+            href='http://www.mein-datenschutzbeauftragter.de/'
             rel='noreferrer'
             target='_blank'>
             mein-datenschutzbeauftragter.de
