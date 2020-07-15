@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { useGithubEditing } from 'react-tinacms-github'
+import { TinaCMS } from 'tinacms'
 import styled from 'styled-components'
 
 const EditButton = styled.button`
@@ -22,12 +22,10 @@ const EditButton = styled.button`
   cursor: pointer;
 `
 
-const TinaButton: FC<Props> = ({ editMode }) => {
-  const github = useGithubEditing()
-
+const TinaButton: FC<Props> = ({ cms }) => {
   return (
-    <EditButton onClick={editMode ? github.exitEditMode : github.enterEditMode}>
-      {editMode ? 'Bearbeiten beenden' : 'Seite bearbeiten'}
+    <EditButton onClick={() => cms.toggle()}>
+      {cms.enabled ? 'Bearbeiten beenden' : 'Seite bearbeiten'}
     </EditButton>
   )
 }
@@ -35,5 +33,5 @@ const TinaButton: FC<Props> = ({ editMode }) => {
 export default TinaButton
 
 interface Props {
-  editMode: boolean
+  cms: TinaCMS
 }

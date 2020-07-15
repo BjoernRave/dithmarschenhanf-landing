@@ -7,6 +7,7 @@ import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
 import { AppProps } from 'next/app'
 import Router from 'next/router'
+import { useEffect, useState } from 'react'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { GithubClient, TinacmsGithubProvider } from 'react-tinacms-github'
 import { ThemeProvider } from 'styled-components'
@@ -18,38 +19,34 @@ Router.events.on('routeChangeComplete', (url) => {
 })
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
-  const cms = new TinaCMS({
-    apis: {
-      github: new GithubClient({
-        proxy: '/api/proxy-github',
-        authCallbackRoute: '/api/create-github-access-token',
-        clientId: process.env.GITHUB_CLIENT_ID,
-        baseRepoFullName: process.env.REPO_FULL_NAME,
-      }),
-    },
-    sidebar: {
-      hidden: !pageProps.preview,
-    },
-    toolbar: {
-      hidden: !pageProps.preview,
-    },
-  })
+  const [cms] = useState(
+    new TinaCMS({
+      apis: {
+        github: new GithubClient({
+          proxy: '/api/proxy-github',
+          authCallbackRoute: '/api/create-github-access-token',
+          clientId: process.env.GITHUB_CLIENT_ID,
+          baseRepoFullName: process.env.REPO_FULL_NAME,
+        }),
+      },
+      enabled: pageProps.preview,
+      sidebar: pageProps.preview,
+      toolbar: pageProps.preview,
+    })
+  )
 
   return (
     <TinaProvider cms={cms}>
       <TinacmsGithubProvider
-        editMode={pageProps.preview}
-        enterEditMode={enterEditMode}
-        exitEditMode={exitEditMode}
+        onLogin={enterEditMode}
+        onLogout={exitEditMode}
         error={pageProps.error}>
         <ThemeProvider theme={theme}>
           <Normalize />
           <GlobalStyles />
           <Meta />
           <Nav />
-          {(router.query.edit || pageProps.preview) && (
-            <TinaButton editMode={pageProps.preview} />
-          )}
+          {(router.query.edit || pageProps.preview) && <TinaButton cms={cms} />}
           <Component {...pageProps} />
           <Footer />
         </ThemeProvider>
@@ -60,10 +57,22 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
 export default MyApp
 
-const enterEditMode = () => {
-  return fetch(`/api/preview`).then(() => {
-    window.location.href = window.location.pathname
-  })
+const enterEditMode = async () => {
+  const token = localStorage.getItem('tinacms-github-token') || null
+  const headers = new Headers()
+
+  if (token) {
+    headers.append('Authorization', 'Bearer ' + token)
+  }
+
+  const response = await fetch(`/api/preview`, { headers })
+  const data = await response.json()
+
+  if (response.status === 200) {
+    window.location.reload()
+  } else {
+    throw new Error(data.message)
+  }
 }
 
 const exitEditMode = () => {

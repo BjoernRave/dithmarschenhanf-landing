@@ -3,8 +3,13 @@ import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { useGithubJsonForm } from 'react-tinacms-github'
+import {
+  useGithubJsonForm,
+  useGithubToolbarPlugins,
+} from 'react-tinacms-github'
 import styled from 'styled-components'
+import { MarkdownFieldPlugin } from 'react-tinacms-editor'
+import { usePlugin } from 'tinacms'
 
 const SectionWrapper = styled.section`
   padding: 20px 0;
@@ -50,6 +55,8 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
   }
 
   const [data, form] = useGithubJsonForm(file, formOptions)
+  usePlugin([form, MarkdownFieldPlugin])
+  useGithubToolbarPlugins()
 
   return (
     <PageWrapper>
