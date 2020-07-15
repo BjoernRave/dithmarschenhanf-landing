@@ -38,7 +38,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
   return (
     <TinaProvider cms={cms}>
       <TinacmsGithubProvider
-        onLogin={enterEditMode}
+        onLogin={onLogin}
         onLogout={exitEditMode}
         error={pageProps.error}>
         <ThemeProvider theme={theme}>
@@ -57,7 +57,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
 
 export default MyApp
 
-const enterEditMode = async () => {
+const onLogin = async () => {
   const token = localStorage.getItem('tinacms-github-token') || null
   const headers = new Headers()
 
