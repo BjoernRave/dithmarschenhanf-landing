@@ -63,10 +63,8 @@ const CartItem: FC<Props> = ({ product, amount }) => {
     <ItemWrapper>
       <LeftImageWrapper>
         <ItemImage src={images[0].url} alt={name} />
-       
-            <ItemName>{name}</ItemName>
-      
-        </Link>
+
+        <ItemName>{name}</ItemName>
       </LeftImageWrapper>
       <Numbers>
         <Select
