@@ -9,5 +9,6 @@ module.exports = withBundleAnalyzer({
     REPO_FULL_NAME: process.env.REPO_FULL_NAME,
     BASE_BRANCH: process.env.BASE_BRANCH,
     API_URL: process.env.API_URL,
+    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
   },
 })

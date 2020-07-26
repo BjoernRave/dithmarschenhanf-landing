@@ -1,7 +1,7 @@
 import 'next'
 import 'styled-components'
-import { borderRadiusType, boxShadowsType, colorType } from './theme'
 import { Client as UrqlClient } from 'urql'
+import { borderRadiusType, boxShadowsType, colorType } from './theme'
 
 declare module 'next' {
   export interface NextPageContext {
@@ -29,4 +29,8 @@ export interface Product {
   description: string
   nutrients?: Nutrient[]
   mhd?: string
+}
+
+export interface EditLinkProps {
+  editMode: boolean
 }

@@ -1,35 +1,59 @@
-import Link from 'next/link'
-import { FC } from 'react'
+import Link from 'next/Link'
+import React, { FC } from 'react'
 import styled from 'styled-components'
+import Wave from './Wave'
 
-const FooterWrapper = styled.footer`
-  margin-top: 150px;
+export const FooterHeight = 386
+
+const Wrapper = styled.div`
+  margin-top: 50px;
   position: relative;
-  background: url('/FooterWave.svg');
-  background-repeat: no-repeat;
-  background-size: cover;
 `
 
-const TopSection = styled.div`
+const Content = styled.footer`
+  background-color: ${({ theme }) => theme.colors.primary};
   display: flex;
-  padding-top: 150px;
-  padding-bottom: 100px;
-  justify-content: space-between;
-  margin: 0 20%;
+  justify-content: space-around;
+  margin-top: -20px;
+  padding-bottom: 50px;
 
   @media (max-width: 767px) {
-    flex-direction: column;
+    flex-direction: column-reverse;
+    align-items: center;
   }
 `
 
-const RightSection = styled.div`
+const SocialSection = styled.div`
+  color: white;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`
+
+const SocialLink = styled.a`
+  color: white;
+  margin: 0 10px;
+`
+
+const ItemSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 
-  @media (max-width: 840px) {
-    margin-top: 20px;
+  @media (max-width: 767px) {
     align-items: center;
+  }
+`
+
+const FooterLink = styled.a`
+  color: white;
+  cursor: pointer;
+  margin: 15px 0;
+  font-size: 18px;
+  text-decoration: none;
+
+  :hover {
+    text-decoration: underline;
   }
 `
 
@@ -49,29 +73,6 @@ const Copyright = styled.span`
   }
 `
 
-const FooterLink = styled.a`
-  color: white;
-  cursor: pointer;
-  margin: 15px 0;
-  font-size: 18px;
-
-  :hover {
-    text-decoration: underline;
-  }
-`
-
-const LeftSection = styled.div`
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
-
-const SocialLink = styled.a`
-  color: white;
-  margin: 0 10px;
-`
-
 const SocialIcon = styled.img`
   width: 40px;
   height: 40px;
@@ -84,17 +85,13 @@ const EmailLink = styled.a`
   margin-top: 20px;
 `
 
-const Socials = styled.div`
-  display: flex;
-`
-
-const Footer: FC<Props> = ({}) => {
+const Footer: FC<Props> = (props) => {
   return (
-    <FooterWrapper>
-      <TopSection>
-        {/* <FooterWave src="/FooterWave.svg" /> */}
-        <LeftSection>
-          <Socials>
+    <Wrapper {...props}>
+      <Wave color='#01621f' />
+      <Content>
+        <SocialSection>
+          <div>
             <SocialLink
               rel='noreferrer'
               target='_blank'
@@ -107,24 +104,25 @@ const Footer: FC<Props> = ({}) => {
               href='https://www.instagram.com/dithmarschenhanf/'>
               <SocialIcon alt='instagram' src='/instagram.svg' />
             </SocialLink>
-          </Socials>
+          </div>
           <EmailLink href='mailto:info@dithmarschenhanf.de'>
             info@dithmarschenhanf.de
           </EmailLink>
-        </LeftSection>
-        <RightSection>
+        </SocialSection>
+
+        <ItemSection>
           <Link href='/datenschutz'>
             <FooterLink>Datenschutzerklärung</FooterLink>
           </Link>
           <Link href='/impressum'>
             <FooterLink>Impressum</FooterLink>
           </Link>
-        </RightSection>
-      </TopSection>
+        </ItemSection>
+      </Content>
       <Copyright>
         Copyright © 2020 Dithmarschenhanf, Alle Rechte vorbehalten
       </Copyright>
-    </FooterWrapper>
+    </Wrapper>
   )
 }
 

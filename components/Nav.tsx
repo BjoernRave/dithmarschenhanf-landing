@@ -1,7 +1,12 @@
-import Link from 'next/link'
+import { ShoppingBag } from '@styled-icons/boxicons-regular/ShoppingBag'
+import Link from 'next/Link'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import Headroom from 'react-headroom'
 import styled from 'styled-components'
+import { useShoppingCart } from './ShoppingCart'
+
+export const NavHeight = 90
 
 const Logo = styled.img`
   width: auto;
@@ -15,7 +20,7 @@ const NavWrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: ${({ theme }) => theme.boxShadows.normal};
+  box-shadow: ${({ theme }) => theme.boxShadows.default.google};
   padding: 0 20px;
 `
 
@@ -99,6 +104,17 @@ const CloseIcon = styled.img`
   cursor: pointer;
 `
 
+const ShoppingCart = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`
+
+const ShoppingCartAmount = styled.span`
+  font-size: 24px;
+  margin-left: 5px;
+`
+
 const Navigation = () => (
   <>
     {/* <Link href='/aktuelles'>
@@ -130,7 +146,10 @@ const Navigation = () => (
 )
 
 const Nav: FC<Props> = ({}) => {
+  const { query } = useRouter()
   const [isMenu, setIsMenu] = useState(false)
+  const { cart } = useShoppingCart()
+
   return (
     <>
       <Headroom>
@@ -140,6 +159,17 @@ const Nav: FC<Props> = ({}) => {
           </Link>
           <Actions>
             <Navigation />
+            {query.shop && (
+              <Link href='/einkaufswagen'>
+                <ShoppingCart>
+                  <ShoppingBag size={30} />
+                  <ShoppingCartAmount>
+                    {' '}
+                    {cart.reduce((prev, next) => prev + next.amount, 0)}
+                  </ShoppingCartAmount>
+                </ShoppingCart>
+              </Link>
+            )}
           </Actions>
           <MenuButton
             onClick={() => setIsMenu(true)}

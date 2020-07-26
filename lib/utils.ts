@@ -1,30 +1,59 @@
-import { useEffect, useState } from "react";
-export const isServer = typeof window === "undefined";
+import { useEffect, useState } from 'react'
+export const isServer = typeof window === 'undefined'
 
 const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
   const [state, setState] = useState<{ width: number; height: number }>({
     width: !isServer ? window.innerWidth : initialWidth,
-    height: !isServer ? window.innerHeight : initialHeight
-  });
+    height: !isServer ? window.innerHeight : initialHeight,
+  })
 
   useEffect((): (() => void) | void => {
     if (!isServer) {
       const handler = () => {
         setState({
           width: window.innerWidth,
-          height: window.innerHeight
-        });
-      };
+          height: window.innerHeight,
+        })
+      }
 
-      window.addEventListener("resize", handler);
+      window.addEventListener('resize', handler)
 
       return () => {
-        window.removeEventListener("resize", handler);
-      };
+        window.removeEventListener('resize', handler)
+      }
     }
-  }, []);
+  }, [])
 
-  return state;
-};
+  return state
+}
 
-export default useWindowSize;
+export default useWindowSize
+
+export const useLocalStorage = (key: string, initialValue?: any) => {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+
+      return item ? JSON.parse(item) : initialValue
+    } catch (error) {
+      console.log(error)
+
+      return initialValue
+    }
+  })
+
+  const setValue = (value) => {
+    try {
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value
+
+      setStoredValue(valueToStore)
+
+      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return [storedValue, setValue]
+}

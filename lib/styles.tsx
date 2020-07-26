@@ -1,3 +1,5 @@
+import { FooterHeight } from 'components/Footer'
+import { NavHeight } from 'components/Nav'
 import styled, { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyles = createGlobalStyle`
@@ -33,6 +35,7 @@ export const PageWrapper = styled.div`
   padding: 0 10%;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: calc(100vh - ${NavHeight}px - ${FooterHeight}px - 22px);
 
   @media (max-width: 767px) {
     padding: 0 10px;

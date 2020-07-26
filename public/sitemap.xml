@@ -1,48 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-<url><loc>https://dithmarschenhanf.de/datenschutz</loc>
+      <urlset xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 
+      http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+      xmlns:xhtml="http://www.w3.org/1999/xhtml">
+      <url><loc>https://example.com/404</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/erstesjahr</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/aktuelles</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/galerie</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/api/create-github-access-token</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/impressum</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/api/preview</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/index</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/api/proxy-github</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/produkte/[slug]</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/api/reset-preview</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/produkte/index</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/datenschutz</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/verkaufstellen</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/einkaufswagen</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
-                </url><url><loc>https://dithmarschenhanf.de/wir</loc>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/erstesjahr</loc>
                 
                 
                 
-                <lastmod>2020-04-13</lastmod>
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/galerie</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/github/authorizing</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/impressum</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/index</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/blattbluetetee</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/hanfblaettertee</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/hanfbluettentee</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/hanfmehlblattbluete</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/hanfsamenpur</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/knusperhanf</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte/wuerzsalzhanf</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/produkte2</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/verkaufstellen</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/warumhanf</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
+                </url><url><loc>https://example.com/wir</loc>
+                
+                
+                
+                <lastmod>2020-06-30</lastmod>
                 </url></urlset>

@@ -1,15 +1,19 @@
-import { products } from 'lib/products'
-import { Product as ProductType } from 'lib/types'
-import { NextPage, NextPageContext } from 'next'
-import React from 'react'
-import { Carousel } from 'react-responsive-carousel'
-import styled from 'styled-components'
+import { CartAdd } from '@styled-icons/boxicons-solid/CartAdd'
+import Select from 'components/Select'
+import { useShoppingCart } from 'components/ShoppingCart'
+import { Get_ProductQuery, ListedProduct } from 'generated'
 import gql from 'graphql-tag'
-import { useGet_ProductQuery, Get_ProductQuery, ListedProduct } from 'generated'
-import { useRouter } from 'next/router'
-import Markdown from 'react-markdown'
-import { OperationResult } from 'urql'
+import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
+import dynamic from 'next/dynamic'
+import React, { useState } from 'react'
+import Markdown from 'react-markdown'
+import styled from 'styled-components'
+import { OperationResult } from 'urql'
+
+const ImageCarousel = dynamic(() => import('components/ImageCarousel'), {
+  ssr: false,
+})
 
 const GET_PRODUCT = gql`
   query GET_PRODUCT($slug: String!) {
@@ -29,21 +33,13 @@ const GET_PRODUCT = gql`
   }
 `
 
-const Haltbarkeit = styled.span`
-  padding: 40px 0;
-`
-
-const Info = styled.span`
-  color: #6c6c6c;
-`
-
 const ProductWrapper = styled.div`
-  margin: 20px 20%;
+  margin: 20px;
 `
 
 const Title = styled.h1`
   display: table;
-  margin: 20px auto;
+  margin: 20px auto 50px auto;
   font-size: 45px;
 `
 
@@ -51,57 +47,71 @@ const Description = styled.p`
   font-size: 20px;
 `
 
-const NutrientHeader = styled.h2``
+const BuySection = styled.div`
+  display: flex;
+`
 
-const NutrientWrapper = styled.div`
+const BuyButton = styled.button`
+  padding: 10px 20px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 10px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all linear 0.1s;
+  box-shadow: ${({ theme }) => theme.boxShadows.default.google};
+  font-size: 24px;
+
+  :hover {
+    box-shadow: ${({ theme }) => theme.boxShadows.hover.google};
+  }
+`
+
+const ContentWrapper = styled.section`
+  display: flex;
+  margin-top: 20px;
+`
+
+const DescriptionWrapper = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 60%;
 `
 
 const Product: NextPage<Props> = ({ product }) => {
+  const [amount, setAmount] = useState(1)
+  const { addToCart } = useShoppingCart()
   const { description, images, name, slug } = product
 
   return (
     <ProductWrapper>
-      <Title>{name}</Title>
-      <Carousel showThumbs={false} dynamicHeight={true}>
-        {images.map((image, index) => (
-          <img
-            style={{ height: 400, width: 'auto' }}
-            alt={`${name}_${index}`}
-            src={image.url}
-          />
-        ))}
-      </Carousel>
-      <Description>
-        <Markdown source={description} />
-      </Description>
-      {/* {product.mhd && (
-        <Haltbarkeit>Mindesthaltbarkeitsdatum: {product.mhd}</Haltbarkeit>
-      )} */}
-      {/* {nutrients && (
-        <NutrientWrapper>
-          <NutrientHeader>Nährwerte</NutrientHeader>
-          <table>
-            <thead>
-              <tr>
-                <td>Name</td>
-                <td>Wert</td>
-              </tr>
-            </thead>
-            <tbody>
-              {nutrients.map((nutrient) => (
-                <tr>
-                  <td>{nutrient.name}</td>
-                  <td>{nutrient.value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Info>Nährwerte können natürlichen Schwankungen unterliegen</Info>
-        </NutrientWrapper>
-      )} */}
+      <ContentWrapper>
+        <ImageCarousel
+          style={{ width: '40%', marginTop: 50 }}
+          images={images.map((i) => i.url)}
+        />
+        <DescriptionWrapper>
+          <Title>{name}</Title>
+          <BuySection>
+            <Select
+              label='Menge'
+              options={new Array(product.amount)
+                .fill(0)
+                .map((v, ind) => ({ value: ind + 1, label: String(ind + 1) }))}
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+            />
+            <BuyButton onClick={() => addToCart(product, amount)}>
+              In den Warenkorb
+              <CartAdd size={40} style={{ marginLeft: 5 }} />
+            </BuyButton>
+          </BuySection>
+          <Description>
+            <Markdown source={description} />
+          </Description>
+        </DescriptionWrapper>
+      </ContentWrapper>
     </ProductWrapper>
   )
 }
