@@ -1,4 +1,4 @@
-import Link from 'next/Link'
+import Link from 'next/link'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import Wave from './Wave'

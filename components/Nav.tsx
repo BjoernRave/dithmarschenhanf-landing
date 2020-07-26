@@ -1,5 +1,5 @@
 import { ShoppingBag } from '@styled-icons/boxicons-regular/ShoppingBag'
-import Link from 'next/Link'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import Headroom from 'react-headroom'

@@ -1,6 +1,7 @@
 import { XCircle } from '@styled-icons/boxicons-solid/XCircle'
 import Select from 'components/Select'
 import { ListedProduct } from 'generated'
+import Link from 'next/link'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import { useShoppingCart } from './ShoppingCart'
@@ -63,8 +64,11 @@ const CartItem: FC<Props> = ({ product, amount }) => {
     <ItemWrapper>
       <LeftImageWrapper>
         <ItemImage src={images[0].url} alt={name} />
-
-        <ItemName>{name}</ItemName>
+        <Link passHref href={`/produkte2/${slug}`}>
+          <a>
+            <ItemName>{name}</ItemName>
+          </a>
+        </Link>
       </LeftImageWrapper>
       <Numbers>
         <Select
