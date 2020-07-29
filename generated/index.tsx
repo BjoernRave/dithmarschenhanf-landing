@@ -369,6 +369,13 @@ export enum MovementType {
   Loss = 'loss'
 }
 
+export enum MovementStatus {
+  Cancelled = 'cancelled',
+  Pending = 'pending',
+  Paid = 'paid',
+  Completed = 'completed'
+}
+
 export type MovementImport = {
   id?: Maybe<Scalars['Int']>;
   date?: Maybe<Scalars['DateTime']>;
@@ -392,6 +399,7 @@ export type MovementImport = {
 
 export type Movement = {
   id: Scalars['String'];
+  status?: Maybe<MovementStatus>;
   movementId: Scalars['Int'];
   documents: Array<File>;
   amount: Scalars['Int'];
@@ -409,6 +417,7 @@ export type Movement = {
   storageNumber?: Maybe<Scalars['String']>;
   warehouse?: Maybe<Warehouse>;
   inventoryId?: Maybe<Scalars['String']>;
+  inventory?: Maybe<Inventory>;
   totalPrice?: Maybe<Scalars['Float']>;
 };
 
@@ -1008,6 +1017,7 @@ export type ClientWhereUniqueInput = {
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['Int']>;
 };
 
 export type ClientWhereInput = {
@@ -1446,6 +1456,7 @@ export type NotificationWhereUniqueInput = {
 
 export type PaymentWhereUniqueInput = {
   id?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['Int']>;
   stripePaymentIntentId?: Maybe<Scalars['String']>;
   stripeClientSecret?: Maybe<Scalars['String']>;
 };
@@ -1874,6 +1885,7 @@ export type SupplierWhereUniqueInput = {
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['Int']>;
 };
 
 export type SupplierWhereInput = {
@@ -2581,13 +2593,6 @@ export type ArrivalDateArrivalPointCompoundUniqueInput = {
   arrivalDate: Scalars['DateTime'];
   arrivalPoint: Scalars['String'];
 };
-
-export enum MovementStatus {
-  Cancelled = 'cancelled',
-  Pending = 'pending',
-  Paid = 'paid',
-  Completed = 'completed'
-}
 
 export type NullableIntFilter = {
   equals?: Maybe<Scalars['Int']>;
@@ -13291,6 +13296,7 @@ export type QuerySupplierCountArgs = {
 };
 
 export type Mutation = {
+  createManyFiles: File;
   createOneIntegrationRequest: IntegrationRequest;
   sendSupportMessage: ValidationPayload;
   createOneUser: ValidationPayload;
@@ -13364,6 +13370,12 @@ export type Mutation = {
   deleteOneSupplier: Supplier;
   createOneSupplier: Supplier;
   importSuppliers: ValidationPayload;
+};
+
+
+export type MutationCreateManyFilesArgs = {
+  files: Array<Scalars['Upload']>;
+  isPublic: Scalars['Boolean'];
 };
 
 
@@ -13568,6 +13580,7 @@ export type MutationCreateOneOutgoingMovementArgs = {
   clientId: Scalars['String'];
   date: Scalars['DateTime'];
   unitPrice?: Maybe<Scalars['Float']>;
+  status: MovementStatus;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   documents?: Maybe<Array<Scalars['Upload']>>;
 };
@@ -13583,6 +13596,7 @@ export type MutationCreateOneIncomingMovementArgs = {
   batchNumber?: Maybe<Scalars['String']>;
   unitPrice?: Maybe<Scalars['Float']>;
   bestBefore?: Maybe<Scalars['DateTime']>;
+  status: MovementStatus;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   documents?: Maybe<Array<Scalars['Upload']>>;
   warehouseId?: Maybe<Scalars['ID']>;
@@ -13598,6 +13612,7 @@ export type MutationUpdateOneMovementArgs = {
   unitPrice?: Maybe<Scalars['Float']>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   documents?: Maybe<Array<Scalars['Upload']>>;
+  status?: Maybe<MovementStatus>;
 };
 
 
@@ -13914,6 +13929,14 @@ export type Create_CheckoutMutationVariables = Exact<{
 
 export type Create_CheckoutMutation = { createOneCheckout: Pick<StripeCheckout, 'checkoutId' | 'stripeAccountId'> };
 
+export type Upload_FilesMutationVariables = Exact<{
+  files: Array<Scalars['Upload']>;
+  isPublic: Scalars['Boolean'];
+}>;
+
+
+export type Upload_FilesMutation = { createManyFiles: Pick<File, 'id' | 'url' | 'name'> };
+
 export type Get_ProductQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
@@ -13944,6 +13967,19 @@ export const Create_CheckoutDocument = gql`
 
 export function useCreate_CheckoutMutation() {
   return Urql.useMutation<Create_CheckoutMutation, Create_CheckoutMutationVariables>(Create_CheckoutDocument);
+};
+export const Upload_FilesDocument = gql`
+    mutation UPLOAD_FILES($files: [Upload!]!, $isPublic: Boolean!) {
+  createManyFiles(files: $files, isPublic: $isPublic) {
+    id
+    url
+    name
+  }
+}
+    `;
+
+export function useUpload_FilesMutation() {
+  return Urql.useMutation<Upload_FilesMutation, Upload_FilesMutationVariables>(Upload_FilesDocument);
 };
 export const Get_ProductDocument = gql`
     query GET_PRODUCT($slug: String!) {

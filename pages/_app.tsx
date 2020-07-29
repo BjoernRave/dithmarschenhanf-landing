@@ -4,10 +4,11 @@ import Meta from 'components/Meta'
 import Nav from 'components/Nav'
 import { CartItem, ShoppingCartProvider } from 'components/ShoppingCart'
 import TinaButton from 'components/TinaButton'
+import { useUpload_FilesMutation } from 'generated'
 import { pageView } from 'lib/analytics'
 import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
-import { useLocalStorage } from 'lib/utils'
+import { persistFiles, useLocalStorage } from 'lib/utils'
 import { AppProps } from 'next/app'
 import Router from 'next/router'
 import { useState } from 'react'
@@ -15,15 +16,21 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { GithubClient, TinacmsGithubProvider } from 'react-tinacms-github'
 import { ThemeProvider } from 'styled-components'
 import { Normalize } from 'styled-normalize'
-import { TinaCMS, TinaProvider } from 'tinacms'
+import { MediaManager, TinaCMS, TinaProvider } from 'tinacms'
 
 Router.events.on('routeChangeComplete', (url) => {
   pageView(url)
 })
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
+  const [, uploadFiles] = useUpload_FilesMutation()
+
   const [cms] = useState(
     new TinaCMS({
+      media: new MediaManager({
+        accept: '*',
+        persist: (files) => persistFiles(files, uploadFiles),
+      }),
       apis: {
         github: new GithubClient({
           proxy: '/api/proxy-github',

@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Media, MediaUploadOptions } from 'tinacms'
 export const isServer = typeof window === 'undefined'
 
 const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
@@ -59,4 +60,19 @@ export const useLocalStorage = <S>(
   }
 
   return [storedValue, setValue]
+}
+
+export const persistFiles = async (
+  files: MediaUploadOptions[],
+  uploadFiles: any
+): Promise<Media[]> => {
+  const response = await uploadFiles({
+    isPublic: true,
+    files: files.map((file) => file.file),
+  })
+
+  return response?.data?.uploadManyFiles.map((resultFile) => ({
+    filename: resultFile.name,
+    directory: resultFile.url,
+  }))
 }

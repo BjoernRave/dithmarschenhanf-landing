@@ -16,3 +16,13 @@ export const CREATE_CHECKOUT = gql`
     }
   }
 `
+
+export const UPLOAD_FILES = gql`
+  mutation UPLOAD_FILES($files: [Upload!]!, $isPublic: Boolean!) {
+    createManyFiles(files: $files, isPublic: $isPublic) {
+      id
+      url
+      name
+    }
+  }
+`
