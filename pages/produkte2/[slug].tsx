@@ -1,4 +1,5 @@
 import { CartAdd } from '@styled-icons/boxicons-solid/CartAdd'
+import Modal from 'components/Modal'
 import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
 import { Get_ProductQuery, ListedProduct } from 'generated'
@@ -6,6 +7,7 @@ import gql from 'graphql-tag'
 import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
@@ -26,9 +28,12 @@ const GET_PRODUCT = gql`
         url
       }
       currencySymbol
-      listPrice
+      listedInventories {
+        id
+        amount
+        listPrice
+      }
       description
-      amount
     }
   }
 `
@@ -49,6 +54,7 @@ const Description = styled.p`
 
 const BuySection = styled.div`
   display: flex;
+  align-items: flex-end;
 `
 
 const BuyButton = styled.button`
@@ -79,10 +85,44 @@ const DescriptionWrapper = styled.section`
   width: 60%;
 `
 
+const StyledSelect = styled(Select)`
+  font-size: 24px;
+  margin: 0 10px;
+`
+
+const Price = styled.span`
+  font-size: 48px;
+`
+
 const Product: NextPage<Props> = ({ product }) => {
   const [amount, setAmount] = useState(1)
   const { addToCart } = useShoppingCart()
+  const [isModal, setIsModal] = useState(false)
   const { description, images, name, slug } = product
+
+  const handleAdd = () => {
+    let left = amount
+
+    for (const listedInventory of product.listedInventories) {
+      if (left > 0) {
+        addToCart({
+          images: product.images.map(({ url }) => url),
+          name: product.name,
+          total: product.listedInventories.reduce(
+            (prev, next) => prev + next.amount,
+            0
+          ),
+          slug: product.slug,
+          id: listedInventory.id,
+          listPrice: listedInventory.listPrice,
+          amount:
+            amount > listedInventory.amount ? listedInventory.amount : amount,
+        })
+        left = left - listedInventory.amount
+      }
+    }
+    setIsModal(true)
+  }
 
   return (
     <ProductWrapper>
@@ -94,15 +134,21 @@ const Product: NextPage<Props> = ({ product }) => {
         <DescriptionWrapper>
           <Title>{name}</Title>
           <BuySection>
-            <Select
+            <Price>{product.listedInventories[0].listPrice}€</Price>
+            <StyledSelect
               label='Menge'
-              options={new Array(product.amount)
+              options={new Array(
+                product.listedInventories.reduce(
+                  (prev, next) => prev + next.amount,
+                  0
+                )
+              )
                 .fill(0)
                 .map((v, ind) => ({ value: ind + 1, label: String(ind + 1) }))}
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
             />
-            <BuyButton onClick={() => addToCart(product, amount)}>
+            <BuyButton onClick={() => handleAdd()}>
               In den Warenkorb
               <CartAdd size={40} style={{ marginLeft: 5 }} />
             </BuyButton>
@@ -112,6 +158,20 @@ const Product: NextPage<Props> = ({ product }) => {
           </Description>
         </DescriptionWrapper>
       </ContentWrapper>
+      {isModal && (
+        <Modal onClose={() => setIsModal(false)}>
+          <Link href='/produkte2'>
+            <a>
+              <BuyButton>Zu den Produkten</BuyButton>
+            </a>
+          </Link>
+          <Link href='/einkaufswagen'>
+            <a>
+              <BuyButton>Zum Warenkorb</BuyButton>
+            </a>
+          </Link>
+        </Modal>
+      )}
     </ProductWrapper>
   )
 }

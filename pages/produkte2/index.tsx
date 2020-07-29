@@ -1,13 +1,12 @@
-import { products } from 'lib/products'
+import Loader from 'components/Loader'
+import { useGet_ProductsQuery } from 'generated'
+import gql from 'graphql-tag'
 import { Description, Title } from 'lib/styles'
 import { NextPage } from 'next'
+import { withUrqlClient } from 'next-urql'
 import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
-import { withUrqlClient } from 'next-urql'
-import gql from 'graphql-tag'
-import { useMutation, useQuery } from 'urql'
-import { useGet_ProductsQuery } from 'generated'
 
 const GET_PRODUCTS = gql`
   query GET_PRODUCTS {
@@ -15,7 +14,10 @@ const GET_PRODUCTS = gql`
       id
       name
       slug
-      listPrice
+      listedInventories {
+        id
+        amount
+      }
       currencySymbol
       images {
         id
@@ -83,14 +85,18 @@ const Products: NextPage<Props> = ({}) => {
         auf.
       </StyledText>
       <ProductsWrapper>
-        {data?.listedProducts.map(({ name, slug, images, id }) => (
-          <Link key={id} href={`/produkte2/${slug}`}>
-            <ProductWrapper>
-              <ProductImage alt='Produkt Bild' src={images[0].url} />
-              <ProductName>{name}</ProductName>
-            </ProductWrapper>
-          </Link>
-        ))}
+        {data?.listedProducts ? (
+          data?.listedProducts.map(({ name, slug, images, id }) => (
+            <Link key={id} href={`/produkte2/${slug}`}>
+              <ProductWrapper>
+                <ProductImage alt='Produkt Bild' src={images[0].url} />
+                <ProductName>{name}</ProductName>
+              </ProductWrapper>
+            </Link>
+          ))
+        ) : (
+          <Loader />
+        )}
       </ProductsWrapper>
     </>
   )

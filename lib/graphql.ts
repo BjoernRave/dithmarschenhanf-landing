@@ -4,12 +4,12 @@ export const CREATE_CHECKOUT = gql`
   mutation CREATE_CHECKOUT(
     $successUrl: String!
     $cancelUrl: String!
-    $products: [StripeCheckoutProduct!]!
+    $inventories: [StripeCheckoutInventory!]!
   ) {
     createOneCheckout(
       successUrl: $successUrl
       cancelUrl: $cancelUrl
-      products: $products
+      inventories: $inventories
     ) {
       checkoutId
       stripeAccountId

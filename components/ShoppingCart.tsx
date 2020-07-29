@@ -1,15 +1,19 @@
-import { ListedProduct } from 'generated'
 import { createContext, Dispatch, SetStateAction, useContext } from 'react'
 
-export interface CartProduct {
-  product: Partial<ListedProduct>
+export interface CartItem {
+  name: string
+  slug: string
   amount: number
+  total: number
+  listPrice: number
+  id: string
+  images: string[]
 }
 
 const initialValues: {
-  cart: Partial<CartProduct>[]
-  setCart: SetStateAction<Dispatch<CartProduct[]>>
-  addToCart: (product: Partial<ListedProduct>, amount?: number) => void
+  cart: CartItem[]
+  setCart: Dispatch<SetStateAction<CartItem[]>>
+  addToCart: (item: CartItem) => void
   removeFromCart: (id: string) => void
 } = { setCart: null, cart: null, addToCart: null, removeFromCart: null }
 

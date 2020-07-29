@@ -2,9 +2,8 @@ import '@brainhubeu/react-carousel/lib/style.css'
 import Footer from 'components/Footer'
 import Meta from 'components/Meta'
 import Nav from 'components/Nav'
-import { ShoppingCartProvider } from 'components/ShoppingCart'
+import { CartItem, ShoppingCartProvider } from 'components/ShoppingCart'
 import TinaButton from 'components/TinaButton'
-import { ListedProduct } from 'generated'
 import { pageView } from 'lib/analytics'
 import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
@@ -39,25 +38,25 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     })
   )
 
-  const [cart, setCart] = useLocalStorage('shopping-cart', [])
+  const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', [])
 
-  const addToCart = (product: Partial<ListedProduct>, amount: number = 1) => {
-    const existingProduct = cart.find((item) => item.product.id === product.id)
+  const addToCart = (cartItem: CartItem) => {
+    const existingItem = cart.find((item) => item.id === cartItem.id)
 
-    if (existingProduct) {
+    if (existingItem) {
       const newCart = Array.from(cart)
 
       newCart.splice(
-        cart.findIndex((item) => item.product.id === product.id),
+        cart.findIndex((item) => item.id === cartItem.id),
         1
       )
 
       setCart([
         ...newCart,
-        { product, amount: existingProduct.amount + amount },
+        { ...cartItem, amount: existingItem.amount + cartItem.amount },
       ])
     } else {
-      setCart([...cart, { product, amount }])
+      setCart([...cart, cartItem])
     }
   }
 
@@ -65,7 +64,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     const newCart = Array.from(cart)
 
     newCart.splice(
-      cart.findIndex((item) => item.product.id === id),
+      cart.findIndex((item) => item.id === id),
       1
     )
 

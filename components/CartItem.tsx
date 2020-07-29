@@ -1,10 +1,9 @@
 import { XCircle } from '@styled-icons/boxicons-solid/XCircle'
 import Select from 'components/Select'
-import { ListedProduct } from 'generated'
 import Link from 'next/link'
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import { useShoppingCart } from './ShoppingCart'
+import { CartItem as CartItemType, useShoppingCart } from './ShoppingCart'
 
 const ItemWrapper = styled.li`
   display: flex;
@@ -33,9 +32,9 @@ const LeftImageWrapper = styled.div`
 `
 
 const Price = styled.span`
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  margin-left: 20px;
+  margin: 0 20px;
 `
 
 const Numbers = styled.div`
@@ -56,14 +55,13 @@ const StyledX = styled(XCircle)`
   transition: all linear 0.1s;
 `
 
-const CartItem: FC<Props> = ({ product, amount }) => {
-  const { removeFromCart } = useShoppingCart()
-  const { name, images, slug } = product
-
+const CartItem: FC<Props> = ({ cartItem }) => {
+  const { removeFromCart, setCart, cart } = useShoppingCart()
+  const { listPrice, id, name, amount, total, images, slug } = cartItem
   return (
     <ItemWrapper>
       <LeftImageWrapper>
-        <ItemImage src={images[0].url} alt={name} />
+        <ItemImage src={images[0]} alt={name} />
         <Link passHref href={`/produkte2/${slug}`}>
           <a>
             <ItemName>{name}</ItemName>
@@ -72,17 +70,29 @@ const CartItem: FC<Props> = ({ product, amount }) => {
       </LeftImageWrapper>
       <Numbers>
         <Select
+          onChange={(e) => {
+            const newCart = Array.from(cart)
+
+            newCart.splice(
+              cart.findIndex((c) => c.id === id),
+              1
+            )
+
+            setCart([
+              ...newCart,
+              { ...cartItem, amount: Number(e.target.value) },
+            ])
+          }}
           value={amount}
-          label='Menge'
-          options={new Array(product.amount).fill(0).map((v, ind) => ({
+          options={new Array(total).fill(0).map((v, ind) => ({
             value: ind + 1,
             label: String(ind + 1),
           }))}
         />
-        <Price>{product.listPrice * amount}€</Price>
+        <Price>{listPrice * amount}€</Price>
         <RemoveButton
           title='Artikel entfernen'
-          onClick={() => removeFromCart(product.id)}>
+          onClick={() => removeFromCart(id)}>
           <StyledX size={40} />
         </RemoveButton>
       </Numbers>
@@ -93,6 +103,5 @@ const CartItem: FC<Props> = ({ product, amount }) => {
 export default CartItem
 
 interface Props {
-  product: Partial<ListedProduct>
-  amount: number
+  cartItem: CartItemType
 }

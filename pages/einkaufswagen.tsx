@@ -2,6 +2,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { RightArrowAlt } from '@styled-icons/boxicons-regular/RightArrowAlt'
 import CartItem from 'components/CartItem'
 import { FooterHeight } from 'components/Footer'
+import Loader from 'components/Loader'
 import { NavHeight } from 'components/Nav'
 import { useShoppingCart } from 'components/ShoppingCart'
 import StripeLogo from 'components/StripeLogo'
@@ -9,7 +10,8 @@ import { CREATE_CHECKOUT } from 'lib/graphql'
 import { Title } from 'lib/styles'
 import { NextPage } from 'next'
 import { withUrqlClient } from 'next-urql'
-import React from 'react'
+import Link from 'next/link'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useMutation } from 'urql'
 
@@ -30,6 +32,7 @@ const CheckoutButton = styled.button`
   cursor: pointer;
   transition: all linear 0.1s;
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
+  margin: 20px 0;
 
   :hover {
     box-shadow: ${({ theme }) => theme.boxShadows.hover.google};
@@ -48,17 +51,33 @@ const Total = styled.span`
   margin-bottom: 20px;
 `
 
+const InnerCheckoutWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`
+
+const NoItemsWrapper = styled.section`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`
+
+const NoItemsTitle = styled.h2``
+
 const Einkaufswagen: NextPage<Props> = ({}) => {
   const { cart } = useShoppingCart()
+  const [isLoading, setIsLoading] = useState(false)
   const [, createCheckout] = useMutation(CREATE_CHECKOUT)
 
   const handleCheckout = async () => {
+    setIsLoading(true)
     const response = await createCheckout({
-      cancelUrl: 'http://localhost:3001/einkauf/fehler',
+      cancelUrl: 'http://localhost:3001/einkaufswagen',
       successUrl: 'http://localhost:3001/einkauf/erfolg',
-      products: cart.map((cartItem) => ({
+      inventories: cart.map((cartItem) => ({
         amount: cartItem.amount,
-        id: cartItem.product.id,
+        id: cartItem.id,
       })),
     })
 
@@ -69,32 +88,57 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
     stripe.redirectToCheckout({
       sessionId: response.data.createOneCheckout.checkoutId,
     })
+    setIsLoading(false)
   }
 
   return (
     <Wrapper>
       <Title>Einkaufswagen</Title>
-      <ItemsWrapper>
-        {cart.map(({ product, amount }) => (
-          <CartItem amount={amount} key={product.slug} product={product} />
-        ))}
-      </ItemsWrapper>
+      {cart.length > 0 ? (
+        <>
+          <ItemsWrapper>
+            {cart.map((cartItem) => (
+              <CartItem key={cartItem.slug} cartItem={cartItem} />
+            ))}
+          </ItemsWrapper>
 
-      <CheckoutWrapper>
-        <Total>
-          Gesamt:
-          {cart.reduce(
-            (prev, next) => prev + next.amount * next.product.listPrice,
-            0
-          )}{' '}
-          €
-        </Total>
-        <CheckoutButton onClick={() => handleCheckout()}>
-          Bezahlen
-          <RightArrowAlt style={{ marginLeft: 5 }} size={36} />
-        </CheckoutButton>
-        <StripeLogo />
-      </CheckoutWrapper>
+          <CheckoutWrapper>
+            <InnerCheckoutWrapper>
+              <Total>
+                Gesamt:{' '}
+                {cart.reduce(
+                  (prev, next) => prev + next.amount * next.listPrice,
+                  0
+                )}
+                €
+              </Total>
+              <CheckoutButton onClick={() => handleCheckout()}>
+                {isLoading ? (
+                  <Loader color='white' />
+                ) : (
+                  <>
+                    Bezahlen
+                    <RightArrowAlt style={{ marginLeft: 5 }} size={36} />
+                  </>
+                )}
+              </CheckoutButton>
+              <StripeLogo />
+            </InnerCheckoutWrapper>
+          </CheckoutWrapper>
+        </>
+      ) : (
+        <NoItemsWrapper>
+          <NoItemsTitle>
+            Ihr Einkaufswagen ist momentan leer. Gehen sie hier zu unseren
+            Produkten
+          </NoItemsTitle>
+          <Link href='/produkte2'>
+            <a>
+              <CheckoutButton>Zu den Produkten</CheckoutButton>
+            </a>
+          </Link>
+        </NoItemsWrapper>
+      )}
     </Wrapper>
   )
 }

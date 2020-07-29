@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 export const isServer = typeof window === 'undefined'
 
 const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
@@ -29,8 +29,11 @@ const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
 
 export default useWindowSize
 
-export const useLocalStorage = (key: string, initialValue?: any) => {
-  const [storedValue, setStoredValue] = useState(() => {
+export const useLocalStorage = <S>(
+  key: string,
+  initialValue?: S
+): [S, Dispatch<SetStateAction<S>>] => {
+  const [storedValue, setStoredValue] = useState<S>(() => {
     try {
       const item = window.localStorage.getItem(key)
 
@@ -42,7 +45,7 @@ export const useLocalStorage = (key: string, initialValue?: any) => {
     }
   })
 
-  const setValue = (value) => {
+  const setValue = (value: S) => {
     try {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value

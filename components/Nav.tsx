@@ -115,40 +115,45 @@ const ShoppingCartAmount = styled.span`
   margin-left: 5px;
 `
 
-const Navigation = () => (
-  <>
-    {/* <Link href='/aktuelles'>
-      <NavItem>Aktuelles</NavItem>
-    </Link> */}
-    <Link href='/verkaufstellen'>
-      <NavItem>Verkaufstellen</NavItem>
-    </Link>
-    <Link href='/produkte'>
-      <NavItem>Produkte</NavItem>
-    </Link>
-    <Link href='/erstesjahr'>
-      <NavItem>Das erste Jahr</NavItem>
-    </Link>
-    <Link href='/wir'>
-      <NavItem>Über Uns</NavItem>
-    </Link>
-
-    <Link href='/galerie'>
-      <NavItem>Galerie</NavItem>
-    </Link>
-    <Link href='/warumhanf'>
-      <NavItem>Warum Hanf?</NavItem>
-    </Link>
-    <ExLink href=' mailto:info@dithmarschenhanf.de'>
-      <NavItem>Kontakt</NavItem>
-    </ExLink>
-  </>
-)
-
 const Nav: FC<Props> = ({}) => {
   const { query } = useRouter()
   const [isMenu, setIsMenu] = useState(false)
   const { cart } = useShoppingCart()
+
+  const Navigation = () => (
+    <>
+      {/* <Link href='/aktuelles'>
+        <NavItem>Aktuelles</NavItem>
+      </Link> */}
+      <Link href='/verkaufstellen'>
+        <NavItem>Verkaufstellen</NavItem>
+      </Link>
+      <Link
+        href={
+          query.shop || process.env.NODE_ENV === 'development'
+            ? '/produkte2'
+            : '/produkte'
+        }>
+        <NavItem>Produkte</NavItem>
+      </Link>
+      <Link href='/erstesjahr'>
+        <NavItem>Das erste Jahr</NavItem>
+      </Link>
+      <Link href='/wir'>
+        <NavItem>Über Uns</NavItem>
+      </Link>
+
+      <Link href='/galerie'>
+        <NavItem>Galerie</NavItem>
+      </Link>
+      <Link href='/warumhanf'>
+        <NavItem>Warum Hanf?</NavItem>
+      </Link>
+      <ExLink href=' mailto:info@dithmarschenhanf.de'>
+        <NavItem>Kontakt</NavItem>
+      </ExLink>
+    </>
+  )
 
   return (
     <>
@@ -159,7 +164,7 @@ const Nav: FC<Props> = ({}) => {
           </Link>
           <Actions>
             <Navigation />
-            {query.shop && (
+            {(query.shop || process.env.NODE_ENV === 'development') && (
               <Link href='/einkaufswagen'>
                 <ShoppingCart>
                   <ShoppingBag size={30} />
