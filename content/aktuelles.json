@@ -7,6 +7,10 @@
     {
       "_template": "content-block",
       "content": "\nblah blah"
+    },
+    {
+      "_template": "image-block",
+      "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-07-29T20:59:17.524Z_dithmarschenhanf_screenshot_2020-07-03_at_16_54_41_png"
     }
   ],
   "title": "Aktuelles"
