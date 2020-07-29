@@ -13,5 +13,29 @@
       "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-07-29T20:59:17.524Z_dithmarschenhanf_screenshot_2020-07-03_at_16_54_41_png"
     }
   ],
-  "title": "Aktuelles"
+  "title": "Aktuelles",
+  "entries": [
+    {
+      "title": "Erster Eintrag",
+      "items": [
+        {
+          "_template": "content-block",
+          "content": "Wie geht's ab? alles tuttti soweit."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-07-29T21:03:18.240Z_dithmarschenhanf_screenshot_2020-06-14_at_16_49_56_png"
+        }
+      ]
+    },
+    {
+      "title": "Balh blub",
+      "items": [
+        {
+          "_template": "content-block",
+          "content": "asdasd"
+        }
+      ]
+    }
+  ]
 }
