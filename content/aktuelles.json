@@ -2,7 +2,12 @@
   "items": [
     {
       "_template": "image-block",
-      "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-07-29T20:48:26.486Z_dithmarschenhanf_screenshot_2020-07-03_at_16_54_41_png"
+      "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-07-29T20:58:43.795Z_dithmarschenhanf_screenshot_2020-05-14_at_23_48_37_png"
+    },
+    {
+      "_template": "content-block",
+      "content": "\nblah blah"
     }
-  ]
+  ],
+  "title": "Aktuelles"
 }
