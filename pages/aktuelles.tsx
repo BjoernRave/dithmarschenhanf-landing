@@ -1,17 +1,27 @@
 import { PageWrapper, Title } from 'lib/styles'
+import { formatDate } from 'lib/utils'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { useGithubJsonForm } from 'react-tinacms-github'
+import { DateFieldPlugin } from 'react-tinacms-date'
+import { MarkdownFieldPlugin } from 'react-tinacms-editor'
+import {
+  useGithubJsonForm,
+  useGithubToolbarPlugins,
+} from 'react-tinacms-github'
 import styled from 'styled-components'
-import { useCMS } from 'tinacms'
+import { usePlugin } from 'tinacms'
 
 const Entry = styled.section`
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
-  padding: 20px;
+  padding: 50px;
   margin: 20px;
   border-radius: 10px;
+
+  @media (max-width: 767px) {
+    padding: 20px;
+  }
 `
 
 const EntryTitle = styled.h2`
@@ -19,7 +29,17 @@ const EntryTitle = styled.h2`
   margin: 20px auto;
 `
 
-const EntryText = styled.p``
+const Image = styled.img`
+  width: 100%;
+  height: auto;
+  margin: 20px 0;
+`
+
+const EntryDate = styled.span`
+  display: table;
+  margin: 0 auto;
+  color: gray;
+`
 
 const Aktuelles: NextPage<Props> = ({ file }) => {
   const formOptions = {
@@ -45,24 +65,55 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
             component: 'text',
           },
           {
-            label: 'Beschreibung',
-            name: 'description',
-            component: 'markdown',
+            name: 'createdAt',
+            label: 'Erstellungsdatum',
+            component: 'date',
+            dateFormat: 'DD.MM.YYYY',
+            timeFormat: false,
+          },
+          {
+            label: 'Items',
+            name: 'items',
+            component: 'blocks',
+            templates: {
+              'content-block': {
+                label: 'Text',
+                key: 'content-block',
+
+                fields: [
+                  { name: 'content', label: 'Content', component: 'markdown' },
+                ],
+              },
+              'image-block': {
+                label: 'Bild',
+                key: 'image-block',
+                fields: [
+                  {
+                    name: 'image',
+                    label: 'Bild',
+                    component: 'image',
+                    previewSrc: (test, test2) =>
+                      test.items[test2.field.name.split('.')[1]].image,
+                    uploadDir: () => '/test',
+                    parse: (fileName) => {
+                      console.log(fileName)
+
+                      return fileName
+                    },
+                  },
+                ],
+              },
+            },
           },
         ],
       },
     ],
   }
 
-  const cms = useCMS()
-
-  React.useEffect(() => {
-    import('react-tinacms-editor').then(({ MarkdownFieldPlugin }) => {
-      cms.plugins.add(MarkdownFieldPlugin as any)
-    })
-  }, [])
-
   const [data, form] = useGithubJsonForm(file, formOptions)
+  usePlugin([form, MarkdownFieldPlugin, DateFieldPlugin])
+  useGithubToolbarPlugins()
+  console.log(data)
 
   return (
     <PageWrapper>
@@ -70,9 +121,15 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
       {data?.entries?.map((entry, ind) => (
         <Entry key={ind}>
           <EntryTitle>{entry.title}</EntryTitle>
-          <EntryText>
-            <ReactMarkdown source={entry.description} />
-          </EntryText>
+          <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
+          {entry.items?.map((item) => {
+            if (item._template === 'image-block') {
+              return <Image src={item.image} />
+            }
+            if (item._template === 'content-block') {
+              return <ReactMarkdown source={item.content} />
+            }
+          })}
         </Entry>
       ))}
     </PageWrapper>

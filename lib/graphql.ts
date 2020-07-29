@@ -18,8 +18,18 @@ export const CREATE_CHECKOUT = gql`
 `
 
 export const UPLOAD_FILES = gql`
-  mutation UPLOAD_FILES($files: [Upload!]!, $isPublic: Boolean!) {
-    createManyFiles(files: $files, isPublic: $isPublic) {
+  mutation UPLOAD_FILES(
+    $files: [Upload!]!
+    $isPublic: Boolean!
+    $name: String!
+    $key: String!
+  ) {
+    createManyFiles(
+      files: $files
+      isPublic: $isPublic
+      name: $name
+      key: $key
+    ) {
       id
       url
       name

@@ -13296,7 +13296,7 @@ export type QuerySupplierCountArgs = {
 };
 
 export type Mutation = {
-  createManyFiles: File;
+  createManyFiles: Array<File>;
   createOneIntegrationRequest: IntegrationRequest;
   sendSupportMessage: ValidationPayload;
   createOneUser: ValidationPayload;
@@ -13376,6 +13376,8 @@ export type Mutation = {
 export type MutationCreateManyFilesArgs = {
   files: Array<Scalars['Upload']>;
   isPublic: Scalars['Boolean'];
+  name: Scalars['String'];
+  key: Scalars['String'];
 };
 
 
@@ -13932,10 +13934,12 @@ export type Create_CheckoutMutation = { createOneCheckout: Pick<StripeCheckout, 
 export type Upload_FilesMutationVariables = Exact<{
   files: Array<Scalars['Upload']>;
   isPublic: Scalars['Boolean'];
+  name: Scalars['String'];
+  key: Scalars['String'];
 }>;
 
 
-export type Upload_FilesMutation = { createManyFiles: Pick<File, 'id' | 'url' | 'name'> };
+export type Upload_FilesMutation = { createManyFiles: Array<Pick<File, 'id' | 'url' | 'name'>> };
 
 export type Get_ProductQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -13969,8 +13973,8 @@ export function useCreate_CheckoutMutation() {
   return Urql.useMutation<Create_CheckoutMutation, Create_CheckoutMutationVariables>(Create_CheckoutDocument);
 };
 export const Upload_FilesDocument = gql`
-    mutation UPLOAD_FILES($files: [Upload!]!, $isPublic: Boolean!) {
-  createManyFiles(files: $files, isPublic: $isPublic) {
+    mutation UPLOAD_FILES($files: [Upload!]!, $isPublic: Boolean!, $name: String!, $key: String!) {
+  createManyFiles(files: $files, isPublic: $isPublic, name: $name, key: $key) {
     id
     url
     name

@@ -4,7 +4,6 @@ import Meta from 'components/Meta'
 import Nav from 'components/Nav'
 import { CartItem, ShoppingCartProvider } from 'components/ShoppingCart'
 import TinaButton from 'components/TinaButton'
-import { useUpload_FilesMutation } from 'generated'
 import { pageView } from 'lib/analytics'
 import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
@@ -23,13 +22,11 @@ Router.events.on('routeChangeComplete', (url) => {
 })
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
-  const [, uploadFiles] = useUpload_FilesMutation()
-
   const [cms] = useState(
     new TinaCMS({
       media: new MediaManager({
         accept: '*',
-        persist: (files) => persistFiles(files, uploadFiles),
+        persist: (files) => persistFiles(files),
       }),
       apis: {
         github: new GithubClient({

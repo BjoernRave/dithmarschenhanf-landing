@@ -1,5 +1,9 @@
+import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Media, MediaUploadOptions } from 'tinacms'
+import { createClient } from 'urql'
+import { UPLOAD_FILES } from './graphql'
+
 export const isServer = typeof window === 'undefined'
 
 const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
@@ -36,7 +40,7 @@ export const useLocalStorage = <S>(
 ): [S, Dispatch<SetStateAction<S>>] => {
   const [storedValue, setStoredValue] = useState<S>(() => {
     try {
-      const item = window.localStorage.getItem(key)
+      const item = !isServer && window.localStorage.getItem(key)
 
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
@@ -63,16 +67,40 @@ export const useLocalStorage = <S>(
 }
 
 export const persistFiles = async (
-  files: MediaUploadOptions[],
-  uploadFiles: any
+  files: MediaUploadOptions[]
 ): Promise<Media[]> => {
-  const response = await uploadFiles({
-    isPublic: true,
-    files: files.map((file) => file.file),
+  const urql = createClient({
+    url: `${process.env.API_URL}/api/graphql`,
+    exchanges: [multipartFetchExchange],
   })
 
-  return response?.data?.uploadManyFiles.map((resultFile) => ({
-    filename: resultFile.name,
-    directory: resultFile.url,
+  const response = await urql
+    .mutation(UPLOAD_FILES, {
+      name: '/dithmarschenhanf',
+      isPublic: true,
+      files: files.map((file) => file.file),
+      key: process.env.UPLOAD_KEY,
+    })
+    .toPromise()
+
+  return response?.data?.createManyFiles.map((resultFile) => ({
+    filename: resultFile.url,
+    directory: resultFile.name,
   }))
+}
+
+export const formatDate = (date: Date) => {
+  const dateTimeFormat = new Intl.DateTimeFormat('de', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  })
+  const [
+    { value: day },
+    ,
+    { value: month },
+    ,
+    { value: year },
+  ] = dateTimeFormat.formatToParts(date)
+  return `${day}.${month}.${year}`
 }
