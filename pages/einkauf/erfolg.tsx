@@ -1,5 +1,5 @@
 import { useShoppingCart } from 'components/ShoppingCart'
-import { PageWrapper, Title } from 'lib/styles'
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import Link from 'next/link'
@@ -65,9 +65,9 @@ const EinkaufsErfolg: FC<Props> = ({ file }) => {
   return (
     <PageWrapper>
       <Title>{data.title}</Title>
-      <p>
+      <Description>
         <ReactMarkdown source={data.text} />
-      </p>
+      </Description>
       <Link href='/'>
         <a style={{ textDecoration: 'none' }}>
           <Button>Zur Startseite</Button>

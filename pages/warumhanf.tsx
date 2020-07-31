@@ -1,4 +1,4 @@
-import { PageWrapper, Title } from 'lib/styles'
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
@@ -60,9 +60,9 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
       {data.advantages.map((advantage) => (
         <SectionWrapper>
           <SectionTitle>{advantage.title}</SectionTitle>
-          <p>
+          <Description>
             <ReactMarkdown source={advantage.description} />
-          </p>
+          </Description>
         </SectionWrapper>
       ))}
     </PageWrapper>

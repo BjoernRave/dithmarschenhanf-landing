@@ -1,4 +1,4 @@
-import { PageWrapper, Title } from 'lib/styles'
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { formatDate } from 'lib/utils'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
@@ -122,7 +122,11 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
               return <Image src={item.image} />
             }
             if (item._template === 'content-block') {
-              return <ReactMarkdown source={item.content} />
+              return (
+                <Description>
+                  <ReactMarkdown source={item.content} />
+                </Description>
+              )
             }
           })}
         </Entry>

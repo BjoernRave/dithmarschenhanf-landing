@@ -1,6 +1,6 @@
 import ImageGallery from 'components/ImageGallery'
 import { photos } from 'lib/photos'
-import { PageWrapper, Title } from 'lib/styles'
+import { Description, PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
@@ -32,7 +32,9 @@ const Galerie: NextPage<Props> = ({ file }) => {
   return (
     <PageWrapper>
       <Title>{data.title}</Title>
-      <ReactMarkdown source={data.text} />
+      <Description>
+        <ReactMarkdown source={data.text} />
+      </Description>
       <ImageGallery photos={photos} />
     </PageWrapper>
   )
