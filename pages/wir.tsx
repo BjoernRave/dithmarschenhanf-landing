@@ -58,19 +58,8 @@ const Wir: NextPage<Props> = ({ file }) => {
         <MiddleImage alt='Wilm' src='/wilm.jpg' />
         <Image src='/maren.jpg' alt='Maren' />
       </ImageWrapper>
-      <ReactMarkdown source={data.text} />
       <Description>
-        Wir, das sind Nis mit Bruder Wilm und Mutter Maren Thomassek. Wir leben
-        in Dithmarschen an der Nordsseküste Schleswig-Holsteins, halten seit
-        Jahren Galloway-Rinder und haben 2019 erstmalig Nutzhanf ausgesät.
-      </Description>
-      <Description>
-        Aus einer Idee am Küchentisch wurde ein Herzensprojekt.
-        <br />
-        Mit der Arbeit vieler fleißiger Hände ernteten wir den EU zugelassenen
-        Nutzhanf, angebaut nach EU Bio Richtlinien, denn wir sind ein
-        Umstellungsbetrieb. Die Begeisterung wuchs mit den Pflanzen und das
-        wollen wir gerne mit ihnen teilen!
+        <ReactMarkdown source={data.text} />
       </Description>
     </PageWrapper>
   )

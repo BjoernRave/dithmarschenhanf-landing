@@ -3,7 +3,7 @@ import { photos } from 'lib/photos'
 import { PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
-import { default as React, default as React } from 'react'
+import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { MarkdownFieldPlugin } from 'react-tinacms-editor'
 import { useGithubJsonForm } from 'react-tinacms-github'
@@ -54,7 +54,7 @@ export const getStaticProps: GetStaticProps = async function ({
   if (preview) {
     return getGithubPreviewProps({
       ...previewData,
-      fileRelativePath: 'content/einkaufsErfolg.json',
+      fileRelativePath: 'content/galerie.json',
       parse: parseJson,
     })
   }
@@ -64,8 +64,8 @@ export const getStaticProps: GetStaticProps = async function ({
       error: null,
       preview: false,
       file: {
-        fileRelativePath: 'content/einkaufsErfolg.json',
-        data: (await import('../../content/einkaufsErfolg.json')).default,
+        fileRelativePath: 'content/galerie.json',
+        data: (await import('../content/galerie.json')).default,
       },
     },
   }
