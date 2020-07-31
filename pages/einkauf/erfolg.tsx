@@ -6,10 +6,7 @@ import Link from 'next/link'
 import React, { FC, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { MarkdownFieldPlugin } from 'react-tinacms-editor'
-import {
-  useGithubJsonForm,
-  useGithubToolbarPlugins,
-} from 'react-tinacms-github'
+import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
 import { usePlugin } from 'tinacms'
 
@@ -64,7 +61,6 @@ const EinkaufsErfolg: FC<Props> = ({ file }) => {
 
   const [data, form] = useGithubJsonForm(file, formOptions)
   usePlugin([form, MarkdownFieldPlugin])
-  useGithubToolbarPlugins()
 
   return (
     <PageWrapper>

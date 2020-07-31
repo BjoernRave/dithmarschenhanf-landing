@@ -6,10 +6,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { DateFieldPlugin } from 'react-tinacms-date'
 import { MarkdownFieldPlugin } from 'react-tinacms-editor'
-import {
-  useGithubJsonForm,
-  useGithubToolbarPlugins,
-} from 'react-tinacms-github'
+import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
 import { usePlugin } from 'tinacms'
 
@@ -112,8 +109,6 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
 
   const [data, form] = useGithubJsonForm(file, formOptions)
   usePlugin([form, MarkdownFieldPlugin, DateFieldPlugin])
-  useGithubToolbarPlugins()
-  console.log(data)
 
   return (
     <PageWrapper>
