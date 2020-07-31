@@ -11,7 +11,7 @@ import { usePlugin } from 'tinacms'
 
 const Galerie: NextPage<Props> = ({ file }) => {
   const formOptions = {
-    label: 'Einkaufserfolg',
+    label: 'Galerie',
     fields: [
       {
         label: 'Title',

@@ -32,7 +32,7 @@ const MiddleImage = styled(Image)`
 
 const Wir: NextPage<Props> = ({ file }) => {
   const formOptions = {
-    label: 'Einkaufserfolg',
+    label: 'Über Uns',
     fields: [
       {
         label: 'Title',

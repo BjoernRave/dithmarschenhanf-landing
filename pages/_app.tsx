@@ -87,7 +87,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
             <GlobalStyles />
             <Meta />
             <Nav />
-            {(router.query.edit || pageProps.preview) && (
+            {pageProps.file && (router.query.edit || pageProps.preview) && (
               <TinaButton cms={cms} />
             )}
             <Component {...pageProps} />
