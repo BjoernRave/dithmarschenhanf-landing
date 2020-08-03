@@ -4,6 +4,10 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:56:20.652Z_dithmarschenhanf_92675565_126087662357502_1974914606530822144_o_jpg"
+        },
+        {
           "_template": "content-block",
           "content": "Die Hanf-Saat ist ausgebracht!\n\nDas Abenteuer geht weiter..."
         },
