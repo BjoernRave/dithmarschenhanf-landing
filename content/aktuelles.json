@@ -1,18 +1,4 @@
 {
-  "entries": [
-    {
-      "items": [
-        {
-          "_template": "content-block",
-          "content": "test"
-        },
-        {
-          "_template": "image-block",
-          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-07-29T22:38:22.695Z_dithmarschenhanf_29378103056033217019812516855809-6_png"
-        }
-      ],
-      "title": "TestEintrag"
-    }
-  ],
+  "entries": [],
   "title": "Aktuelles"
 }
