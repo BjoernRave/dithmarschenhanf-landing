@@ -4,8 +4,10 @@ import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import { MarkdownFieldPlugin } from 'react-tinacms-editor'
 import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
+import { usePlugin } from 'tinacms'
 
 const Title = styled.h1`
   margin: 30px auto 10px auto;
@@ -49,6 +51,7 @@ const Home: NextPage<Props> = ({ file }) => {
 
   // Registers a JSON Tina Form
   const [data, form] = useGithubJsonForm(file, formOptions)
+  usePlugin([form, MarkdownFieldPlugin])
 
   return (
     <>
