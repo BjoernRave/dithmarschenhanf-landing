@@ -1,16 +1,18 @@
 {
   "entries": [
     {
-      "title": "2020 Es geht weiter"
+      "title": "2020 Es geht weiter",
+      "items": [
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:53:11.307Z_dithmarschenhanf_92844890_126085052357763_2153476750875557888_o_jpg"
+        }
+      ]
     },
     {
       "createdAt": "2019-08-01T00:00:00Z",
       "title": "Das Erste Jahr",
       "items": [
-        {
-          "_template": "image-block",
-          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:47:53.938Z_dithmarschenhanf_92844890_126085052357763_2153476750875557888_o_jpg"
-        },
         {
           "_template": "content-block",
           "content": "Im Jahr 2019 hatten wir uns eine kleine Fläche von 4000m2 als Versuchsfeld vorgenommen. Viele Arbeiten, von der Aussaat bis zur Ernte erledigten wir per Hand."
