@@ -44,16 +44,12 @@
           "content": "Hier werden die ersten Blüten schonend getrocknet."
         },
         {
-          "_template": "content-block",
-          "content": "es wird..."
-        },
-        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:00:10.447Z_dithmarschenhanf_75369242_156442455988689_7456751980916383422_o_jpg"
         },
         {
           "_template": "content-block",
-          "content": "Der Regen hat sichtlich gut getan!"
+          "content": "es wird..."
         },
         {
           "_template": "image-block",
@@ -61,7 +57,7 @@
         },
         {
           "_template": "content-block",
-          "content": "das Feld ergrünt..."
+          "content": "Der Regen hat sichtlich gut getan!"
         },
         {
           "_template": "image-block",
@@ -69,7 +65,7 @@
         },
         {
           "_template": "content-block",
-          "content": "Sind die nicht schön?"
+          "content": "das Feld ergrünt..."
         },
         {
           "_template": "image-block",
@@ -77,7 +73,7 @@
         },
         {
           "_template": "content-block",
-          "content": "Die Saat kommt auf!  \nUnd wenn jetzt noch Regen fällt, kann das grüne Wunder neu beginnen..."
+          "content": "Sind die nicht schön?"
         },
         {
           "_template": "image-block",
@@ -85,7 +81,7 @@
         },
         {
           "_template": "content-block",
-          "content": "Die Hanf-Saat ist ausgebracht!\n\nDas Abenteuer geht weiter..."
+          "content": "Die Saat kommt auf!  \nUnd wenn jetzt noch Regen fällt, kann das grüne Wunder neu beginnen..."
         },
         {
           "_template": "image-block",
@@ -93,7 +89,7 @@
         },
         {
           "_template": "content-block",
-          "content": "dannach muss der schwere Marschboden noch weiter aufbereitet werden um die feine Hanfsaat aufnehmen zu können"
+          "content": "Die Hanf-Saat ist ausgebracht!\n\nDas Abenteuer geht weiter..."
         },
         {
           "_template": "image-block",
@@ -101,11 +97,15 @@
         },
         {
           "_template": "content-block",
-          "content": "das Land ist frisch gepflügt..."
+          "content": "dannach muss der schwere Marschboden noch weiter aufbereitet werden um die feine Hanfsaat aufnehmen zu können"
         },
         {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:54:58.667Z_dithmarschenhanf_92579634_126084599024475_425932031298371584_o_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "das Land ist frisch gepflügt..."
         },
         {
           "_template": "image-block",
