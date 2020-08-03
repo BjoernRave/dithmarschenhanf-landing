@@ -36,12 +36,12 @@
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:01:20.247Z_dithmarschenhanf_109023573_160875992212002_6849848267375326664_o_jpg"
         },
         {
-          "_template": "content-block",
-          "content": "Hier werden die ersten Blüten schonend getrocknet."
-        },
-        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:00:45.586Z_dithmarschenhanf_107816154_159756242323977_2911980417705873574_o_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Hier werden die ersten Blüten schonend getrocknet."
         },
         {
           "_template": "content-block",
