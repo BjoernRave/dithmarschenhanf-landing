@@ -5,6 +5,14 @@
       "items": [
         {
           "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:54:58.667Z_dithmarschenhanf_92579634_126084599024475_425932031298371584_o_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "das Land ist frisch gepflügt..."
+        },
+        {
+          "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:53:11.307Z_dithmarschenhanf_92844890_126085052357763_2153476750875557888_o_jpg"
         }
       ]
