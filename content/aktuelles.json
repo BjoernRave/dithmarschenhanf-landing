@@ -4,6 +4,10 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:59:38.030Z_dithmarschenhanf_103323628_150699376562997_7516412268290872552_o_jpg"
+        },
+        {
           "_template": "content-block",
           "content": "das Feld ergrünt..."
         },
