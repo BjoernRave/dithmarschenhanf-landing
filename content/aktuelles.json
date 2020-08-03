@@ -4,6 +4,10 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
+          "_template": "content-block",
+          "content": "Ganz neu: Dinkel Hafer Hanf Taler"
+        },
+        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:03:51.950Z_dithmarschenhanf_116131031_165058028460465_2893253917944298661_o_jpg"
         },
