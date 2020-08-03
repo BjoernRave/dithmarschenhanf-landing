@@ -27,9 +27,11 @@ const EntryTitle = styled.h2`
 `
 
 const Image = styled.img`
-  width: 100%;
-  height: auto;
-  margin: 20px 0;
+  max-height: 1000px;
+  width: auto;
+  max-width: 100%;
+  margin: 20px auto;
+  display: table;
 `
 
 const EntryDate = styled.span`
@@ -124,13 +126,13 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
         <Entry key={ind}>
           <EntryTitle>{entry.title}</EntryTitle>
           <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
-          {entry.items?.map((item) => {
+          {entry.items?.map((item, innerInd) => {
             if (item._template === 'image-block') {
-              return <Image src={item.image} />
+              return <Image key={innerInd} src={item.image} />
             }
             if (item._template === 'content-block') {
               return (
-                <Description>
+                <Description key={innerInd}>
                   <ReactMarkdown source={item.content} />
                 </Description>
               )

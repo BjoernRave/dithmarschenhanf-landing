@@ -95,14 +95,8 @@ export const formatDate = (date: Date) => {
     month: 'short',
     day: '2-digit',
   })
-  const [
-    { value: day },
-    ,
-    { value: month },
-    ,
-    { value: year },
-  ] = dateTimeFormat.formatToParts(date)
-  return `${day}.${month}.${year}`
+
+  return dateTimeFormat.format()
 }
 
 export const getObjectKeyByString = (o: any, s: string) => {

@@ -51,6 +51,15 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Klabautermann, <br /> Zingelstraße 16, <br /> 25704 Meldorf <br />{' '}
+            <a
+              href='https://www.klabautermann-meldorf.de/'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
           <TextBlock>Weitere Verkaufsstellen folgen in Kürze...</TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>

@@ -136,8 +136,8 @@ const Nav: FC<Props> = ({}) => {
         }>
         <NavItem>Produkte</NavItem>
       </Link>
-      <Link href='/erstesjahr'>
-        <NavItem>Das erste Jahr</NavItem>
+      <Link href='/aktuelles'>
+        <NavItem>Aktuelles</NavItem>
       </Link>
       <Link href='/wir'>
         <NavItem>Über Uns</NavItem>
