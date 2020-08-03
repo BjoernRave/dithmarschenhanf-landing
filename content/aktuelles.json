@@ -5,6 +5,10 @@
       "items": [
         {
           "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:02:13.833Z_dithmarschenhanf_110202768_162695915363343_3691711319547609413_o_jpg"
+        },
+        {
+          "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:01:50.105Z_dithmarschenhanf_109787207_162692082030393_7420562350481376024_o_jpg"
         },
         {
