@@ -1,4 +1,75 @@
 {
-  "entries": [],
+  "entries": [
+    {
+      "createdAt": "2019-08-01T00:00:00Z",
+      "title": "Das Erste Jahr",
+      "items": [
+        {
+          "_template": "content-block",
+          "content": "Im Jahr 2019 hatten wir uns eine kleine Fläche von 4000m2 als Versuchsfeld vorgenommen. Viele Arbeiten, von der Aussaat bis zur Ernte erledigten wir per Hand."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:12:07.251Z_dithmarschenhanf_1_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Auch wenn das Wetter der Saat nicht gerade ideale Bedingungen bot, zeigten sich bald die Ersten der robusten Pflanzen."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:12:34.994Z_dithmarschenhanf_2_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Und sie entwickelten sich prächtig"
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:13:01.302Z_dithmarschenhanf_3_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "immer höher…"
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:13:37.976Z_dithmarschenhanf_4_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Den richtigen Zeitpunkt zur Blüten-Ernte zu finden war nicht leicht."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:14:07.262Z_dithmarschenhanf_5_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Und schließlich folgte wochenendweise die Ernte durch viele fleißige Hände."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:14:31.574Z_dithmarschenhanf_6_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Per Hand geschnitten, vom Feld nach Hause geholt und zum Trocknen nachbearbeitet"
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:15:00.403Z_dithmarschenhanf_7_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Auf Netzen ausgebreitet und über Leinen gehängt wurde getrocknet."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dev/2020-08-03T14:15:23.741Z_dithmarschenhanf_8_jpg"
+        }
+      ]
+    }
+  ],
   "title": "Aktuelles"
 }
