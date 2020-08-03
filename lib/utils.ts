@@ -89,14 +89,23 @@ export const persistFiles = async (
   }))
 }
 
-export const formatDate = (date: Date) => {
+export const formatDate = (date: Date | string) => {
   const dateTimeFormat = new Intl.DateTimeFormat('de', {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
   })
 
-  return dateTimeFormat.format()
+  const [
+    { value: day },
+    ,
+    { value: month },
+    ,
+    { value: year },
+  ] = dateTimeFormat.formatToParts(
+    typeof date === 'string' ? new Date(date) : date
+  )
+  return `${day}.${month}${year}`
 }
 
 export const getObjectKeyByString = (o: any, s: string) => {
