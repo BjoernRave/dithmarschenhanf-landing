@@ -4,20 +4,20 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
-          "_template": "content-block",
-          "content": "Jetzt auch in Meldorf beim Klabautermann:  \nZingelstr 16  \n25704 Meldorf  \nGesunde Hanfprodukte aus Dithmarschen"
-        },
-        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:04:24.923Z_dithmarschenhanf_116712354_165282688437999_3564511119096324244_o_jpg"
         },
         {
           "_template": "content-block",
-          "content": "Ganz neu: Dinkel Hafer Hanf Taler"
+          "content": "Jetzt auch in Meldorf beim Klabautermann:  \nZingelstr 16  \n25704 Meldorf  \nGesunde Hanfprodukte aus Dithmarschen"
         },
         {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:03:51.950Z_dithmarschenhanf_116131031_165058028460465_2893253917944298661_o_jpg"
+        },
+        {
+          "_template": "content-block",
+          "content": "Ganz neu: Dinkel Hafer Hanf Taler"
         },
         {
           "_template": "image-block",
@@ -69,14 +69,6 @@
         },
         {
           "_template": "content-block",
-          "content": "Frischer Spargel satt vom \n\n[Hof Hinrichs](https://www.facebook.com/Hof.Hinrichs/?__tn__=kK*F)\n\n und am Tag dannach Spargelsuppe mit Hanf-Würzsalz - einfach lecker!"
-        },
-        {
-          "_template": "image-block",
-          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:58:26.338Z_dithmarschenhanf_96535177_138375297795405_2575967714505916416_o_jpg"
-        },
-        {
-          "_template": "content-block",
           "content": "Sind die nicht schön?"
         },
         {
@@ -93,6 +85,14 @@
         },
         {
           "_template": "content-block",
+          "content": "Die Hanf-Saat ist ausgebracht!\n\nDas Abenteuer geht weiter..."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:55:33.881Z_dithmarschenhanf_93491900_128332635466338_7981922687817613312_n_jpg"
+        },
+        {
+          "_template": "content-block",
           "content": "dannach muss der schwere Marschboden noch weiter aufbereitet werden um die feine Hanfsaat aufnehmen zu können"
         },
         {
@@ -101,19 +101,11 @@
         },
         {
           "_template": "content-block",
-          "content": "Die Hanf-Saat ist ausgebracht!\n\nDas Abenteuer geht weiter..."
-        },
-        {
-          "_template": "image-block",
-          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:55:33.881Z_dithmarschenhanf_93491900_128332635466338_7981922687817613312_n_jpg"
+          "content": "das Land ist frisch gepflügt..."
         },
         {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:54:58.667Z_dithmarschenhanf_92579634_126084599024475_425932031298371584_o_jpg"
-        },
-        {
-          "_template": "content-block",
-          "content": "das Land ist frisch gepflügt..."
         },
         {
           "_template": "image-block",
