@@ -23,6 +23,12 @@ const Galerie: NextPage<Props> = ({ file }) => {
         name: 'text',
         component: 'markdown',
       },
+      {
+        label: 'Bilder',
+        name: 'images',
+        component: 'group-list',
+        fields: [{ label: 'Bild', name: 'image', component: 'image' }],
+      },
     ],
   }
 

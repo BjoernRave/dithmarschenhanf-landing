@@ -1,5 +1,5 @@
 import { Description, PageWrapper, Title } from 'lib/styles'
-import { formatDate } from 'lib/utils'
+import { formatDate, getObjectKeyByString } from 'lib/utils'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
 import React from 'react'
@@ -89,8 +89,15 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
                     name: 'image',
                     label: 'Bild',
                     component: 'image',
-                    previewSrc: (test, test2) =>
-                      test.items[test2.field.name.split('.')[1]].image,
+                    previewSrc: (test, test2) => {
+                      let image
+                      try {
+                        image = getObjectKeyByString(test, test2.field.name)
+                      } catch (error) {
+                        console.log('error image preview', error)
+                      }
+                      return image
+                    },
                     uploadDir: () => '/test',
                     parse: (fileName) => {
                       console.log(fileName)
