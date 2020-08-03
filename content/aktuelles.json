@@ -4,6 +4,10 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
+          "_template": "content-block",
+          "content": "Die erste Fläche ist zur Ernte von \"Blatt& Blüte\" vorbereitet - wir halten euch auf dem Laufenden!"
+        },
+        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T21:01:20.247Z_dithmarschenhanf_109023573_160875992212002_6849848267375326664_o_jpg"
         },
