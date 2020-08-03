@@ -4,6 +4,10 @@
       "title": "2020 Es geht weiter",
       "items": [
         {
+          "_template": "content-block",
+          "content": "Sind die nicht schön?"
+        },
+        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-08-03T20:57:47.447Z_dithmarschenhanf_95832860_136476441318624_3448218565222596608_o_jpg"
         },
