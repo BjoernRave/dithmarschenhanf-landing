@@ -1,13 +1,13 @@
 import { CartAdd } from '@styled-icons/boxicons-solid/CartAdd'
-import Modal from 'components/Modal'
+import EinkaufswagenModal from 'components/EinkaufswagenModal'
 import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
 import { Get_ProductQuery, ListedProduct } from 'generated'
 import gql from 'graphql-tag'
+import { constructDimensionString } from 'lib/utils'
 import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
@@ -23,6 +23,17 @@ const GET_PRODUCT = gql`
       id
       name
       slug
+      weight
+      weightUnit
+      material
+      color
+      dimensions {
+        id
+        height
+        width
+        depth
+      }
+      lengthUnit
       images {
         id
         url
@@ -44,7 +55,7 @@ const ProductWrapper = styled.div`
 
 const Title = styled.h1`
   display: table;
-  margin: 20px auto 50px auto;
+  margin: 20px auto 100px auto;
   font-size: 45px;
 `
 
@@ -76,6 +87,10 @@ const BuyButton = styled.button`
 const ContentWrapper = styled.section`
   display: flex;
   margin-top: 20px;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
 `
 
 const DescriptionWrapper = styled.section`
@@ -83,6 +98,10 @@ const DescriptionWrapper = styled.section`
   flex-direction: column;
   align-items: center;
   width: 60%;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 `
 
 const StyledSelect = styled(Select)`
@@ -91,7 +110,34 @@ const StyledSelect = styled(Select)`
 `
 
 const Price = styled.span`
-  font-size: 48px;
+  font-size: 60px;
+`
+
+const Properties = styled.table`
+  border: none;
+  font-size: 20px;
+  margin: 20px 0;
+  th,
+  td {
+    border: none;
+  }
+
+  td {
+    padding: 10px 40px;
+  }
+
+  td:nth-child(1) {
+    font-weight: bold;
+  }
+`
+
+const StyledCarousel = styled(ImageCarousel)`
+  width: 40%;
+  margin-top: 50px;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 `
 
 const Product: NextPage<Props> = ({ product }) => {
@@ -127,14 +173,11 @@ const Product: NextPage<Props> = ({ product }) => {
   return (
     <ProductWrapper>
       <ContentWrapper>
-        <ImageCarousel
-          style={{ width: '40%', marginTop: 50 }}
-          images={images.map((i) => i.url)}
-        />
+        <StyledCarousel images={images.map((i) => i.url)} />
         <DescriptionWrapper>
           <Title>{name}</Title>
+          <Price>{product.listedInventories[0].listPrice}€</Price>
           <BuySection>
-            <Price>{product.listedInventories[0].listPrice}€</Price>
             <StyledSelect
               label='Menge'
               options={new Array(
@@ -153,25 +196,53 @@ const Product: NextPage<Props> = ({ product }) => {
               <CartAdd size={40} style={{ marginLeft: 5 }} />
             </BuyButton>
           </BuySection>
+          {(product.material ||
+            product.color ||
+            product.weight ||
+            product.dimensions) && (
+            <Properties>
+              <tbody>
+                {product.material && (
+                  <tr>
+                    <td>Material:</td>
+                    <td>{product.material}</td>
+                  </tr>
+                )}
+                {product.color && (
+                  <tr>
+                    <td>Farbe:</td>
+                    <td>{product.color}</td>
+                  </tr>
+                )}
+                {product.weight && (
+                  <tr>
+                    <td>Gewicht:</td>
+                    <td>
+                      {product.weight}
+                      {product.weightUnit}.
+                    </td>
+                  </tr>
+                )}
+                {product.dimensions && (
+                  <tr>
+                    <td>Abmaße:</td>
+                    <td>
+                      {constructDimensionString(
+                        product.dimensions,
+                        product.lengthUnit
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Properties>
+          )}
           <Description>
             <Markdown source={description} />
           </Description>
         </DescriptionWrapper>
       </ContentWrapper>
-      {isModal && (
-        <Modal onClose={() => setIsModal(false)}>
-          <Link href='/produkte2'>
-            <a>
-              <BuyButton>Zu den Produkten</BuyButton>
-            </a>
-          </Link>
-          <Link href='/einkaufswagen'>
-            <a>
-              <BuyButton>Zum Warenkorb</BuyButton>
-            </a>
-          </Link>
-        </Modal>
-      )}
+      {isModal && <EinkaufswagenModal onClose={() => setIsModal(false)} />}
     </ProductWrapper>
   )
 }

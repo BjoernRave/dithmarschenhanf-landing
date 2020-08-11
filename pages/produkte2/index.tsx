@@ -14,6 +14,17 @@ const GET_PRODUCTS = gql`
       id
       name
       slug
+      material
+      color
+      weight
+      weightUnit
+      lengthUnit
+      dimensions {
+        id
+        height
+        width
+        depth
+      }
       listedInventories {
         id
         amount
@@ -73,23 +84,19 @@ const StyledText = styled(Description)`
 
 const Products: NextPage<Props> = ({}) => {
   const [{ data, error }] = useGet_ProductsQuery()
-  console.log(data)
-  console.log(error)
 
   return (
     <>
       <Title>Produkte</Title>
-      <StyledText>
-        Diese Produkte können wir Ihnen derzeit anbieten. Bei Interesse nehmen
-        Sie gerne <a href='mailto:info@dithmarschenhanf.de'>Kontakt</a> zu uns
-        auf.
-      </StyledText>
+
       <ProductsWrapper>
         {data?.listedProducts ? (
           data?.listedProducts.map(({ name, slug, images, id }) => (
             <Link key={id} href={`/produkte2/${slug}`}>
               <ProductWrapper>
-                <ProductImage alt='Produkt Bild' src={images[0].url} />
+                {images?.length > 0 && (
+                  <ProductImage alt='Produkt Bild' src={images[0].url} />
+                )}
                 <ProductName>{name}</ProductName>
               </ProductWrapper>
             </Link>

@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import * as Urql from 'urql';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -49,7 +49,8 @@ export enum EntityType {
   Contactperson = 'contactperson',
   Transport = 'transport',
   Transporter = 'transporter',
-  Unit = 'unit'
+  Unit = 'unit',
+  Consumable = 'consumable'
 }
 
 export type File = {
@@ -215,7 +216,7 @@ export type ClientInventoriesArgs = {
 
 export type Inventory = {
   id: Scalars['String'];
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   supplier?: Maybe<Supplier>;
   product: Product;
   batch?: Maybe<Batch>;
@@ -286,6 +287,7 @@ export type TransportAgency = {
   website?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   address?: Maybe<Address>;
+  billingAddress?: Maybe<Address>;
   source?: Maybe<Scalars['String']>;
   transporters: Array<Transporter>;
   notes?: Maybe<Scalars['String']>;
@@ -376,6 +378,11 @@ export enum MovementStatus {
   Completed = 'completed'
 }
 
+export type ConsumableInput = {
+  inventoryId: Scalars['String'];
+  amount: Scalars['Float'];
+};
+
 export type MovementImport = {
   id?: Maybe<Scalars['Int']>;
   date?: Maybe<Scalars['DateTime']>;
@@ -389,7 +396,7 @@ export type MovementImport = {
   ISBN?: Maybe<Scalars['String']>;
   ASIN?: Maybe<Scalars['String']>;
   UPC?: Maybe<Scalars['String']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   client?: Maybe<Scalars['String']>;
   supplier?: Maybe<Scalars['String']>;
   batchNumber?: Maybe<Scalars['String']>;
@@ -402,7 +409,7 @@ export type Movement = {
   status?: Maybe<MovementStatus>;
   movementId: Scalars['Int'];
   documents: Array<File>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   client?: Maybe<Client>;
   supplier?: Maybe<Supplier>;
   product: Product;
@@ -418,6 +425,7 @@ export type Movement = {
   warehouse?: Maybe<Warehouse>;
   inventoryId?: Maybe<Scalars['String']>;
   inventory?: Maybe<Inventory>;
+  consumablesMovements: Array<Movement>;
   totalPrice?: Maybe<Scalars['Float']>;
 };
 
@@ -433,6 +441,13 @@ export type MovementTransportsArgs = {
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<TransportWhereUniqueInput>;
+};
+
+
+export type MovementConsumablesMovementsArgs = {
+  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  cursor?: Maybe<MovementWhereUniqueInput>;
 };
 
 export type Notification = {
@@ -555,7 +570,7 @@ export enum PaymentStatus {
 export type Unit = {
   id: Scalars['String'];
   name: Scalars['String'];
-  baseAmount: Scalars['Int'];
+  baseAmount: Scalars['Float'];
 };
 
 export type Dimension = {
@@ -585,10 +600,9 @@ export type Product = {
   taxRates: Array<TaxRate>;
   movements: Array<Movement>;
   source?: Maybe<Scalars['String']>;
-  isPackaging: Scalars['Boolean'];
-  packaging: Array<Product>;
+  consumables: Array<Consumable>;
   isListed?: Maybe<Scalars['Boolean']>;
-  variantProduct?: Maybe<Product>;
+  variantProduct: Array<Product>;
   inventories: Array<Inventory>;
 };
 
@@ -628,7 +642,14 @@ export type ProductMovementsArgs = {
 };
 
 
-export type ProductPackagingArgs = {
+export type ProductConsumablesArgs = {
+  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  cursor?: Maybe<ConsumableWhereUniqueInput>;
+};
+
+
+export type ProductVariantProductArgs = {
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<ProductWhereUniqueInput>;
@@ -641,6 +662,13 @@ export type ProductInventoriesArgs = {
   cursor?: Maybe<InventoryWhereUniqueInput>;
 };
 
+export type Consumable = {
+  id: Scalars['String'];
+  product: Product;
+  amount: Scalars['Float'];
+  atIncoming: Scalars['Boolean'];
+};
+
 export type ListedInventory = {
   id: Scalars['String'];
   listPrice: Scalars['Float'];
@@ -651,6 +679,12 @@ export type ListedProduct = {
   id: Scalars['String'];
   description: Scalars['String'];
   name: Scalars['String'];
+  weight: Scalars['Float'];
+  weightUnit: Scalars['String'];
+  material: Scalars['String'];
+  color: Scalars['String'];
+  dimensions: Dimension;
+  lengthUnit: Scalars['String'];
   currency: Scalars['String'];
   currencySymbol: Scalars['String'];
   listedInventories: Array<ListedInventory>;
@@ -663,6 +697,7 @@ export type VariantProductInput = {
   material?: Maybe<Scalars['String']>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   weight?: Maybe<Scalars['Float']>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
 };
 
 export type Role = {
@@ -811,7 +846,7 @@ export type Setting = {
   mobile?: Maybe<Scalars['String']>;
   website?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
-  packaging: Scalars['Boolean'];
+  consumables: Scalars['Boolean'];
   shop: Scalars['Boolean'];
   lengthUnit?: Maybe<Scalars['String']>;
   weightUnit?: Maybe<Scalars['String']>;
@@ -974,7 +1009,7 @@ export type MessageUpdateInput = {
   mentions?: Maybe<MessageUpdatementionsInput>;
   channel?: Maybe<ChannelUpdateOneWithoutMessagesInput>;
   movement?: Maybe<MovementUpdateOneWithoutCommentsInput>;
-  images?: Maybe<FileUpdateManyWithoutMessageInput>;
+  images?: Maybe<FileUpdateManyWithoutMessagesInput>;
 };
 
 export type ChannelCreateInput = {
@@ -1093,7 +1128,7 @@ export type ClientCreateInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -1122,7 +1157,7 @@ export type ClientUpdateInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -1143,7 +1178,7 @@ export type BatchWhereUniqueInput = {
 };
 
 export type InventoryWhereInput = {
-  amount?: Maybe<IntFilter>;
+  amount?: Maybe<FloatFilter>;
   batchId?: Maybe<NullableStringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   id?: Maybe<StringFilter>;
@@ -1252,6 +1287,7 @@ export type TransportAgencyWhereInput = {
   transports?: Maybe<TransportFilter>;
   transporters?: Maybe<TransporterFilter>;
   addressId?: Maybe<NullableStringFilter>;
+  billingAddressId?: Maybe<NullableStringFilter>;
   source?: Maybe<NullableStringFilter>;
   notes?: Maybe<NullableStringFilter>;
   payments?: Maybe<PaymentFilter>;
@@ -1259,6 +1295,8 @@ export type TransportAgencyWhereInput = {
   OR?: Maybe<Array<TransportAgencyWhereInput>>;
   NOT?: Maybe<Array<TransportAgencyWhereInput>>;
   address?: Maybe<AddressWhereInput>;
+  billingAddress?: Maybe<AddressWhereInput>;
+  Address?: Maybe<AddressWhereInput>;
 };
 
 export type TransportAgencyOrderByInput = {
@@ -1270,6 +1308,7 @@ export type TransportAgencyOrderByInput = {
   phone?: Maybe<OrderByArg>;
   website?: Maybe<OrderByArg>;
   addressId?: Maybe<OrderByArg>;
+  billingAddressId?: Maybe<OrderByArg>;
   source?: Maybe<OrderByArg>;
   notes?: Maybe<OrderByArg>;
 };
@@ -1291,11 +1330,13 @@ export type TransportAgencyCreateInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type TransportAgencyUpdateInput = {
@@ -1309,11 +1350,13 @@ export type TransportAgencyUpdateInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
 };
 
 export type WarehouseCreateInput = {
@@ -1357,7 +1400,7 @@ export type TransportWhereUniqueInput = {
 
 export type MovementWhereInput = {
   active?: Maybe<BooleanFilter>;
-  amount?: Maybe<IntFilter>;
+  amount?: Maybe<FloatFilter>;
   batchId?: Maybe<NullableStringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   date?: Maybe<DateTimeFilter>;
@@ -1383,6 +1426,8 @@ export type MovementWhereInput = {
   source?: Maybe<NullableStringFilter>;
   documents?: Maybe<FileFilter>;
   payments?: Maybe<PaymentFilter>;
+  consumablesMovements?: Maybe<MovementFilter>;
+  movementId_MovementToMovement?: Maybe<NullableStringFilter>;
   AND?: Maybe<Array<MovementWhereInput>>;
   OR?: Maybe<Array<MovementWhereInput>>;
   NOT?: Maybe<Array<MovementWhereInput>>;
@@ -1394,6 +1439,7 @@ export type MovementWhereInput = {
   warehouse?: Maybe<WarehouseWhereInput>;
   reservation?: Maybe<ReservationWhereInput>;
   invoice?: Maybe<InvoiceWhereInput>;
+  consumedFrom?: Maybe<MovementWhereInput>;
 };
 
 export type MovementOrderByInput = {
@@ -1419,6 +1465,7 @@ export type MovementOrderByInput = {
   invoiceId?: Maybe<OrderByArg>;
   invoiceId_InvoiceToMovement?: Maybe<OrderByArg>;
   source?: Maybe<OrderByArg>;
+  movementId_MovementToMovement?: Maybe<OrderByArg>;
 };
 
 export type NotificationCreateInput = {
@@ -1591,6 +1638,10 @@ export type ProductWhereUniqueInput = {
   name_color_material_dimensionId_weight?: Maybe<NameColorMaterialDimensionIdWeightCompoundUniqueInput>;
 };
 
+export type ConsumableWhereUniqueInput = {
+  id?: Maybe<Scalars['String']>;
+};
+
 export type ProductWhereInput = {
   id?: Maybe<StringFilter>;
   productId?: Maybe<IntFilter>;
@@ -1618,20 +1669,17 @@ export type ProductWhereInput = {
   units?: Maybe<UnitFilter>;
   taxRates?: Maybe<TaxRateFilter>;
   source?: Maybe<NullableStringFilter>;
-  packaging?: Maybe<ProductFilter>;
-  isPackaging?: Maybe<BooleanFilter>;
   isListed?: Maybe<NullableBooleanFilter>;
   variants?: Maybe<ProductFilter>;
-  productId_PackageToPackagedProduct?: Maybe<NullableStringFilter>;
-  productId_VariantToProduct?: Maybe<NullableStringFilter>;
+  variantProduct?: Maybe<ProductFilter>;
   categories?: Maybe<CategoryFilter>;
+  consumables?: Maybe<ConsumableFilter>;
+  consumers?: Maybe<ConsumableFilter>;
   AND?: Maybe<Array<ProductWhereInput>>;
   OR?: Maybe<Array<ProductWhereInput>>;
   NOT?: Maybe<Array<ProductWhereInput>>;
   dimensions?: Maybe<DimensionWhereInput>;
   manufacturer?: Maybe<ManufacturerWhereInput>;
-  packagedProduct?: Maybe<ProductWhereInput>;
-  variantProduct?: Maybe<ProductWhereInput>;
 };
 
 export type ProductOrderByInput = {
@@ -1653,14 +1701,11 @@ export type ProductOrderByInput = {
   color?: Maybe<OrderByArg>;
   weight?: Maybe<OrderByArg>;
   source?: Maybe<OrderByArg>;
-  isPackaging?: Maybe<OrderByArg>;
   isListed?: Maybe<OrderByArg>;
-  productId_PackageToPackagedProduct?: Maybe<OrderByArg>;
-  productId_VariantToProduct?: Maybe<OrderByArg>;
 };
 
 export type UnitCreateInput = {
-  baseAmount: Scalars['Int'];
+  baseAmount: Scalars['Float'];
   description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
@@ -1684,24 +1729,23 @@ export type ProductCreateInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type ProductUpdateInput = {
@@ -1721,24 +1765,23 @@ export type ProductUpdateInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type PresetWhereUniqueInput = {
@@ -1813,10 +1856,10 @@ export type SettingUpdateInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -1852,10 +1895,10 @@ export type SettingCreateInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging: Scalars['Boolean'];
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -1958,7 +2001,7 @@ export type SupplierCreateInput = {
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
@@ -1984,7 +2027,7 @@ export type SupplierUpdateInput = {
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
@@ -2064,16 +2107,16 @@ export type MovementUpdateOneWithoutCommentsInput = {
   upsert?: Maybe<MovementUpsertWithoutCommentsInput>;
 };
 
-export type FileUpdateManyWithoutMessageInput = {
-  create?: Maybe<Array<FileCreateWithoutMessageInput>>;
+export type FileUpdateManyWithoutMessagesInput = {
+  create?: Maybe<Array<FileCreateWithoutMessagesInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutMessageInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutMessagesInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutMessageInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutMessagesInput>>;
 };
 
 export type ChannelCreatemembersInput = {
@@ -2179,8 +2222,8 @@ export type AddressWhereInput = {
   state?: Maybe<NullableStringFilter>;
   zip?: Maybe<NullableStringFilter>;
   Manufacturer?: Maybe<ManufacturerFilter>;
-  TransportAgency?: Maybe<TransportAgencyFilter>;
   Warehouse?: Maybe<WarehouseFilter>;
+  TransportAgency?: Maybe<TransportAgencyFilter>;
   AND?: Maybe<Array<AddressWhereInput>>;
   OR?: Maybe<Array<AddressWhereInput>>;
   NOT?: Maybe<Array<AddressWhereInput>>;
@@ -2190,6 +2233,8 @@ export type AddressWhereInput = {
   clientBillingAddress?: Maybe<ClientWhereInput>;
   address?: Maybe<SettingWhereInput>;
   billingAddress?: Maybe<SettingWhereInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyWhereInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyWhereInput>;
 };
 
 export enum OrderByArg {
@@ -2202,8 +2247,8 @@ export type ContactPersonCreateManyWithoutClientInput = {
   connect?: Maybe<Array<ContactPersonWhereUniqueInput>>;
 };
 
-export type FileCreateManyWithoutClientInput = {
-  create?: Maybe<Array<FileCreateWithoutClientInput>>;
+export type FileCreateManyWithoutClientsInput = {
+  create?: Maybe<Array<FileCreateWithoutClientsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -2259,16 +2304,16 @@ export type ContactPersonUpdateManyWithoutClientInput = {
   upsert?: Maybe<Array<ContactPersonUpsertWithWhereUniqueWithoutClientInput>>;
 };
 
-export type FileUpdateManyWithoutClientInput = {
-  create?: Maybe<Array<FileCreateWithoutClientInput>>;
+export type FileUpdateManyWithoutClientsInput = {
+  create?: Maybe<Array<FileCreateWithoutClientsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutClientInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutClientsInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutClientInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutClientsInput>>;
 };
 
 export type InteractionUpdateManyWithoutClientInput = {
@@ -2361,6 +2406,17 @@ export type PaymentUpdateManyWithoutClientInput = {
   upsert?: Maybe<Array<PaymentUpsertWithWhereUniqueWithoutClientInput>>;
 };
 
+export type FloatFilter = {
+  equals?: Maybe<Scalars['Float']>;
+  not?: Maybe<Scalars['Float']>;
+  in?: Maybe<Array<Scalars['Float']>>;
+  notIn?: Maybe<Array<Scalars['Float']>>;
+  lt?: Maybe<Scalars['Float']>;
+  lte?: Maybe<Scalars['Float']>;
+  gt?: Maybe<Scalars['Float']>;
+  gte?: Maybe<Scalars['Float']>;
+};
+
 export type NullableFloatFilter = {
   equals?: Maybe<Scalars['Float']>;
   not?: Maybe<Scalars['Float']>;
@@ -2413,8 +2469,8 @@ export type ContactPersonCreateManyWithoutTransportAgencyInput = {
   connect?: Maybe<Array<ContactPersonWhereUniqueInput>>;
 };
 
-export type FileCreateManyWithoutTransportAgencyInput = {
-  create?: Maybe<Array<FileCreateWithoutTransportAgencyInput>>;
+export type FileCreateManyWithoutTransportAgenciesInput = {
+  create?: Maybe<Array<FileCreateWithoutTransportAgenciesInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -2428,14 +2484,24 @@ export type TransporterCreateManyWithoutTransportAgencyInput = {
   connect?: Maybe<Array<TransporterWhereUniqueInput>>;
 };
 
-export type AddressCreateOneWithoutTransportAgencyInput = {
-  create?: Maybe<AddressCreateWithoutTransportAgencyInput>;
+export type AddressCreateOneWithoutTransportAgencyAddressInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyAddressInput>;
+  connect?: Maybe<AddressWhereUniqueInput>;
+};
+
+export type AddressCreateOneWithoutTransportAgencyBillingAddressInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyBillingAddressInput>;
   connect?: Maybe<AddressWhereUniqueInput>;
 };
 
 export type PaymentCreateManyWithoutTransportAgencyInput = {
   create?: Maybe<Array<PaymentCreateWithoutTransportAgencyInput>>;
   connect?: Maybe<Array<PaymentWhereUniqueInput>>;
+};
+
+export type AddressCreateOneWithoutTransportAgencyInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyInput>;
+  connect?: Maybe<AddressWhereUniqueInput>;
 };
 
 export type ContactPersonUpdateManyWithoutTransportAgencyInput = {
@@ -2450,16 +2516,16 @@ export type ContactPersonUpdateManyWithoutTransportAgencyInput = {
   upsert?: Maybe<Array<ContactPersonUpsertWithWhereUniqueWithoutTransportAgencyInput>>;
 };
 
-export type FileUpdateManyWithoutTransportAgencyInput = {
-  create?: Maybe<Array<FileCreateWithoutTransportAgencyInput>>;
+export type FileUpdateManyWithoutTransportAgenciesInput = {
+  create?: Maybe<Array<FileCreateWithoutTransportAgenciesInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutTransportAgencyInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutTransportAgenciesInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutTransportAgencyInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutTransportAgenciesInput>>;
 };
 
 export type TransportUpdateManyWithoutTransportAgencyInput = {
@@ -2486,13 +2552,22 @@ export type TransporterUpdateManyWithoutTransportAgencyInput = {
   upsert?: Maybe<Array<TransporterUpsertWithWhereUniqueWithoutTransportAgencyInput>>;
 };
 
-export type AddressUpdateOneWithoutTransportAgencyInput = {
-  create?: Maybe<AddressCreateWithoutTransportAgencyInput>;
+export type AddressUpdateOneWithoutTransportAgencyAddressInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyAddressInput>;
   connect?: Maybe<AddressWhereUniqueInput>;
   disconnect?: Maybe<Scalars['Boolean']>;
   delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<AddressUpdateWithoutTransportAgencyDataInput>;
-  upsert?: Maybe<AddressUpsertWithoutTransportAgencyInput>;
+  update?: Maybe<AddressUpdateWithoutTransportAgencyAddressDataInput>;
+  upsert?: Maybe<AddressUpsertWithoutTransportAgencyAddressInput>;
+};
+
+export type AddressUpdateOneWithoutTransportAgencyBillingAddressInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyBillingAddressInput>;
+  connect?: Maybe<AddressWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<AddressUpdateWithoutTransportAgencyBillingAddressDataInput>;
+  upsert?: Maybe<AddressUpsertWithoutTransportAgencyBillingAddressInput>;
 };
 
 export type PaymentUpdateManyWithoutTransportAgencyInput = {
@@ -2505,6 +2580,15 @@ export type PaymentUpdateManyWithoutTransportAgencyInput = {
   updateMany?: Maybe<Array<PaymentUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<PaymentScalarWhereInput>>;
   upsert?: Maybe<Array<PaymentUpsertWithWhereUniqueWithoutTransportAgencyInput>>;
+};
+
+export type AddressUpdateOneWithoutTransportAgencyInput = {
+  create?: Maybe<AddressCreateWithoutTransportAgencyInput>;
+  connect?: Maybe<AddressWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<AddressUpdateWithoutTransportAgencyDataInput>;
+  upsert?: Maybe<AddressUpsertWithoutTransportAgencyInput>;
 };
 
 export type ContactPersonCreateManyWithoutWarehouseInput = {
@@ -2681,17 +2765,6 @@ export type NullableDateTimeFilter = {
   gte?: Maybe<Scalars['DateTime']>;
 };
 
-export type FloatFilter = {
-  equals?: Maybe<Scalars['Float']>;
-  not?: Maybe<Scalars['Float']>;
-  in?: Maybe<Array<Scalars['Float']>>;
-  notIn?: Maybe<Array<Scalars['Float']>>;
-  lt?: Maybe<Scalars['Float']>;
-  lte?: Maybe<Scalars['Float']>;
-  gt?: Maybe<Scalars['Float']>;
-  gte?: Maybe<Scalars['Float']>;
-};
-
 export type GroupWhereInput = {
   id?: Maybe<StringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
@@ -2843,6 +2916,12 @@ export type CategoryFilter = {
   none?: Maybe<CategoryWhereInput>;
 };
 
+export type ConsumableFilter = {
+  every?: Maybe<ConsumableWhereInput>;
+  some?: Maybe<ConsumableWhereInput>;
+  none?: Maybe<ConsumableWhereInput>;
+};
+
 export type DimensionWhereInput = {
   id?: Maybe<StringFilter>;
   height?: Maybe<FloatFilter>;
@@ -2900,8 +2979,8 @@ export type BatchCreateManyWithoutProductInput = {
   connect?: Maybe<Array<BatchWhereUniqueInput>>;
 };
 
-export type FileCreateManyWithoutProductInput = {
-  create?: Maybe<Array<FileCreateWithoutProductInput>>;
+export type FileCreateManyWithoutProductsInput = {
+  create?: Maybe<Array<FileCreateWithoutProductsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -2935,29 +3014,29 @@ export type TaxRateCreateManyWithoutProductInput = {
   connect?: Maybe<Array<TaxRateWhereUniqueInput>>;
 };
 
-export type ProductCreateManyWithoutPackagedProductInput = {
-  create?: Maybe<Array<ProductCreateWithoutPackagedProductInput>>;
-  connect?: Maybe<Array<ProductWhereUniqueInput>>;
-};
-
 export type ProductCreateManyWithoutVariantProductInput = {
   create?: Maybe<Array<ProductCreateWithoutVariantProductInput>>;
   connect?: Maybe<Array<ProductWhereUniqueInput>>;
 };
 
-export type ProductCreateOneWithoutPackagingInput = {
-  create?: Maybe<ProductCreateWithoutPackagingInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
-};
-
-export type ProductCreateOneWithoutVariantsInput = {
-  create?: Maybe<ProductCreateWithoutVariantsInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
+export type ProductCreateManyWithoutVariantsInput = {
+  create?: Maybe<Array<ProductCreateWithoutVariantsInput>>;
+  connect?: Maybe<Array<ProductWhereUniqueInput>>;
 };
 
 export type CategoryCreateManyWithoutProductsInput = {
   create?: Maybe<Array<CategoryCreateWithoutProductsInput>>;
   connect?: Maybe<Array<CategoryWhereUniqueInput>>;
+};
+
+export type ConsumableCreateManyWithoutConsumerInput = {
+  create?: Maybe<Array<ConsumableCreateWithoutConsumerInput>>;
+  connect?: Maybe<Array<ConsumableWhereUniqueInput>>;
+};
+
+export type ConsumableCreateManyWithoutProductInput = {
+  create?: Maybe<Array<ConsumableCreateWithoutProductInput>>;
+  connect?: Maybe<Array<ConsumableWhereUniqueInput>>;
 };
 
 export type ProductUpdatetagsInput = {
@@ -2994,16 +3073,16 @@ export type BatchUpdateManyWithoutProductInput = {
   upsert?: Maybe<Array<BatchUpsertWithWhereUniqueWithoutProductInput>>;
 };
 
-export type FileUpdateManyWithoutProductInput = {
-  create?: Maybe<Array<FileCreateWithoutProductInput>>;
+export type FileUpdateManyWithoutProductsInput = {
+  create?: Maybe<Array<FileCreateWithoutProductsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutProductInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutProductsInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutProductInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutProductsInput>>;
 };
 
 export type InteractionUpdateManyWithoutProductInput = {
@@ -3078,18 +3157,6 @@ export type TaxRateUpdateManyWithoutProductInput = {
   upsert?: Maybe<Array<TaxRateUpsertWithWhereUniqueWithoutProductInput>>;
 };
 
-export type ProductUpdateManyWithoutPackagedProductInput = {
-  create?: Maybe<Array<ProductCreateWithoutPackagedProductInput>>;
-  connect?: Maybe<Array<ProductWhereUniqueInput>>;
-  set?: Maybe<Array<ProductWhereUniqueInput>>;
-  disconnect?: Maybe<Array<ProductWhereUniqueInput>>;
-  delete?: Maybe<Array<ProductWhereUniqueInput>>;
-  update?: Maybe<Array<ProductUpdateWithWhereUniqueWithoutPackagedProductInput>>;
-  updateMany?: Maybe<Array<ProductUpdateManyWithWhereNestedInput>>;
-  deleteMany?: Maybe<Array<ProductScalarWhereInput>>;
-  upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutPackagedProductInput>>;
-};
-
 export type ProductUpdateManyWithoutVariantProductInput = {
   create?: Maybe<Array<ProductCreateWithoutVariantProductInput>>;
   connect?: Maybe<Array<ProductWhereUniqueInput>>;
@@ -3102,22 +3169,16 @@ export type ProductUpdateManyWithoutVariantProductInput = {
   upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutVariantProductInput>>;
 };
 
-export type ProductUpdateOneWithoutPackagingInput = {
-  create?: Maybe<ProductCreateWithoutPackagingInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<ProductUpdateWithoutPackagingDataInput>;
-  upsert?: Maybe<ProductUpsertWithoutPackagingInput>;
-};
-
-export type ProductUpdateOneWithoutVariantsInput = {
-  create?: Maybe<ProductCreateWithoutVariantsInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<ProductUpdateWithoutVariantsDataInput>;
-  upsert?: Maybe<ProductUpsertWithoutVariantsInput>;
+export type ProductUpdateManyWithoutVariantsInput = {
+  create?: Maybe<Array<ProductCreateWithoutVariantsInput>>;
+  connect?: Maybe<Array<ProductWhereUniqueInput>>;
+  set?: Maybe<Array<ProductWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ProductWhereUniqueInput>>;
+  delete?: Maybe<Array<ProductWhereUniqueInput>>;
+  update?: Maybe<Array<ProductUpdateWithWhereUniqueWithoutVariantsInput>>;
+  updateMany?: Maybe<Array<ProductUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ProductScalarWhereInput>>;
+  upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutVariantsInput>>;
 };
 
 export type CategoryUpdateManyWithoutProductsInput = {
@@ -3130,6 +3191,30 @@ export type CategoryUpdateManyWithoutProductsInput = {
   updateMany?: Maybe<Array<CategoryUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<CategoryScalarWhereInput>>;
   upsert?: Maybe<Array<CategoryUpsertWithWhereUniqueWithoutProductsInput>>;
+};
+
+export type ConsumableUpdateManyWithoutConsumerInput = {
+  create?: Maybe<Array<ConsumableCreateWithoutConsumerInput>>;
+  connect?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  set?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  delete?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  update?: Maybe<Array<ConsumableUpdateWithWhereUniqueWithoutConsumerInput>>;
+  updateMany?: Maybe<Array<ConsumableUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ConsumableScalarWhereInput>>;
+  upsert?: Maybe<Array<ConsumableUpsertWithWhereUniqueWithoutConsumerInput>>;
+};
+
+export type ConsumableUpdateManyWithoutProductInput = {
+  create?: Maybe<Array<ConsumableCreateWithoutProductInput>>;
+  connect?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  set?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  delete?: Maybe<Array<ConsumableWhereUniqueInput>>;
+  update?: Maybe<Array<ConsumableUpdateWithWhereUniqueWithoutProductInput>>;
+  updateMany?: Maybe<Array<ConsumableUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ConsumableScalarWhereInput>>;
+  upsert?: Maybe<Array<ConsumableUpsertWithWhereUniqueWithoutProductInput>>;
 };
 
 export type UserNameTypeCompoundUniqueInput = {
@@ -3149,10 +3234,10 @@ export type SettingWhereInput = {
   logoId?: Maybe<NullableStringFilter>;
   name?: Maybe<StringFilter>;
   timezone?: Maybe<NullableStringFilter>;
-  transports?: Maybe<BooleanFilter>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<BooleanFilter>;
   warehouses?: Maybe<BooleanFilter>;
-  packaging?: Maybe<BooleanFilter>;
+  consumables?: Maybe<BooleanFilter>;
   shop?: Maybe<BooleanFilter>;
   accounting?: Maybe<BooleanFilter>;
   presets?: Maybe<PresetFilter>;
@@ -3357,8 +3442,8 @@ export type ContactPersonCreateManyWithoutSupplierInput = {
   connect?: Maybe<Array<ContactPersonWhereUniqueInput>>;
 };
 
-export type FileCreateManyWithoutSupplierInput = {
-  create?: Maybe<Array<FileCreateWithoutSupplierInput>>;
+export type FileCreateManyWithoutSuppliersInput = {
+  create?: Maybe<Array<FileCreateWithoutSuppliersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -3412,16 +3497,16 @@ export type ContactPersonUpdateManyWithoutSupplierInput = {
   upsert?: Maybe<Array<ContactPersonUpsertWithWhereUniqueWithoutSupplierInput>>;
 };
 
-export type FileUpdateManyWithoutSupplierInput = {
-  create?: Maybe<Array<FileCreateWithoutSupplierInput>>;
+export type FileUpdateManyWithoutSuppliersInput = {
+  create?: Maybe<Array<FileCreateWithoutSuppliersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutSupplierInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutSuppliersInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutSupplierInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutSuppliersInput>>;
 };
 
 export type InteractionUpdateManyWithoutSupplierInput = {
@@ -3481,29 +3566,28 @@ export type FileWhereInput = {
   description?: Maybe<NullableStringFilter>;
   supplierId?: Maybe<NullableStringFilter>;
   clientId?: Maybe<NullableStringFilter>;
-  productId?: Maybe<NullableStringFilter>;
   smallUrl?: Maybe<NullableStringFilter>;
   transportAgencyId?: Maybe<NullableStringFilter>;
   transporterId?: Maybe<NullableStringFilter>;
   url?: Maybe<StringFilter>;
+  manufacturers?: Maybe<ManufacturerFilter>;
+  messages?: Maybe<MessageFilter>;
+  clients?: Maybe<ClientFilter>;
+  suppliers?: Maybe<SupplierFilter>;
+  products?: Maybe<ProductFilter>;
+  transportAgencies?: Maybe<TransportAgencyFilter>;
+  transporters?: Maybe<TransporterFilter>;
   settings?: Maybe<SettingFilter>;
   Invoice?: Maybe<InvoiceFilter>;
   imageCategory?: Maybe<CategoryFilter>;
   bannerCategory?: Maybe<CategoryFilter>;
+  movements?: Maybe<MovementFilter>;
   movementId?: Maybe<NullableStringFilter>;
+  payments?: Maybe<PaymentFilter>;
   paymentId?: Maybe<NullableStringFilter>;
   AND?: Maybe<Array<FileWhereInput>>;
   OR?: Maybe<Array<FileWhereInput>>;
   NOT?: Maybe<Array<FileWhereInput>>;
-  manufacturer?: Maybe<ManufacturerWhereInput>;
-  message?: Maybe<MessageWhereInput>;
-  client?: Maybe<ClientWhereInput>;
-  supplier?: Maybe<SupplierWhereInput>;
-  product?: Maybe<ProductWhereInput>;
-  transportAgency?: Maybe<TransportAgencyWhereInput>;
-  transporter?: Maybe<TransporterWhereInput>;
-  Movement?: Maybe<MovementWhereInput>;
-  Payment?: Maybe<PaymentWhereInput>;
 };
 
 export type ChannelCreateWithoutMessagesInput = {
@@ -3533,7 +3617,7 @@ export type ChannelUpsertWithoutMessagesInput = {
 
 export type MovementCreateWithoutCommentsInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -3557,13 +3641,15 @@ export type MovementCreateWithoutCommentsInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpdateWithoutCommentsDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -3587,8 +3673,10 @@ export type MovementUpdateWithoutCommentsDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpsertWithoutCommentsInput = {
@@ -3596,30 +3684,38 @@ export type MovementUpsertWithoutCommentsInput = {
   create: MovementCreateWithoutCommentsInput;
 };
 
-export type FileCreateWithoutMessageInput = {
+export type FileCreateWithoutMessagesInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
-export type FileUpdateWithWhereUniqueWithoutMessageInput = {
+export type FileUpdateWithWhereUniqueWithoutMessagesInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutMessageDataInput;
+  data: FileUpdateWithoutMessagesDataInput;
 };
 
 export type FileUpdateManyWithWhereNestedInput = {
@@ -3636,26 +3732,34 @@ export type FileScalarWhereInput = {
   description?: Maybe<NullableStringFilter>;
   supplierId?: Maybe<NullableStringFilter>;
   clientId?: Maybe<NullableStringFilter>;
-  productId?: Maybe<NullableStringFilter>;
   smallUrl?: Maybe<NullableStringFilter>;
   transportAgencyId?: Maybe<NullableStringFilter>;
   transporterId?: Maybe<NullableStringFilter>;
   url?: Maybe<StringFilter>;
+  manufacturers?: Maybe<ManufacturerFilter>;
+  messages?: Maybe<MessageFilter>;
+  clients?: Maybe<ClientFilter>;
+  suppliers?: Maybe<SupplierFilter>;
+  products?: Maybe<ProductFilter>;
+  transportAgencies?: Maybe<TransportAgencyFilter>;
+  transporters?: Maybe<TransporterFilter>;
   settings?: Maybe<SettingFilter>;
   Invoice?: Maybe<InvoiceFilter>;
   imageCategory?: Maybe<CategoryFilter>;
   bannerCategory?: Maybe<CategoryFilter>;
+  movements?: Maybe<MovementFilter>;
   movementId?: Maybe<NullableStringFilter>;
+  payments?: Maybe<PaymentFilter>;
   paymentId?: Maybe<NullableStringFilter>;
   AND?: Maybe<Array<FileScalarWhereInput>>;
   OR?: Maybe<Array<FileScalarWhereInput>>;
   NOT?: Maybe<Array<FileScalarWhereInput>>;
 };
 
-export type FileUpsertWithWhereUniqueWithoutMessageInput = {
+export type FileUpsertWithWhereUniqueWithoutMessagesInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutMessageDataInput;
-  create: FileCreateWithoutMessageInput;
+  update: FileUpdateWithoutMessagesDataInput;
+  create: FileCreateWithoutMessagesInput;
 };
 
 export type MessageCreateWithoutChannelInput = {
@@ -3667,7 +3771,7 @@ export type MessageCreateWithoutChannelInput = {
   updatedAt?: Maybe<Scalars['DateTime']>;
   mentions?: Maybe<MessageCreatementionsInput>;
   movement?: Maybe<MovementCreateOneWithoutCommentsInput>;
-  images?: Maybe<FileCreateManyWithoutMessageInput>;
+  images?: Maybe<FileCreateManyWithoutMessagesInput>;
 };
 
 export type MessageUpdateWithWhereUniqueWithoutChannelInput = {
@@ -3751,16 +3855,16 @@ export type ManufacturerFilter = {
   none?: Maybe<ManufacturerWhereInput>;
 };
 
-export type TransportAgencyFilter = {
-  every?: Maybe<TransportAgencyWhereInput>;
-  some?: Maybe<TransportAgencyWhereInput>;
-  none?: Maybe<TransportAgencyWhereInput>;
-};
-
 export type WarehouseFilter = {
   every?: Maybe<WarehouseWhereInput>;
   some?: Maybe<WarehouseWhereInput>;
   none?: Maybe<WarehouseWhereInput>;
+};
+
+export type TransportAgencyFilter = {
+  every?: Maybe<TransportAgencyWhereInput>;
+  some?: Maybe<TransportAgencyWhereInput>;
+  none?: Maybe<TransportAgencyWhereInput>;
 };
 
 export type ContactPersonCreateWithoutClientInput = {
@@ -3780,25 +3884,33 @@ export type ContactPersonCreateWithoutClientInput = {
   warehouse?: Maybe<WarehouseCreateOneWithoutContactPersonsInput>;
 };
 
-export type FileCreateWithoutClientInput = {
+export type FileCreateWithoutClientsInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type InteractionCreateWithoutClientInput = {
@@ -3816,7 +3928,7 @@ export type InteractionWhereUniqueInput = {
 };
 
 export type InventoryCreateWithoutClientInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -3834,7 +3946,7 @@ export type InventoryCreateWithoutClientInput = {
 
 export type MovementCreateWithoutClientInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -3858,8 +3970,10 @@ export type MovementCreateWithoutClientInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ReservationCreateWithoutClientInput = {
@@ -3885,9 +3999,11 @@ export type AddressCreateWithoutClientAddressInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type AddressWhereUniqueInput = {
@@ -3907,9 +4023,11 @@ export type AddressCreateWithoutClientBillingAddressInput = {
   clientAddress?: Maybe<ClientCreateOneWithoutAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type InvoiceCreateWithoutClientInput = {
@@ -3942,7 +4060,7 @@ export type PaymentCreateWithoutClientInput = {
   movement?: Maybe<MovementCreateOneWithoutPaymentsInput>;
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
 };
 
@@ -3983,15 +4101,15 @@ export type ContactPersonUpsertWithWhereUniqueWithoutClientInput = {
   create: ContactPersonCreateWithoutClientInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutClientInput = {
+export type FileUpdateWithWhereUniqueWithoutClientsInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutClientDataInput;
+  data: FileUpdateWithoutClientsDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutClientInput = {
+export type FileUpsertWithWhereUniqueWithoutClientsInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutClientDataInput;
-  create: FileCreateWithoutClientInput;
+  update: FileUpdateWithoutClientsDataInput;
+  create: FileCreateWithoutClientsInput;
 };
 
 export type InteractionUpdateWithWhereUniqueWithoutClientInput = {
@@ -4035,7 +4153,7 @@ export type InventoryUpdateManyWithWhereNestedInput = {
 };
 
 export type InventoryScalarWhereInput = {
-  amount?: Maybe<IntFilter>;
+  amount?: Maybe<FloatFilter>;
   batchId?: Maybe<NullableStringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   id?: Maybe<StringFilter>;
@@ -4073,7 +4191,7 @@ export type MovementUpdateManyWithWhereNestedInput = {
 
 export type MovementScalarWhereInput = {
   active?: Maybe<BooleanFilter>;
-  amount?: Maybe<IntFilter>;
+  amount?: Maybe<FloatFilter>;
   batchId?: Maybe<NullableStringFilter>;
   createdAt?: Maybe<DateTimeFilter>;
   date?: Maybe<DateTimeFilter>;
@@ -4099,6 +4217,8 @@ export type MovementScalarWhereInput = {
   source?: Maybe<NullableStringFilter>;
   documents?: Maybe<FileFilter>;
   payments?: Maybe<PaymentFilter>;
+  consumablesMovements?: Maybe<MovementFilter>;
+  movementId_MovementToMovement?: Maybe<NullableStringFilter>;
   AND?: Maybe<Array<MovementScalarWhereInput>>;
   OR?: Maybe<Array<MovementScalarWhereInput>>;
   NOT?: Maybe<Array<MovementScalarWhereInput>>;
@@ -4153,9 +4273,11 @@ export type AddressUpdateWithoutClientAddressDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutClientAddressInput = {
@@ -4176,9 +4298,11 @@ export type AddressUpdateWithoutClientBillingAddressDataInput = {
   clientAddress?: Maybe<ClientUpdateOneWithoutAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutClientBillingAddressInput = {
@@ -4330,25 +4454,33 @@ export type ContactPersonCreateWithoutTransportAgencyInput = {
   warehouse?: Maybe<WarehouseCreateOneWithoutContactPersonsInput>;
 };
 
-export type FileCreateWithoutTransportAgencyInput = {
+export type FileCreateWithoutTransportAgenciesInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type TransportCreateWithoutTransportAgencyInput = {
@@ -4369,11 +4501,11 @@ export type TransporterCreateWithoutTransportAgencyInput = {
   type: TransportType;
   notes?: Maybe<Scalars['String']>;
   identifications?: Maybe<TransporterCreateidentificationsInput>;
-  images?: Maybe<FileCreateManyWithoutTransporterInput>;
+  images?: Maybe<FileCreateManyWithoutTransportersInput>;
   transports?: Maybe<TransportCreateManyWithoutTransporterInput>;
 };
 
-export type AddressCreateWithoutTransportAgencyInput = {
+export type AddressCreateWithoutTransportAgencyAddressInput = {
   id?: Maybe<Scalars['String']>;
   addressLine1?: Maybe<Scalars['String']>;
   addressLine2?: Maybe<Scalars['String']>;
@@ -4387,8 +4519,30 @@ export type AddressCreateWithoutTransportAgencyInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
+};
+
+export type AddressCreateWithoutTransportAgencyBillingAddressInput = {
+  id?: Maybe<Scalars['String']>;
+  addressLine1?: Maybe<Scalars['String']>;
+  addressLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  zip?: Maybe<Scalars['String']>;
+  supplierAddress?: Maybe<SupplierCreateOneWithoutAddressInput>;
+  supplierBillingAddress?: Maybe<SupplierCreateOneWithoutBillingAddressInput>;
+  clientAddress?: Maybe<ClientCreateOneWithoutAddressInput>;
+  clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
+  address?: Maybe<SettingCreateOneWithoutAddressInput>;
+  billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
+  Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type PaymentCreateWithoutTransportAgencyInput = {
@@ -4413,8 +4567,28 @@ export type PaymentCreateWithoutTransportAgencyInput = {
   movement?: Maybe<MovementCreateOneWithoutPaymentsInput>;
   client?: Maybe<ClientCreateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
+};
+
+export type AddressCreateWithoutTransportAgencyInput = {
+  id?: Maybe<Scalars['String']>;
+  addressLine1?: Maybe<Scalars['String']>;
+  addressLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  zip?: Maybe<Scalars['String']>;
+  supplierAddress?: Maybe<SupplierCreateOneWithoutAddressInput>;
+  supplierBillingAddress?: Maybe<SupplierCreateOneWithoutBillingAddressInput>;
+  clientAddress?: Maybe<ClientCreateOneWithoutAddressInput>;
+  clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
+  address?: Maybe<SettingCreateOneWithoutAddressInput>;
+  billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
+  Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
+  Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
 };
 
 export type ContactPersonUpdateWithWhereUniqueWithoutTransportAgencyInput = {
@@ -4428,15 +4602,15 @@ export type ContactPersonUpsertWithWhereUniqueWithoutTransportAgencyInput = {
   create: ContactPersonCreateWithoutTransportAgencyInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutTransportAgencyInput = {
+export type FileUpdateWithWhereUniqueWithoutTransportAgenciesInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutTransportAgencyDataInput;
+  data: FileUpdateWithoutTransportAgenciesDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutTransportAgencyInput = {
+export type FileUpsertWithWhereUniqueWithoutTransportAgenciesInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutTransportAgencyDataInput;
-  create: FileCreateWithoutTransportAgencyInput;
+  update: FileUpdateWithoutTransportAgenciesDataInput;
+  create: FileCreateWithoutTransportAgenciesInput;
 };
 
 export type TransportUpdateWithWhereUniqueWithoutTransportAgencyInput = {
@@ -4500,6 +4674,67 @@ export type TransporterUpsertWithWhereUniqueWithoutTransportAgencyInput = {
   create: TransporterCreateWithoutTransportAgencyInput;
 };
 
+export type AddressUpdateWithoutTransportAgencyAddressDataInput = {
+  id?: Maybe<Scalars['String']>;
+  addressLine1?: Maybe<Scalars['String']>;
+  addressLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  zip?: Maybe<Scalars['String']>;
+  supplierAddress?: Maybe<SupplierUpdateOneWithoutAddressInput>;
+  supplierBillingAddress?: Maybe<SupplierUpdateOneWithoutBillingAddressInput>;
+  clientAddress?: Maybe<ClientUpdateOneWithoutAddressInput>;
+  clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
+  address?: Maybe<SettingUpdateOneWithoutAddressInput>;
+  billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
+  Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
+  Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
+};
+
+export type AddressUpsertWithoutTransportAgencyAddressInput = {
+  update: AddressUpdateWithoutTransportAgencyAddressDataInput;
+  create: AddressCreateWithoutTransportAgencyAddressInput;
+};
+
+export type AddressUpdateWithoutTransportAgencyBillingAddressDataInput = {
+  id?: Maybe<Scalars['String']>;
+  addressLine1?: Maybe<Scalars['String']>;
+  addressLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  zip?: Maybe<Scalars['String']>;
+  supplierAddress?: Maybe<SupplierUpdateOneWithoutAddressInput>;
+  supplierBillingAddress?: Maybe<SupplierUpdateOneWithoutBillingAddressInput>;
+  clientAddress?: Maybe<ClientUpdateOneWithoutAddressInput>;
+  clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
+  address?: Maybe<SettingUpdateOneWithoutAddressInput>;
+  billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
+  Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
+};
+
+export type AddressUpsertWithoutTransportAgencyBillingAddressInput = {
+  update: AddressUpdateWithoutTransportAgencyBillingAddressDataInput;
+  create: AddressCreateWithoutTransportAgencyBillingAddressInput;
+};
+
+export type PaymentUpdateWithWhereUniqueWithoutTransportAgencyInput = {
+  where: PaymentWhereUniqueInput;
+  data: PaymentUpdateWithoutTransportAgencyDataInput;
+};
+
+export type PaymentUpsertWithWhereUniqueWithoutTransportAgencyInput = {
+  where: PaymentWhereUniqueInput;
+  update: PaymentUpdateWithoutTransportAgencyDataInput;
+  create: PaymentCreateWithoutTransportAgencyInput;
+};
+
 export type AddressUpdateWithoutTransportAgencyDataInput = {
   id?: Maybe<Scalars['String']>;
   addressLine1?: Maybe<Scalars['String']>;
@@ -4514,6 +4749,8 @@ export type AddressUpdateWithoutTransportAgencyDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
 };
@@ -4521,17 +4758,6 @@ export type AddressUpdateWithoutTransportAgencyDataInput = {
 export type AddressUpsertWithoutTransportAgencyInput = {
   update: AddressUpdateWithoutTransportAgencyDataInput;
   create: AddressCreateWithoutTransportAgencyInput;
-};
-
-export type PaymentUpdateWithWhereUniqueWithoutTransportAgencyInput = {
-  where: PaymentWhereUniqueInput;
-  data: PaymentUpdateWithoutTransportAgencyDataInput;
-};
-
-export type PaymentUpsertWithWhereUniqueWithoutTransportAgencyInput = {
-  where: PaymentWhereUniqueInput;
-  update: PaymentUpdateWithoutTransportAgencyDataInput;
-  create: PaymentCreateWithoutTransportAgencyInput;
 };
 
 export type ContactPersonCreateWithoutWarehouseInput = {
@@ -4552,7 +4778,7 @@ export type ContactPersonCreateWithoutWarehouseInput = {
 };
 
 export type InventoryCreateWithoutWarehouseInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -4570,7 +4796,7 @@ export type InventoryCreateWithoutWarehouseInput = {
 
 export type MovementCreateWithoutWarehouseInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -4594,8 +4820,10 @@ export type MovementCreateWithoutWarehouseInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type AddressCreateWithoutWarehouseInput = {
@@ -4612,6 +4840,8 @@ export type AddressCreateWithoutWarehouseInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
   TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
@@ -4676,6 +4906,8 @@ export type AddressUpdateWithoutWarehouseDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
   TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
@@ -4751,23 +4983,22 @@ export type ProductCreateWithoutNotificationsInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type WarehouseUpdateWithoutNotificationDataInput = {
@@ -4808,23 +5039,22 @@ export type ProductUpdateWithoutNotificationsDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutNotificationsInput = {
@@ -4857,23 +5087,22 @@ export type ProductCreateWithoutTaxRatesInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type PaymentCreateWithoutTaxRateInput = {
@@ -4898,7 +5127,7 @@ export type PaymentCreateWithoutTaxRateInput = {
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutPaymentsInput>;
   client?: Maybe<ClientCreateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
 };
 
@@ -4932,23 +5161,22 @@ export type ProductUpdateWithoutTaxRatesDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutTaxRatesInput = {
@@ -4989,7 +5217,7 @@ export type PaymentCreateWithoutGroupInput = {
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutPaymentsInput>;
   client?: Maybe<ClientCreateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
 };
 
@@ -5030,7 +5258,7 @@ export type TaxRateUpsertWithoutGroupInput = {
 };
 
 export type UnitWhereInput = {
-  baseAmount?: Maybe<IntFilter>;
+  baseAmount?: Maybe<FloatFilter>;
   description?: Maybe<NullableStringFilter>;
   id?: Maybe<StringFilter>;
   name?: Maybe<StringFilter>;
@@ -5058,6 +5286,19 @@ export type CategoryWhereInput = {
   Category?: Maybe<CategoryWhereInput>;
 };
 
+export type ConsumableWhereInput = {
+  id?: Maybe<StringFilter>;
+  amount?: Maybe<FloatFilter>;
+  atIncoming?: Maybe<BooleanFilter>;
+  productId?: Maybe<StringFilter>;
+  consumerId?: Maybe<StringFilter>;
+  AND?: Maybe<Array<ConsumableWhereInput>>;
+  OR?: Maybe<Array<ConsumableWhereInput>>;
+  NOT?: Maybe<Array<ConsumableWhereInput>>;
+  product?: Maybe<ProductWhereInput>;
+  consumer?: Maybe<ProductWhereInput>;
+};
+
 export type ProductCreateWithoutUnitsInput = {
   id?: Maybe<Scalars['String']>;
   productId: Scalars['Int'];
@@ -5075,23 +5316,22 @@ export type ProductCreateWithoutUnitsInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type DimensionCreateWithoutProductInput = {
@@ -5118,7 +5358,7 @@ export type ManufacturerCreateWithoutProductsInput = {
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchCreateManyWithoutManufacturerInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutManufacturerInput>;
-  images?: Maybe<FileCreateManyWithoutManufacturerInput>;
+  images?: Maybe<FileCreateManyWithoutManufacturersInput>;
   address?: Maybe<AddressCreateOneWithoutManufacturerInput>;
 };
 
@@ -5140,25 +5380,33 @@ export type BatchCreateWithoutProductInput = {
   movements?: Maybe<MovementCreateManyWithoutBatchInput>;
 };
 
-export type FileCreateWithoutProductInput = {
+export type FileCreateWithoutProductsInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type InteractionCreateWithoutProductInput = {
@@ -5172,7 +5420,7 @@ export type InteractionCreateWithoutProductInput = {
 };
 
 export type InventoryCreateWithoutProductInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -5190,7 +5438,7 @@ export type InventoryCreateWithoutProductInput = {
 
 export type MovementCreateWithoutProductInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -5214,8 +5462,10 @@ export type MovementCreateWithoutProductInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type NotificationCreateWithoutProductInput = {
@@ -5232,7 +5482,7 @@ export type NotificationCreateWithoutProductInput = {
 };
 
 export type UnitCreateWithoutProductInput = {
-  baseAmount: Scalars['Int'];
+  baseAmount: Scalars['Float'];
   description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
@@ -5246,42 +5496,6 @@ export type TaxRateCreateWithoutProductInput = {
   name?: Maybe<Scalars['String']>;
   group?: Maybe<GroupCreateOneWithoutTaxRateInput>;
   payments?: Maybe<PaymentCreateManyWithoutTaxRateInput>;
-};
-
-export type ProductCreateWithoutPackagedProductInput = {
-  id?: Maybe<Scalars['String']>;
-  productId: Scalars['Int'];
-  ASIN?: Maybe<Scalars['String']>;
-  EAN?: Maybe<Scalars['String']>;
-  ISBN?: Maybe<Scalars['String']>;
-  UPC?: Maybe<Scalars['String']>;
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  slug: Scalars['String'];
-  material?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Float']>;
-  source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  isListed?: Maybe<Scalars['Boolean']>;
-  tags?: Maybe<ProductCreatetagsInput>;
-  dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
-  batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
-  interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
-  inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
-  movements?: Maybe<MovementCreateManyWithoutProductInput>;
-  notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
-  units?: Maybe<UnitCreateManyWithoutProductInput>;
-  taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
-  variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
-  categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
 };
 
 export type ProductCreateWithoutVariantProductInput = {
@@ -5301,49 +5515,12 @@ export type ProductCreateWithoutVariantProductInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
-  interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
-  inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
-  movements?: Maybe<MovementCreateManyWithoutProductInput>;
-  notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
-  units?: Maybe<UnitCreateManyWithoutProductInput>;
-  taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
-  variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
-};
-
-export type ProductCreateWithoutPackagingInput = {
-  id?: Maybe<Scalars['String']>;
-  productId: Scalars['Int'];
-  ASIN?: Maybe<Scalars['String']>;
-  EAN?: Maybe<Scalars['String']>;
-  ISBN?: Maybe<Scalars['String']>;
-  UPC?: Maybe<Scalars['String']>;
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  slug: Scalars['String'];
-  material?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Float']>;
-  source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  isListed?: Maybe<Scalars['Boolean']>;
-  tags?: Maybe<ProductCreatetagsInput>;
-  dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
-  batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
@@ -5351,9 +5528,9 @@ export type ProductCreateWithoutPackagingInput = {
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type ProductCreateWithoutVariantsInput = {
@@ -5373,23 +5550,22 @@ export type ProductCreateWithoutVariantsInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type CategoryCreateWithoutProductsInput = {
@@ -5404,6 +5580,20 @@ export type CategoryCreateWithoutProductsInput = {
 
 export type CategoryWhereUniqueInput = {
   id?: Maybe<Scalars['String']>;
+};
+
+export type ConsumableCreateWithoutConsumerInput = {
+  id?: Maybe<Scalars['String']>;
+  amount: Scalars['Float'];
+  atIncoming: Scalars['Boolean'];
+  product: ProductCreateOneWithoutConsumersInput;
+};
+
+export type ConsumableCreateWithoutProductInput = {
+  id?: Maybe<Scalars['String']>;
+  amount: Scalars['Float'];
+  atIncoming: Scalars['Boolean'];
+  consumer: ProductCreateOneWithoutConsumablesInput;
 };
 
 export type DimensionUpdateWithoutProductDataInput = {
@@ -5431,7 +5621,7 @@ export type ManufacturerUpdateWithoutProductsDataInput = {
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchUpdateManyWithoutManufacturerInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutManufacturerInput>;
-  images?: Maybe<FileUpdateManyWithoutManufacturerInput>;
+  images?: Maybe<FileUpdateManyWithoutManufacturersInput>;
   address?: Maybe<AddressUpdateOneWithoutManufacturerInput>;
 };
 
@@ -5472,15 +5662,15 @@ export type BatchUpsertWithWhereUniqueWithoutProductInput = {
   create: BatchCreateWithoutProductInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutProductInput = {
+export type FileUpdateWithWhereUniqueWithoutProductsInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutProductDataInput;
+  data: FileUpdateWithoutProductsDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutProductInput = {
+export type FileUpsertWithWhereUniqueWithoutProductsInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutProductDataInput;
-  create: FileCreateWithoutProductInput;
+  update: FileUpdateWithoutProductsDataInput;
+  create: FileCreateWithoutProductsInput;
 };
 
 export type InteractionUpdateWithWhereUniqueWithoutProductInput = {
@@ -5538,7 +5728,7 @@ export type UnitUpdateManyWithWhereNestedInput = {
 };
 
 export type UnitScalarWhereInput = {
-  baseAmount?: Maybe<IntFilter>;
+  baseAmount?: Maybe<FloatFilter>;
   description?: Maybe<NullableStringFilter>;
   id?: Maybe<StringFilter>;
   name?: Maybe<StringFilter>;
@@ -5583,9 +5773,9 @@ export type TaxRateUpsertWithWhereUniqueWithoutProductInput = {
   create: TaxRateCreateWithoutProductInput;
 };
 
-export type ProductUpdateWithWhereUniqueWithoutPackagedProductInput = {
+export type ProductUpdateWithWhereUniqueWithoutVariantProductInput = {
   where: ProductWhereUniqueInput;
-  data: ProductUpdateWithoutPackagedProductDataInput;
+  data: ProductUpdateWithoutVariantProductDataInput;
 };
 
 export type ProductUpdateManyWithWhereNestedInput = {
@@ -5620,27 +5810,15 @@ export type ProductScalarWhereInput = {
   units?: Maybe<UnitFilter>;
   taxRates?: Maybe<TaxRateFilter>;
   source?: Maybe<NullableStringFilter>;
-  packaging?: Maybe<ProductFilter>;
-  isPackaging?: Maybe<BooleanFilter>;
   isListed?: Maybe<NullableBooleanFilter>;
   variants?: Maybe<ProductFilter>;
-  productId_PackageToPackagedProduct?: Maybe<NullableStringFilter>;
-  productId_VariantToProduct?: Maybe<NullableStringFilter>;
+  variantProduct?: Maybe<ProductFilter>;
   categories?: Maybe<CategoryFilter>;
+  consumables?: Maybe<ConsumableFilter>;
+  consumers?: Maybe<ConsumableFilter>;
   AND?: Maybe<Array<ProductScalarWhereInput>>;
   OR?: Maybe<Array<ProductScalarWhereInput>>;
   NOT?: Maybe<Array<ProductScalarWhereInput>>;
-};
-
-export type ProductUpsertWithWhereUniqueWithoutPackagedProductInput = {
-  where: ProductWhereUniqueInput;
-  update: ProductUpdateWithoutPackagedProductDataInput;
-  create: ProductCreateWithoutPackagedProductInput;
-};
-
-export type ProductUpdateWithWhereUniqueWithoutVariantProductInput = {
-  where: ProductWhereUniqueInput;
-  data: ProductUpdateWithoutVariantProductDataInput;
 };
 
 export type ProductUpsertWithWhereUniqueWithoutVariantProductInput = {
@@ -5649,84 +5827,13 @@ export type ProductUpsertWithWhereUniqueWithoutVariantProductInput = {
   create: ProductCreateWithoutVariantProductInput;
 };
 
-export type ProductUpdateWithoutPackagingDataInput = {
-  id?: Maybe<Scalars['String']>;
-  productId?: Maybe<Scalars['Int']>;
-  ASIN?: Maybe<Scalars['String']>;
-  EAN?: Maybe<Scalars['String']>;
-  ISBN?: Maybe<Scalars['String']>;
-  UPC?: Maybe<Scalars['String']>;
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  material?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Float']>;
-  source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  isListed?: Maybe<Scalars['Boolean']>;
-  tags?: Maybe<ProductUpdatetagsInput>;
-  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
-  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
-  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
-  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
-  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
-  units?: Maybe<UnitUpdateManyWithoutProductInput>;
-  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
-  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+export type ProductUpdateWithWhereUniqueWithoutVariantsInput = {
+  where: ProductWhereUniqueInput;
+  data: ProductUpdateWithoutVariantsDataInput;
 };
 
-export type ProductUpsertWithoutPackagingInput = {
-  update: ProductUpdateWithoutPackagingDataInput;
-  create: ProductCreateWithoutPackagingInput;
-};
-
-export type ProductUpdateWithoutVariantsDataInput = {
-  id?: Maybe<Scalars['String']>;
-  productId?: Maybe<Scalars['Int']>;
-  ASIN?: Maybe<Scalars['String']>;
-  EAN?: Maybe<Scalars['String']>;
-  ISBN?: Maybe<Scalars['String']>;
-  UPC?: Maybe<Scalars['String']>;
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  material?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Float']>;
-  source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  isListed?: Maybe<Scalars['Boolean']>;
-  tags?: Maybe<ProductUpdatetagsInput>;
-  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
-  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
-  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
-  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
-  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
-  units?: Maybe<UnitUpdateManyWithoutProductInput>;
-  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
-  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
-};
-
-export type ProductUpsertWithoutVariantsInput = {
+export type ProductUpsertWithWhereUniqueWithoutVariantsInput = {
+  where: ProductWhereUniqueInput;
   update: ProductUpdateWithoutVariantsDataInput;
   create: ProductCreateWithoutVariantsInput;
 };
@@ -5761,6 +5868,44 @@ export type CategoryUpsertWithWhereUniqueWithoutProductsInput = {
   create: CategoryCreateWithoutProductsInput;
 };
 
+export type ConsumableUpdateWithWhereUniqueWithoutConsumerInput = {
+  where: ConsumableWhereUniqueInput;
+  data: ConsumableUpdateWithoutConsumerDataInput;
+};
+
+export type ConsumableUpdateManyWithWhereNestedInput = {
+  where: ConsumableScalarWhereInput;
+  data: ConsumableUpdateManyDataInput;
+};
+
+export type ConsumableScalarWhereInput = {
+  id?: Maybe<StringFilter>;
+  amount?: Maybe<FloatFilter>;
+  atIncoming?: Maybe<BooleanFilter>;
+  productId?: Maybe<StringFilter>;
+  consumerId?: Maybe<StringFilter>;
+  AND?: Maybe<Array<ConsumableScalarWhereInput>>;
+  OR?: Maybe<Array<ConsumableScalarWhereInput>>;
+  NOT?: Maybe<Array<ConsumableScalarWhereInput>>;
+};
+
+export type ConsumableUpsertWithWhereUniqueWithoutConsumerInput = {
+  where: ConsumableWhereUniqueInput;
+  update: ConsumableUpdateWithoutConsumerDataInput;
+  create: ConsumableCreateWithoutConsumerInput;
+};
+
+export type ConsumableUpdateWithWhereUniqueWithoutProductInput = {
+  where: ConsumableWhereUniqueInput;
+  data: ConsumableUpdateWithoutProductDataInput;
+};
+
+export type ConsumableUpsertWithWhereUniqueWithoutProductInput = {
+  where: ConsumableWhereUniqueInput;
+  update: ConsumableUpdateWithoutProductDataInput;
+  create: ConsumableCreateWithoutProductInput;
+};
+
 export type PresetFilter = {
   every?: Maybe<PresetWhereInput>;
   some?: Maybe<PresetWhereInput>;
@@ -5777,10 +5922,10 @@ export type SettingCreateWithoutPresetsInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging: Scalars['Boolean'];
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -5815,10 +5960,10 @@ export type SettingUpdateWithoutPresetsDataInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -5851,43 +5996,59 @@ export type SettingUpsertWithoutPresetsInput = {
 export type FileCreateWithoutSettingsInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type FileUpdateWithoutSettingsDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type FileUpsertWithoutSettingsInput = {
@@ -5958,9 +6119,11 @@ export type AddressCreateWithoutAddressInput = {
   clientAddress?: Maybe<ClientCreateOneWithoutAddressInput>;
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type AddressUpdateWithoutAddressDataInput = {
@@ -5976,9 +6139,11 @@ export type AddressUpdateWithoutAddressDataInput = {
   clientAddress?: Maybe<ClientUpdateOneWithoutAddressInput>;
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutAddressInput = {
@@ -5999,9 +6164,11 @@ export type AddressCreateWithoutBillingAddressInput = {
   clientAddress?: Maybe<ClientCreateOneWithoutAddressInput>;
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type AddressUpdateWithoutBillingAddressDataInput = {
@@ -6017,9 +6184,11 @@ export type AddressUpdateWithoutBillingAddressDataInput = {
   clientAddress?: Maybe<ClientUpdateOneWithoutAddressInput>;
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutBillingAddressInput = {
@@ -6040,9 +6209,11 @@ export type AddressCreateWithoutSupplierAddressInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type AddressCreateWithoutSupplierBillingAddressInput = {
@@ -6058,9 +6229,11 @@ export type AddressCreateWithoutSupplierBillingAddressInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerCreateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type ContactPersonCreateWithoutSupplierInput = {
@@ -6080,25 +6253,33 @@ export type ContactPersonCreateWithoutSupplierInput = {
   warehouse?: Maybe<WarehouseCreateOneWithoutContactPersonsInput>;
 };
 
-export type FileCreateWithoutSupplierInput = {
+export type FileCreateWithoutSuppliersInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type InteractionCreateWithoutSupplierInput = {
@@ -6112,7 +6293,7 @@ export type InteractionCreateWithoutSupplierInput = {
 };
 
 export type InventoryCreateWithoutSupplierInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -6130,7 +6311,7 @@ export type InventoryCreateWithoutSupplierInput = {
 
 export type MovementCreateWithoutSupplierInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -6154,8 +6335,10 @@ export type MovementCreateWithoutSupplierInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type PaymentCreateWithoutSupplierInput = {
@@ -6180,7 +6363,7 @@ export type PaymentCreateWithoutSupplierInput = {
   movement?: Maybe<MovementCreateOneWithoutPaymentsInput>;
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutPaymentsInput>;
   client?: Maybe<ClientCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
 };
 
@@ -6197,9 +6380,11 @@ export type AddressUpdateWithoutSupplierAddressDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutSupplierAddressInput = {
@@ -6220,9 +6405,11 @@ export type AddressUpdateWithoutSupplierBillingAddressDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Manufacturer?: Maybe<ManufacturerUpdateManyWithoutAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutSupplierBillingAddressInput = {
@@ -6241,15 +6428,15 @@ export type ContactPersonUpsertWithWhereUniqueWithoutSupplierInput = {
   create: ContactPersonCreateWithoutSupplierInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutSupplierInput = {
+export type FileUpdateWithWhereUniqueWithoutSuppliersInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutSupplierDataInput;
+  data: FileUpdateWithoutSuppliersDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutSupplierInput = {
+export type FileUpsertWithWhereUniqueWithoutSuppliersInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutSupplierDataInput;
-  create: FileCreateWithoutSupplierInput;
+  update: FileUpdateWithoutSuppliersDataInput;
+  create: FileCreateWithoutSuppliersInput;
 };
 
 export type InteractionUpdateWithWhereUniqueWithoutSupplierInput = {
@@ -6294,6 +6481,18 @@ export type PaymentUpsertWithWhereUniqueWithoutSupplierInput = {
   where: PaymentWhereUniqueInput;
   update: PaymentUpdateWithoutSupplierDataInput;
   create: PaymentCreateWithoutSupplierInput;
+};
+
+export type ClientFilter = {
+  every?: Maybe<ClientWhereInput>;
+  some?: Maybe<ClientWhereInput>;
+  none?: Maybe<ClientWhereInput>;
+};
+
+export type SupplierFilter = {
+  every?: Maybe<SupplierWhereInput>;
+  some?: Maybe<SupplierWhereInput>;
+  none?: Maybe<SupplierWhereInput>;
 };
 
 export type SettingFilter = {
@@ -6352,14 +6551,24 @@ export type InvoiceCreateOneWithoutMovementsInput = {
   connect?: Maybe<InvoiceWhereUniqueInput>;
 };
 
-export type FileCreateManyWithoutMovementInput = {
-  create?: Maybe<Array<FileCreateWithoutMovementInput>>;
+export type FileCreateManyWithoutMovementsInput = {
+  create?: Maybe<Array<FileCreateWithoutMovementsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
 export type PaymentCreateManyWithoutMovementInput = {
   create?: Maybe<Array<PaymentCreateWithoutMovementInput>>;
   connect?: Maybe<Array<PaymentWhereUniqueInput>>;
+};
+
+export type MovementCreateManyWithoutConsumedFromInput = {
+  create?: Maybe<Array<MovementCreateWithoutConsumedFromInput>>;
+  connect?: Maybe<Array<MovementWhereUniqueInput>>;
+};
+
+export type MovementCreateOneWithoutConsumablesMovementsInput = {
+  create?: Maybe<MovementCreateWithoutConsumablesMovementsInput>;
+  connect?: Maybe<MovementWhereUniqueInput>;
 };
 
 export type ClientUpdateOneWithoutMovementsInput = {
@@ -6456,16 +6665,16 @@ export type InvoiceUpdateOneWithoutMovementsInput = {
   upsert?: Maybe<InvoiceUpsertWithoutMovementsInput>;
 };
 
-export type FileUpdateManyWithoutMovementInput = {
-  create?: Maybe<Array<FileCreateWithoutMovementInput>>;
+export type FileUpdateManyWithoutMovementsInput = {
+  create?: Maybe<Array<FileCreateWithoutMovementsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutMovementInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutMovementsInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutMovementInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutMovementsInput>>;
 };
 
 export type PaymentUpdateManyWithoutMovementInput = {
@@ -6480,34 +6689,55 @@ export type PaymentUpdateManyWithoutMovementInput = {
   upsert?: Maybe<Array<PaymentUpsertWithWhereUniqueWithoutMovementInput>>;
 };
 
-export type ManufacturerCreateOneWithoutImagesInput = {
-  create?: Maybe<ManufacturerCreateWithoutImagesInput>;
-  connect?: Maybe<ManufacturerWhereUniqueInput>;
+export type MovementUpdateManyWithoutConsumedFromInput = {
+  create?: Maybe<Array<MovementCreateWithoutConsumedFromInput>>;
+  connect?: Maybe<Array<MovementWhereUniqueInput>>;
+  set?: Maybe<Array<MovementWhereUniqueInput>>;
+  disconnect?: Maybe<Array<MovementWhereUniqueInput>>;
+  delete?: Maybe<Array<MovementWhereUniqueInput>>;
+  update?: Maybe<Array<MovementUpdateWithWhereUniqueWithoutConsumedFromInput>>;
+  updateMany?: Maybe<Array<MovementUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<MovementScalarWhereInput>>;
+  upsert?: Maybe<Array<MovementUpsertWithWhereUniqueWithoutConsumedFromInput>>;
 };
 
-export type ClientCreateOneWithoutImagesInput = {
-  create?: Maybe<ClientCreateWithoutImagesInput>;
-  connect?: Maybe<ClientWhereUniqueInput>;
+export type MovementUpdateOneWithoutConsumablesMovementsInput = {
+  create?: Maybe<MovementCreateWithoutConsumablesMovementsInput>;
+  connect?: Maybe<MovementWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<MovementUpdateWithoutConsumablesMovementsDataInput>;
+  upsert?: Maybe<MovementUpsertWithoutConsumablesMovementsInput>;
 };
 
-export type SupplierCreateOneWithoutImagesInput = {
-  create?: Maybe<SupplierCreateWithoutImagesInput>;
-  connect?: Maybe<SupplierWhereUniqueInput>;
+export type ManufacturerCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<ManufacturerCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ManufacturerWhereUniqueInput>>;
 };
 
-export type ProductCreateOneWithoutImagesInput = {
-  create?: Maybe<ProductCreateWithoutImagesInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
+export type ClientCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<ClientCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ClientWhereUniqueInput>>;
 };
 
-export type TransportAgencyCreateOneWithoutImagesInput = {
-  create?: Maybe<TransportAgencyCreateWithoutImagesInput>;
-  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+export type SupplierCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<SupplierCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<SupplierWhereUniqueInput>>;
 };
 
-export type TransporterCreateOneWithoutImagesInput = {
-  create?: Maybe<TransporterCreateWithoutImagesInput>;
-  connect?: Maybe<TransporterWhereUniqueInput>;
+export type ProductCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<ProductCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ProductWhereUniqueInput>>;
+};
+
+export type TransportAgencyCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<TransportAgencyCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+};
+
+export type TransporterCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<TransporterCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<TransporterWhereUniqueInput>>;
 };
 
 export type SettingCreateManyWithoutLogoInput = {
@@ -6530,44 +6760,60 @@ export type CategoryCreateManyWithoutBannerImageInput = {
   connect?: Maybe<Array<CategoryWhereUniqueInput>>;
 };
 
-export type MovementCreateOneWithoutDocumentsInput = {
-  create?: Maybe<MovementCreateWithoutDocumentsInput>;
-  connect?: Maybe<MovementWhereUniqueInput>;
+export type MovementCreateManyWithoutDocumentsInput = {
+  create?: Maybe<Array<MovementCreateWithoutDocumentsInput>>;
+  connect?: Maybe<Array<MovementWhereUniqueInput>>;
 };
 
-export type PaymentCreateOneWithoutDocumentsInput = {
-  create?: Maybe<PaymentCreateWithoutDocumentsInput>;
-  connect?: Maybe<PaymentWhereUniqueInput>;
+export type PaymentCreateManyWithoutDocumentsInput = {
+  create?: Maybe<Array<PaymentCreateWithoutDocumentsInput>>;
+  connect?: Maybe<Array<PaymentWhereUniqueInput>>;
 };
 
-export type FileUpdateWithoutMessageDataInput = {
+export type FileUpdateWithoutMessagesDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type FileUpdateManyDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
 };
 
 export type MessageCreatementionsInput = {
@@ -6579,8 +6825,8 @@ export type MovementCreateOneWithoutCommentsInput = {
   connect?: Maybe<MovementWhereUniqueInput>;
 };
 
-export type FileCreateManyWithoutMessageInput = {
-  create?: Maybe<Array<FileCreateWithoutMessageInput>>;
+export type FileCreateManyWithoutMessagesInput = {
+  create?: Maybe<Array<FileCreateWithoutMessagesInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -6593,7 +6839,7 @@ export type MessageUpdateWithoutChannelDataInput = {
   updatedAt?: Maybe<Scalars['DateTime']>;
   mentions?: Maybe<MessageUpdatementionsInput>;
   movement?: Maybe<MovementUpdateOneWithoutCommentsInput>;
-  images?: Maybe<FileUpdateManyWithoutMessageInput>;
+  images?: Maybe<FileUpdateManyWithoutMessagesInput>;
 };
 
 export type MessageUpdateManyDataInput = {
@@ -6626,9 +6872,9 @@ export type WarehouseCreateOneWithoutContactPersonsInput = {
   connect?: Maybe<WarehouseWhereUniqueInput>;
 };
 
-export type MessageCreateOneWithoutImagesInput = {
-  create?: Maybe<MessageCreateWithoutImagesInput>;
-  connect?: Maybe<MessageWhereUniqueInput>;
+export type MessageCreateManyWithoutImagesInput = {
+  create?: Maybe<Array<MessageCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<MessageWhereUniqueInput>>;
 };
 
 export type SupplierCreateOneWithoutInteractionsInput = {
@@ -6716,19 +6962,29 @@ export type SettingCreateOneWithoutBillingAddressInput = {
   connect?: Maybe<SettingWhereUniqueInput>;
 };
 
+export type TransportAgencyCreateOneWithoutAddressInput = {
+  create?: Maybe<TransportAgencyCreateWithoutAddressInput>;
+  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+};
+
+export type TransportAgencyCreateOneWithoutBillingAddressInput = {
+  create?: Maybe<TransportAgencyCreateWithoutBillingAddressInput>;
+  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+};
+
 export type ManufacturerCreateManyWithoutAddressInput = {
   create?: Maybe<Array<ManufacturerCreateWithoutAddressInput>>;
   connect?: Maybe<Array<ManufacturerWhereUniqueInput>>;
 };
 
-export type TransportAgencyCreateManyWithoutAddressInput = {
-  create?: Maybe<Array<TransportAgencyCreateWithoutAddressInput>>;
-  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
-};
-
 export type WarehouseCreateManyWithoutAddressInput = {
   create?: Maybe<Array<WarehouseCreateWithoutAddressInput>>;
   connect?: Maybe<Array<WarehouseWhereUniqueInput>>;
+};
+
+export type TransportAgencyCreateManyWithoutAddressInput = {
+  create?: Maybe<Array<TransportAgencyCreateWithoutAddressInput>>;
+  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
 };
 
 export type ClientCreateOneWithoutAddressInput = {
@@ -6771,8 +7027,8 @@ export type SupplierCreateOneWithoutPaymentsInput = {
   connect?: Maybe<SupplierWhereUniqueInput>;
 };
 
-export type FileCreateManyWithoutPaymentInput = {
-  create?: Maybe<Array<FileCreateWithoutPaymentInput>>;
+export type FileCreateManyWithoutPaymentsInput = {
+  create?: Maybe<Array<FileCreateWithoutPaymentsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -6811,25 +7067,33 @@ export type ContactPersonUpdateManyDataInput = {
   notes?: Maybe<Scalars['String']>;
 };
 
-export type FileUpdateWithoutClientDataInput = {
+export type FileUpdateWithoutClientsDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type InteractionUpdateWithoutClientDataInput = {
@@ -6850,7 +7114,7 @@ export type InteractionUpdateManyDataInput = {
 };
 
 export type InventoryUpdateWithoutClientDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -6867,7 +7131,7 @@ export type InventoryUpdateWithoutClientDataInput = {
 };
 
 export type InventoryUpdateManyDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -6879,7 +7143,7 @@ export type InventoryUpdateManyDataInput = {
 
 export type MovementUpdateWithoutClientDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -6903,13 +7167,15 @@ export type MovementUpdateWithoutClientDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpdateManyDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -6988,6 +7254,24 @@ export type SettingUpdateOneWithoutBillingAddressInput = {
   upsert?: Maybe<SettingUpsertWithoutBillingAddressInput>;
 };
 
+export type TransportAgencyUpdateOneWithoutAddressInput = {
+  create?: Maybe<TransportAgencyCreateWithoutAddressInput>;
+  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<TransportAgencyUpdateWithoutAddressDataInput>;
+  upsert?: Maybe<TransportAgencyUpsertWithoutAddressInput>;
+};
+
+export type TransportAgencyUpdateOneWithoutBillingAddressInput = {
+  create?: Maybe<TransportAgencyCreateWithoutBillingAddressInput>;
+  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<TransportAgencyUpdateWithoutBillingAddressDataInput>;
+  upsert?: Maybe<TransportAgencyUpsertWithoutBillingAddressInput>;
+};
+
 export type ManufacturerUpdateManyWithoutAddressInput = {
   create?: Maybe<Array<ManufacturerCreateWithoutAddressInput>>;
   connect?: Maybe<Array<ManufacturerWhereUniqueInput>>;
@@ -7000,18 +7284,6 @@ export type ManufacturerUpdateManyWithoutAddressInput = {
   upsert?: Maybe<Array<ManufacturerUpsertWithWhereUniqueWithoutAddressInput>>;
 };
 
-export type TransportAgencyUpdateManyWithoutAddressInput = {
-  create?: Maybe<Array<TransportAgencyCreateWithoutAddressInput>>;
-  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
-  set?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
-  disconnect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
-  delete?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
-  update?: Maybe<Array<TransportAgencyUpdateWithWhereUniqueWithoutAddressInput>>;
-  updateMany?: Maybe<Array<TransportAgencyUpdateManyWithWhereNestedInput>>;
-  deleteMany?: Maybe<Array<TransportAgencyScalarWhereInput>>;
-  upsert?: Maybe<Array<TransportAgencyUpsertWithWhereUniqueWithoutAddressInput>>;
-};
-
 export type WarehouseUpdateManyWithoutAddressInput = {
   create?: Maybe<Array<WarehouseCreateWithoutAddressInput>>;
   connect?: Maybe<Array<WarehouseWhereUniqueInput>>;
@@ -7022,6 +7294,18 @@ export type WarehouseUpdateManyWithoutAddressInput = {
   updateMany?: Maybe<Array<WarehouseUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<WarehouseScalarWhereInput>>;
   upsert?: Maybe<Array<WarehouseUpsertWithWhereUniqueWithoutAddressInput>>;
+};
+
+export type TransportAgencyUpdateManyWithoutAddressInput = {
+  create?: Maybe<Array<TransportAgencyCreateWithoutAddressInput>>;
+  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  set?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  disconnect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  delete?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  update?: Maybe<Array<TransportAgencyUpdateWithWhereUniqueWithoutAddressInput>>;
+  updateMany?: Maybe<Array<TransportAgencyUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<TransportAgencyScalarWhereInput>>;
+  upsert?: Maybe<Array<TransportAgencyUpsertWithWhereUniqueWithoutAddressInput>>;
 };
 
 export type ClientUpdateOneWithoutAddressInput = {
@@ -7071,7 +7355,7 @@ export type PaymentUpdateWithoutClientDataInput = {
   movement?: Maybe<MovementUpdateOneWithoutPaymentsInput>;
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
 };
 
@@ -7113,8 +7397,8 @@ export type TransporterCreateidentificationsInput = {
   set?: Maybe<Array<Scalars['String']>>;
 };
 
-export type FileCreateManyWithoutTransporterInput = {
-  create?: Maybe<Array<FileCreateWithoutTransporterInput>>;
+export type FileCreateManyWithoutTransportersInput = {
+  create?: Maybe<Array<FileCreateWithoutTransportersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -7145,25 +7429,33 @@ export type ContactPersonUpdateWithoutTransportAgencyDataInput = {
   warehouse?: Maybe<WarehouseUpdateOneWithoutContactPersonsInput>;
 };
 
-export type FileUpdateWithoutTransportAgencyDataInput = {
+export type FileUpdateWithoutTransportAgenciesDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type TransportUpdateWithoutTransportAgencyDataInput = {
@@ -7193,7 +7485,7 @@ export type TransporterUpdateWithoutTransportAgencyDataInput = {
   type?: Maybe<TransportType>;
   notes?: Maybe<Scalars['String']>;
   identifications?: Maybe<TransporterUpdateidentificationsInput>;
-  images?: Maybe<FileUpdateManyWithoutTransporterInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportersInput>;
   transports?: Maybe<TransportUpdateManyWithoutTransporterInput>;
 };
 
@@ -7228,7 +7520,7 @@ export type PaymentUpdateWithoutTransportAgencyDataInput = {
   movement?: Maybe<MovementUpdateOneWithoutPaymentsInput>;
   client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
 };
 
@@ -7255,7 +7547,7 @@ export type ContactPersonUpdateWithoutWarehouseDataInput = {
 };
 
 export type InventoryUpdateWithoutWarehouseDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -7273,7 +7565,7 @@ export type InventoryUpdateWithoutWarehouseDataInput = {
 
 export type MovementUpdateWithoutWarehouseDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -7297,8 +7589,10 @@ export type MovementUpdateWithoutWarehouseDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type NotificationUpdateWithoutWarehouseDataInput = {
@@ -7348,7 +7642,7 @@ export type PaymentUpdateWithoutTaxRateDataInput = {
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
   client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
 };
 
@@ -7374,7 +7668,7 @@ export type PaymentUpdateWithoutGroupDataInput = {
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
   client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
 };
 
@@ -7388,8 +7682,8 @@ export type ContactPersonCreateManyWithoutManufacturerInput = {
   connect?: Maybe<Array<ContactPersonWhereUniqueInput>>;
 };
 
-export type FileCreateManyWithoutManufacturerInput = {
-  create?: Maybe<Array<FileCreateWithoutManufacturerInput>>;
+export type FileCreateManyWithoutManufacturersInput = {
+  create?: Maybe<Array<FileCreateWithoutManufacturersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
 };
 
@@ -7438,6 +7732,16 @@ export type CategoryCreateOneWithoutSubCategoriesInput = {
   connect?: Maybe<CategoryWhereUniqueInput>;
 };
 
+export type ProductCreateOneWithoutConsumersInput = {
+  create?: Maybe<ProductCreateWithoutConsumersInput>;
+  connect?: Maybe<ProductWhereUniqueInput>;
+};
+
+export type ProductCreateOneWithoutConsumablesInput = {
+  create?: Maybe<ProductCreateWithoutConsumablesInput>;
+  connect?: Maybe<ProductWhereUniqueInput>;
+};
+
 export type BatchUpdateManyWithoutManufacturerInput = {
   create?: Maybe<Array<BatchCreateWithoutManufacturerInput>>;
   connect?: Maybe<Array<BatchWhereUniqueInput>>;
@@ -7462,16 +7766,16 @@ export type ContactPersonUpdateManyWithoutManufacturerInput = {
   upsert?: Maybe<Array<ContactPersonUpsertWithWhereUniqueWithoutManufacturerInput>>;
 };
 
-export type FileUpdateManyWithoutManufacturerInput = {
-  create?: Maybe<Array<FileCreateWithoutManufacturerInput>>;
+export type FileUpdateManyWithoutManufacturersInput = {
+  create?: Maybe<Array<FileCreateWithoutManufacturersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutManufacturerInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutManufacturersInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutManufacturerInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutManufacturersInput>>;
 };
 
 export type AddressUpdateOneWithoutManufacturerInput = {
@@ -7504,25 +7808,33 @@ export type BatchUpdateManyDataInput = {
   source?: Maybe<Scalars['String']>;
 };
 
-export type FileUpdateWithoutProductDataInput = {
+export type FileUpdateWithoutProductsDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type InteractionUpdateWithoutProductDataInput = {
@@ -7536,7 +7848,7 @@ export type InteractionUpdateWithoutProductDataInput = {
 };
 
 export type InventoryUpdateWithoutProductDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -7554,7 +7866,7 @@ export type InventoryUpdateWithoutProductDataInput = {
 
 export type MovementUpdateWithoutProductDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -7578,8 +7890,10 @@ export type MovementUpdateWithoutProductDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type NotificationUpdateWithoutProductDataInput = {
@@ -7596,14 +7910,14 @@ export type NotificationUpdateWithoutProductDataInput = {
 };
 
 export type UnitUpdateWithoutProductDataInput = {
-  baseAmount?: Maybe<Scalars['Int']>;
+  baseAmount?: Maybe<Scalars['Float']>;
   description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
 };
 
 export type UnitUpdateManyDataInput = {
-  baseAmount?: Maybe<Scalars['Int']>;
+  baseAmount?: Maybe<Scalars['Float']>;
   description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -7627,7 +7941,7 @@ export type TaxRateUpdateManyDataInput = {
   name?: Maybe<Scalars['String']>;
 };
 
-export type ProductUpdateWithoutPackagedProductDataInput = {
+export type ProductUpdateWithoutVariantProductDataInput = {
   id?: Maybe<Scalars['String']>;
   productId?: Maybe<Scalars['Int']>;
   ASIN?: Maybe<Scalars['String']>;
@@ -7644,23 +7958,22 @@ export type ProductUpdateWithoutPackagedProductDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpdateManyDataInput = {
@@ -7680,12 +7993,11 @@ export type ProductUpdateManyDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
 };
 
-export type ProductUpdateWithoutVariantProductDataInput = {
+export type ProductUpdateWithoutVariantsDataInput = {
   id?: Maybe<Scalars['String']>;
   productId?: Maybe<Scalars['Int']>;
   ASIN?: Maybe<Scalars['String']>;
@@ -7702,23 +8014,22 @@ export type ProductUpdateWithoutVariantProductDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
-  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type CategoryUpdateWithoutProductsDataInput = {
@@ -7737,67 +8048,108 @@ export type CategoryUpdateManyDataInput = {
   description?: Maybe<Scalars['String']>;
 };
 
-export type ManufacturerUpdateOneWithoutImagesInput = {
-  create?: Maybe<ManufacturerCreateWithoutImagesInput>;
-  connect?: Maybe<ManufacturerWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<ManufacturerUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<ManufacturerUpsertWithoutImagesInput>;
+export type ConsumableUpdateWithoutConsumerDataInput = {
+  id?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['Float']>;
+  atIncoming?: Maybe<Scalars['Boolean']>;
+  product?: Maybe<ProductUpdateOneRequiredWithoutConsumersInput>;
 };
 
-export type MessageUpdateOneWithoutImagesInput = {
-  create?: Maybe<MessageCreateWithoutImagesInput>;
-  connect?: Maybe<MessageWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<MessageUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<MessageUpsertWithoutImagesInput>;
+export type ConsumableUpdateManyDataInput = {
+  id?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['Float']>;
+  atIncoming?: Maybe<Scalars['Boolean']>;
 };
 
-export type ClientUpdateOneWithoutImagesInput = {
-  create?: Maybe<ClientCreateWithoutImagesInput>;
-  connect?: Maybe<ClientWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<ClientUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<ClientUpsertWithoutImagesInput>;
+export type ConsumableUpdateWithoutProductDataInput = {
+  id?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['Float']>;
+  atIncoming?: Maybe<Scalars['Boolean']>;
+  consumer?: Maybe<ProductUpdateOneRequiredWithoutConsumablesInput>;
 };
 
-export type SupplierUpdateOneWithoutImagesInput = {
-  create?: Maybe<SupplierCreateWithoutImagesInput>;
-  connect?: Maybe<SupplierWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<SupplierUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<SupplierUpsertWithoutImagesInput>;
+export type ManufacturerUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<ManufacturerCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ManufacturerWhereUniqueInput>>;
+  set?: Maybe<Array<ManufacturerWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ManufacturerWhereUniqueInput>>;
+  delete?: Maybe<Array<ManufacturerWhereUniqueInput>>;
+  update?: Maybe<Array<ManufacturerUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<ManufacturerUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ManufacturerScalarWhereInput>>;
+  upsert?: Maybe<Array<ManufacturerUpsertWithWhereUniqueWithoutImagesInput>>;
 };
 
-export type ProductUpdateOneWithoutImagesInput = {
-  create?: Maybe<ProductCreateWithoutImagesInput>;
-  connect?: Maybe<ProductWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<ProductUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<ProductUpsertWithoutImagesInput>;
+export type MessageUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<MessageCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<MessageWhereUniqueInput>>;
+  set?: Maybe<Array<MessageWhereUniqueInput>>;
+  disconnect?: Maybe<Array<MessageWhereUniqueInput>>;
+  delete?: Maybe<Array<MessageWhereUniqueInput>>;
+  update?: Maybe<Array<MessageUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<MessageUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<MessageScalarWhereInput>>;
+  upsert?: Maybe<Array<MessageUpsertWithWhereUniqueWithoutImagesInput>>;
 };
 
-export type TransportAgencyUpdateOneWithoutImagesInput = {
-  create?: Maybe<TransportAgencyCreateWithoutImagesInput>;
-  connect?: Maybe<TransportAgencyWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<TransportAgencyUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<TransportAgencyUpsertWithoutImagesInput>;
+export type ClientUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<ClientCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ClientWhereUniqueInput>>;
+  set?: Maybe<Array<ClientWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ClientWhereUniqueInput>>;
+  delete?: Maybe<Array<ClientWhereUniqueInput>>;
+  update?: Maybe<Array<ClientUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<ClientUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ClientScalarWhereInput>>;
+  upsert?: Maybe<Array<ClientUpsertWithWhereUniqueWithoutImagesInput>>;
 };
 
-export type TransporterUpdateOneWithoutImagesInput = {
-  create?: Maybe<TransporterCreateWithoutImagesInput>;
-  connect?: Maybe<TransporterWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<TransporterUpdateWithoutImagesDataInput>;
-  upsert?: Maybe<TransporterUpsertWithoutImagesInput>;
+export type SupplierUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<SupplierCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<SupplierWhereUniqueInput>>;
+  set?: Maybe<Array<SupplierWhereUniqueInput>>;
+  disconnect?: Maybe<Array<SupplierWhereUniqueInput>>;
+  delete?: Maybe<Array<SupplierWhereUniqueInput>>;
+  update?: Maybe<Array<SupplierUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<SupplierUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<SupplierScalarWhereInput>>;
+  upsert?: Maybe<Array<SupplierUpsertWithWhereUniqueWithoutImagesInput>>;
+};
+
+export type ProductUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<ProductCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<ProductWhereUniqueInput>>;
+  set?: Maybe<Array<ProductWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ProductWhereUniqueInput>>;
+  delete?: Maybe<Array<ProductWhereUniqueInput>>;
+  update?: Maybe<Array<ProductUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<ProductUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ProductScalarWhereInput>>;
+  upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutImagesInput>>;
+};
+
+export type TransportAgencyUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<TransportAgencyCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  set?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  disconnect?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  delete?: Maybe<Array<TransportAgencyWhereUniqueInput>>;
+  update?: Maybe<Array<TransportAgencyUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<TransportAgencyUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<TransportAgencyScalarWhereInput>>;
+  upsert?: Maybe<Array<TransportAgencyUpsertWithWhereUniqueWithoutImagesInput>>;
+};
+
+export type TransporterUpdateManyWithoutImagesInput = {
+  create?: Maybe<Array<TransporterCreateWithoutImagesInput>>;
+  connect?: Maybe<Array<TransporterWhereUniqueInput>>;
+  set?: Maybe<Array<TransporterWhereUniqueInput>>;
+  disconnect?: Maybe<Array<TransporterWhereUniqueInput>>;
+  delete?: Maybe<Array<TransporterWhereUniqueInput>>;
+  update?: Maybe<Array<TransporterUpdateWithWhereUniqueWithoutImagesInput>>;
+  updateMany?: Maybe<Array<TransporterUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<TransporterScalarWhereInput>>;
+  upsert?: Maybe<Array<TransporterUpsertWithWhereUniqueWithoutImagesInput>>;
 };
 
 export type InvoiceUpdateManyWithoutPdfInput = {
@@ -7836,22 +8188,28 @@ export type CategoryUpdateManyWithoutBannerImageInput = {
   upsert?: Maybe<Array<CategoryUpsertWithWhereUniqueWithoutBannerImageInput>>;
 };
 
-export type MovementUpdateOneWithoutDocumentsInput = {
-  create?: Maybe<MovementCreateWithoutDocumentsInput>;
-  connect?: Maybe<MovementWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<MovementUpdateWithoutDocumentsDataInput>;
-  upsert?: Maybe<MovementUpsertWithoutDocumentsInput>;
+export type MovementUpdateManyWithoutDocumentsInput = {
+  create?: Maybe<Array<MovementCreateWithoutDocumentsInput>>;
+  connect?: Maybe<Array<MovementWhereUniqueInput>>;
+  set?: Maybe<Array<MovementWhereUniqueInput>>;
+  disconnect?: Maybe<Array<MovementWhereUniqueInput>>;
+  delete?: Maybe<Array<MovementWhereUniqueInput>>;
+  update?: Maybe<Array<MovementUpdateWithWhereUniqueWithoutDocumentsInput>>;
+  updateMany?: Maybe<Array<MovementUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<MovementScalarWhereInput>>;
+  upsert?: Maybe<Array<MovementUpsertWithWhereUniqueWithoutDocumentsInput>>;
 };
 
-export type PaymentUpdateOneWithoutDocumentsInput = {
-  create?: Maybe<PaymentCreateWithoutDocumentsInput>;
-  connect?: Maybe<PaymentWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<PaymentUpdateWithoutDocumentsDataInput>;
-  upsert?: Maybe<PaymentUpsertWithoutDocumentsInput>;
+export type PaymentUpdateManyWithoutDocumentsInput = {
+  create?: Maybe<Array<PaymentCreateWithoutDocumentsInput>>;
+  connect?: Maybe<Array<PaymentWhereUniqueInput>>;
+  set?: Maybe<Array<PaymentWhereUniqueInput>>;
+  disconnect?: Maybe<Array<PaymentWhereUniqueInput>>;
+  delete?: Maybe<Array<PaymentWhereUniqueInput>>;
+  update?: Maybe<Array<PaymentUpdateWithWhereUniqueWithoutDocumentsInput>>;
+  updateMany?: Maybe<Array<PaymentUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<PaymentScalarWhereInput>>;
+  upsert?: Maybe<Array<PaymentUpsertWithWhereUniqueWithoutDocumentsInput>>;
 };
 
 export type PresetUpdateWithoutSettingDataInput = {
@@ -7903,25 +8261,33 @@ export type ContactPersonUpdateWithoutSupplierDataInput = {
   warehouse?: Maybe<WarehouseUpdateOneWithoutContactPersonsInput>;
 };
 
-export type FileUpdateWithoutSupplierDataInput = {
+export type FileUpdateWithoutSuppliersDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type InteractionUpdateWithoutSupplierDataInput = {
@@ -7935,7 +8301,7 @@ export type InteractionUpdateWithoutSupplierDataInput = {
 };
 
 export type InventoryUpdateWithoutSupplierDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -7953,7 +8319,7 @@ export type InventoryUpdateWithoutSupplierDataInput = {
 
 export type MovementUpdateWithoutSupplierDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -7977,8 +8343,10 @@ export type MovementUpdateWithoutSupplierDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type PaymentUpdateWithoutSupplierDataInput = {
@@ -8003,7 +8371,7 @@ export type PaymentUpdateWithoutSupplierDataInput = {
   movement?: Maybe<MovementUpdateOneWithoutPaymentsInput>;
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
   client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
 };
 
@@ -8025,7 +8393,7 @@ export type ClientCreateWithoutMovementsInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   reservations?: Maybe<ReservationCreateManyWithoutClientInput>;
@@ -8054,7 +8422,7 @@ export type SupplierCreateWithoutMovementsInput = {
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentCreateManyWithoutSupplierInput>;
@@ -8073,7 +8441,7 @@ export type BatchCreateWithoutMovementsInput = {
 };
 
 export type InventoryCreateWithoutMovementsInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -8106,23 +8474,22 @@ export type ProductCreateWithoutMovementsInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type WarehouseCreateWithoutMovementsInput = {
@@ -8180,25 +8547,33 @@ export type InvoiceCreateWithoutMovementsInput = {
   client: ClientCreateOneWithoutInvoicesInput;
 };
 
-export type FileCreateWithoutMovementInput = {
+export type FileCreateWithoutMovementsInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type PaymentCreateWithoutMovementInput = {
@@ -8223,8 +8598,72 @@ export type PaymentCreateWithoutMovementInput = {
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutPaymentsInput>;
   client?: Maybe<ClientCreateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierCreateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileCreateManyWithoutPaymentInput>;
+  documents?: Maybe<FileCreateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountCreateOneWithoutPaymentsInput>;
+};
+
+export type MovementCreateWithoutConsumedFromInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  amount: Scalars['Float'];
+  createdAt?: Maybe<Scalars['DateTime']>;
+  date: Scalars['DateTime'];
+  id?: Maybe<Scalars['String']>;
+  status?: Maybe<MovementStatus>;
+  movementId: Scalars['Int'];
+  notes?: Maybe<Scalars['String']>;
+  sendMail?: Maybe<Scalars['Boolean']>;
+  storageNumber?: Maybe<Scalars['String']>;
+  type: MovementType;
+  unitPrice?: Maybe<Scalars['Float']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  invoiceId?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  client?: Maybe<ClientCreateOneWithoutMovementsInput>;
+  supplier?: Maybe<SupplierCreateOneWithoutMovementsInput>;
+  batch?: Maybe<BatchCreateOneWithoutMovementsInput>;
+  inventory?: Maybe<InventoryCreateOneWithoutMovementsInput>;
+  product: ProductCreateOneWithoutMovementsInput;
+  warehouse?: Maybe<WarehouseCreateOneWithoutMovementsInput>;
+  interactions?: Maybe<InteractionCreateManyWithoutMovementInput>;
+  comments?: Maybe<MessageCreateManyWithoutMovementInput>;
+  reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
+  transports?: Maybe<TransportCreateManyWithoutMovementInput>;
+  invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+};
+
+export type MovementCreateWithoutConsumablesMovementsInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  amount: Scalars['Float'];
+  createdAt?: Maybe<Scalars['DateTime']>;
+  date: Scalars['DateTime'];
+  id?: Maybe<Scalars['String']>;
+  status?: Maybe<MovementStatus>;
+  movementId: Scalars['Int'];
+  notes?: Maybe<Scalars['String']>;
+  sendMail?: Maybe<Scalars['Boolean']>;
+  storageNumber?: Maybe<Scalars['String']>;
+  type: MovementType;
+  unitPrice?: Maybe<Scalars['Float']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  invoiceId?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  client?: Maybe<ClientCreateOneWithoutMovementsInput>;
+  supplier?: Maybe<SupplierCreateOneWithoutMovementsInput>;
+  batch?: Maybe<BatchCreateOneWithoutMovementsInput>;
+  inventory?: Maybe<InventoryCreateOneWithoutMovementsInput>;
+  product: ProductCreateOneWithoutMovementsInput;
+  warehouse?: Maybe<WarehouseCreateOneWithoutMovementsInput>;
+  interactions?: Maybe<InteractionCreateManyWithoutMovementInput>;
+  comments?: Maybe<MessageCreateManyWithoutMovementInput>;
+  reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
+  transports?: Maybe<TransportCreateManyWithoutMovementInput>;
+  invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ClientUpdateWithoutMovementsDataInput = {
@@ -8245,7 +8684,7 @@ export type ClientUpdateWithoutMovementsDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   reservations?: Maybe<ReservationUpdateManyWithoutClientInput>;
@@ -8279,7 +8718,7 @@ export type SupplierUpdateWithoutMovementsDataInput = {
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentUpdateManyWithoutSupplierInput>;
@@ -8308,7 +8747,7 @@ export type BatchUpsertWithoutMovementsInput = {
 };
 
 export type InventoryUpdateWithoutMovementsDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -8346,23 +8785,22 @@ export type ProductUpdateWithoutMovementsDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutMovementsInput = {
@@ -8442,15 +8880,15 @@ export type InvoiceUpsertWithoutMovementsInput = {
   create: InvoiceCreateWithoutMovementsInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutMovementInput = {
+export type FileUpdateWithWhereUniqueWithoutMovementsInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutMovementDataInput;
+  data: FileUpdateWithoutMovementsDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutMovementInput = {
+export type FileUpsertWithWhereUniqueWithoutMovementsInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutMovementDataInput;
-  create: FileCreateWithoutMovementInput;
+  update: FileUpdateWithoutMovementsDataInput;
+  create: FileCreateWithoutMovementsInput;
 };
 
 export type PaymentUpdateWithWhereUniqueWithoutMovementInput = {
@@ -8462,6 +8900,54 @@ export type PaymentUpsertWithWhereUniqueWithoutMovementInput = {
   where: PaymentWhereUniqueInput;
   update: PaymentUpdateWithoutMovementDataInput;
   create: PaymentCreateWithoutMovementInput;
+};
+
+export type MovementUpdateWithWhereUniqueWithoutConsumedFromInput = {
+  where: MovementWhereUniqueInput;
+  data: MovementUpdateWithoutConsumedFromDataInput;
+};
+
+export type MovementUpsertWithWhereUniqueWithoutConsumedFromInput = {
+  where: MovementWhereUniqueInput;
+  update: MovementUpdateWithoutConsumedFromDataInput;
+  create: MovementCreateWithoutConsumedFromInput;
+};
+
+export type MovementUpdateWithoutConsumablesMovementsDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  amount?: Maybe<Scalars['Float']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  date?: Maybe<Scalars['DateTime']>;
+  id?: Maybe<Scalars['String']>;
+  status?: Maybe<MovementStatus>;
+  movementId?: Maybe<Scalars['Int']>;
+  notes?: Maybe<Scalars['String']>;
+  sendMail?: Maybe<Scalars['Boolean']>;
+  storageNumber?: Maybe<Scalars['String']>;
+  type?: Maybe<MovementType>;
+  unitPrice?: Maybe<Scalars['Float']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  invoiceId?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  client?: Maybe<ClientUpdateOneWithoutMovementsInput>;
+  supplier?: Maybe<SupplierUpdateOneWithoutMovementsInput>;
+  batch?: Maybe<BatchUpdateOneWithoutMovementsInput>;
+  inventory?: Maybe<InventoryUpdateOneWithoutMovementsInput>;
+  product?: Maybe<ProductUpdateOneRequiredWithoutMovementsInput>;
+  warehouse?: Maybe<WarehouseUpdateOneWithoutMovementsInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutMovementInput>;
+  comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
+  reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
+  transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
+  invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
+};
+
+export type MovementUpsertWithoutConsumablesMovementsInput = {
+  update: MovementUpdateWithoutConsumablesMovementsDataInput;
+  create: MovementCreateWithoutConsumablesMovementsInput;
 };
 
 export type ManufacturerCreateWithoutImagesInput = {
@@ -8551,7 +9037,6 @@ export type ProductCreateWithoutImagesInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
@@ -8563,11 +9048,11 @@ export type ProductCreateWithoutImagesInput = {
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type TransportAgencyCreateWithoutImagesInput = {
@@ -8583,8 +9068,10 @@ export type TransportAgencyCreateWithoutImagesInput = {
   contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
   transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type TransporterCreateWithoutImagesInput = {
@@ -8608,10 +9095,10 @@ export type SettingCreateWithoutLogoInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging: Scalars['Boolean'];
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -8666,7 +9153,7 @@ export type CategoryCreateWithoutBannerImageInput = {
 
 export type MovementCreateWithoutDocumentsInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -8692,6 +9179,8 @@ export type MovementCreateWithoutDocumentsInput = {
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type PaymentCreateWithoutDocumentsInput = {
@@ -8744,7 +9233,7 @@ export type ManufacturerCreateWithoutContactPersonsInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchCreateManyWithoutManufacturerInput>;
-  images?: Maybe<FileCreateManyWithoutManufacturerInput>;
+  images?: Maybe<FileCreateManyWithoutManufacturersInput>;
   products?: Maybe<ProductCreateManyWithoutManufacturerInput>;
   address?: Maybe<AddressCreateOneWithoutManufacturerInput>;
 };
@@ -8767,7 +9256,7 @@ export type SupplierCreateWithoutContactPersonsInput = {
   notes?: Maybe<Scalars['String']>;
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
@@ -8784,11 +9273,13 @@ export type TransportAgencyCreateWithoutContactPersonsInput = {
   website?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type WarehouseCreateWithoutContactPersonsInput = {
@@ -8838,7 +9329,7 @@ export type SupplierCreateWithoutInteractionsInput = {
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentCreateManyWithoutSupplierInput>;
@@ -8846,7 +9337,7 @@ export type SupplierCreateWithoutInteractionsInput = {
 
 export type MovementCreateWithoutInteractionsInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -8870,8 +9361,10 @@ export type MovementCreateWithoutInteractionsInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ProductCreateWithoutInteractionsInput = {
@@ -8891,23 +9384,22 @@ export type ProductCreateWithoutInteractionsInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type SupplierCreateWithoutInventoriesInput = {
@@ -8929,7 +9421,7 @@ export type SupplierCreateWithoutInventoriesInput = {
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentCreateManyWithoutSupplierInput>;
@@ -8964,23 +9456,22 @@ export type ProductCreateWithoutInventoriesInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type WarehouseCreateWithoutInventoriesInput = {
@@ -9001,7 +9492,7 @@ export type WarehouseCreateWithoutInventoriesInput = {
 
 export type MovementCreateWithoutInventoryInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -9025,8 +9516,10 @@ export type MovementCreateWithoutInventoryInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ReservationCreateWithoutInventoryInput = {
@@ -9048,11 +9541,11 @@ export type MessageCreateWithoutMovementInput = {
   updatedAt?: Maybe<Scalars['DateTime']>;
   mentions?: Maybe<MessageCreatementionsInput>;
   channel?: Maybe<ChannelCreateOneWithoutMessagesInput>;
-  images?: Maybe<FileCreateManyWithoutMessageInput>;
+  images?: Maybe<FileCreateManyWithoutMessagesInput>;
 };
 
 export type InventoryCreateWithoutReservationsInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -9070,7 +9563,7 @@ export type InventoryCreateWithoutReservationsInput = {
 
 export type MovementCreateWithoutReservationInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -9094,8 +9587,10 @@ export type MovementCreateWithoutReservationInput = {
   comments?: Maybe<MessageCreateManyWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type SupplierCreateWithoutAddressInput = {
@@ -9116,7 +9611,7 @@ export type SupplierCreateWithoutAddressInput = {
   notes?: Maybe<Scalars['String']>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
@@ -9141,7 +9636,7 @@ export type SupplierCreateWithoutBillingAddressInput = {
   notes?: Maybe<Scalars['String']>;
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
@@ -9166,7 +9661,7 @@ export type ClientCreateWithoutBillingAddressInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -9186,10 +9681,10 @@ export type SettingCreateWithoutAddressInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging: Scalars['Boolean'];
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -9224,10 +9719,10 @@ export type SettingCreateWithoutBillingAddressInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging: Scalars['Boolean'];
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -9252,6 +9747,44 @@ export type SettingCreateWithoutBillingAddressInput = {
   address?: Maybe<AddressCreateOneWithoutAddressInput>;
 };
 
+export type TransportAgencyCreateWithoutAddressInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
+  transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
+  payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+};
+
+export type TransportAgencyCreateWithoutBillingAddressInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
+  transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+};
+
 export type ManufacturerCreateWithoutAddressInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   email?: Maybe<Scalars['String']>;
@@ -9265,25 +9798,8 @@ export type ManufacturerCreateWithoutAddressInput = {
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchCreateManyWithoutManufacturerInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutManufacturerInput>;
-  images?: Maybe<FileCreateManyWithoutManufacturerInput>;
+  images?: Maybe<FileCreateManyWithoutManufacturersInput>;
   products?: Maybe<ProductCreateManyWithoutManufacturerInput>;
-};
-
-export type TransportAgencyCreateWithoutAddressInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
-  transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
-  transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
 };
 
 export type WarehouseCreateWithoutAddressInput = {
@@ -9320,7 +9836,7 @@ export type ClientCreateWithoutAddressInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -9333,27 +9849,35 @@ export type ClientCreateWithoutAddressInput = {
 export type FileCreateWithoutInvoiceInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type MovementCreateWithoutInvoiceInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -9377,8 +9901,10 @@ export type MovementCreateWithoutInvoiceInput = {
   comments?: Maybe<MessageCreateManyWithoutMovementInput>;
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type GroupCreateWithoutPaymentsInput = {
@@ -9401,7 +9927,7 @@ export type TaxRateCreateWithoutPaymentsInput = {
 
 export type MovementCreateWithoutPaymentsInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -9426,7 +9952,9 @@ export type MovementCreateWithoutPaymentsInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type TransportAgencyCreateWithoutPaymentsInput = {
@@ -9440,10 +9968,12 @@ export type TransportAgencyCreateWithoutPaymentsInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type SupplierCreateWithoutPaymentsInput = {
@@ -9465,31 +9995,39 @@ export type SupplierCreateWithoutPaymentsInput = {
   address?: Maybe<AddressCreateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressCreateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutSupplierInput>;
-  images?: Maybe<FileCreateManyWithoutSupplierInput>;
+  images?: Maybe<FileCreateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionCreateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryCreateManyWithoutSupplierInput>;
   movements?: Maybe<MovementCreateManyWithoutSupplierInput>;
 };
 
-export type FileCreateWithoutPaymentInput = {
+export type FileCreateWithoutPaymentsInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
 };
 
 export type BankAccountCreateWithoutPaymentsInput = {
@@ -9664,7 +10202,7 @@ export type SupplierUpdateWithoutAddressDataInput = {
   notes?: Maybe<Scalars['String']>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
@@ -9694,7 +10232,7 @@ export type SupplierUpdateWithoutBillingAddressDataInput = {
   notes?: Maybe<Scalars['String']>;
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
@@ -9724,7 +10262,7 @@ export type ClientUpdateWithoutBillingAddressDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -9749,10 +10287,10 @@ export type SettingUpdateWithoutAddressDataInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -9792,10 +10330,10 @@ export type SettingUpdateWithoutBillingAddressDataInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -9823,6 +10361,54 @@ export type SettingUpdateWithoutBillingAddressDataInput = {
 export type SettingUpsertWithoutBillingAddressInput = {
   update: SettingUpdateWithoutBillingAddressDataInput;
   create: SettingCreateWithoutBillingAddressInput;
+};
+
+export type TransportAgencyUpdateWithoutAddressDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
+  transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+};
+
+export type TransportAgencyUpsertWithoutAddressInput = {
+  update: TransportAgencyUpdateWithoutAddressDataInput;
+  create: TransportAgencyCreateWithoutAddressInput;
+};
+
+export type TransportAgencyUpdateWithoutBillingAddressDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
+  transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+};
+
+export type TransportAgencyUpsertWithoutBillingAddressInput = {
+  update: TransportAgencyUpdateWithoutBillingAddressDataInput;
+  create: TransportAgencyCreateWithoutBillingAddressInput;
 };
 
 export type ManufacturerUpdateWithWhereUniqueWithoutAddressInput = {
@@ -9862,43 +10448,6 @@ export type ManufacturerUpsertWithWhereUniqueWithoutAddressInput = {
   create: ManufacturerCreateWithoutAddressInput;
 };
 
-export type TransportAgencyUpdateWithWhereUniqueWithoutAddressInput = {
-  where: TransportAgencyWhereUniqueInput;
-  data: TransportAgencyUpdateWithoutAddressDataInput;
-};
-
-export type TransportAgencyUpdateManyWithWhereNestedInput = {
-  where: TransportAgencyScalarWhereInput;
-  data: TransportAgencyUpdateManyDataInput;
-};
-
-export type TransportAgencyScalarWhereInput = {
-  createdAt?: Maybe<DateTimeFilter>;
-  email?: Maybe<NullableStringFilter>;
-  id?: Maybe<StringFilter>;
-  mobile?: Maybe<NullableStringFilter>;
-  name?: Maybe<StringFilter>;
-  phone?: Maybe<NullableStringFilter>;
-  website?: Maybe<NullableStringFilter>;
-  contactPersons?: Maybe<ContactPersonFilter>;
-  images?: Maybe<FileFilter>;
-  transports?: Maybe<TransportFilter>;
-  transporters?: Maybe<TransporterFilter>;
-  addressId?: Maybe<NullableStringFilter>;
-  source?: Maybe<NullableStringFilter>;
-  notes?: Maybe<NullableStringFilter>;
-  payments?: Maybe<PaymentFilter>;
-  AND?: Maybe<Array<TransportAgencyScalarWhereInput>>;
-  OR?: Maybe<Array<TransportAgencyScalarWhereInput>>;
-  NOT?: Maybe<Array<TransportAgencyScalarWhereInput>>;
-};
-
-export type TransportAgencyUpsertWithWhereUniqueWithoutAddressInput = {
-  where: TransportAgencyWhereUniqueInput;
-  update: TransportAgencyUpdateWithoutAddressDataInput;
-  create: TransportAgencyCreateWithoutAddressInput;
-};
-
 export type WarehouseUpdateWithWhereUniqueWithoutAddressInput = {
   where: WarehouseWhereUniqueInput;
   data: WarehouseUpdateWithoutAddressDataInput;
@@ -9935,6 +10484,44 @@ export type WarehouseUpsertWithWhereUniqueWithoutAddressInput = {
   create: WarehouseCreateWithoutAddressInput;
 };
 
+export type TransportAgencyUpdateWithWhereUniqueWithoutAddressInput = {
+  where: TransportAgencyWhereUniqueInput;
+  data: TransportAgencyUpdateWithoutAddressDataInput;
+};
+
+export type TransportAgencyUpdateManyWithWhereNestedInput = {
+  where: TransportAgencyScalarWhereInput;
+  data: TransportAgencyUpdateManyDataInput;
+};
+
+export type TransportAgencyScalarWhereInput = {
+  createdAt?: Maybe<DateTimeFilter>;
+  email?: Maybe<NullableStringFilter>;
+  id?: Maybe<StringFilter>;
+  mobile?: Maybe<NullableStringFilter>;
+  name?: Maybe<StringFilter>;
+  phone?: Maybe<NullableStringFilter>;
+  website?: Maybe<NullableStringFilter>;
+  contactPersons?: Maybe<ContactPersonFilter>;
+  images?: Maybe<FileFilter>;
+  transports?: Maybe<TransportFilter>;
+  transporters?: Maybe<TransporterFilter>;
+  addressId?: Maybe<NullableStringFilter>;
+  billingAddressId?: Maybe<NullableStringFilter>;
+  source?: Maybe<NullableStringFilter>;
+  notes?: Maybe<NullableStringFilter>;
+  payments?: Maybe<PaymentFilter>;
+  AND?: Maybe<Array<TransportAgencyScalarWhereInput>>;
+  OR?: Maybe<Array<TransportAgencyScalarWhereInput>>;
+  NOT?: Maybe<Array<TransportAgencyScalarWhereInput>>;
+};
+
+export type TransportAgencyUpsertWithWhereUniqueWithoutAddressInput = {
+  where: TransportAgencyWhereUniqueInput;
+  update: TransportAgencyUpdateWithoutAddressDataInput;
+  create: TransportAgencyCreateWithoutAddressInput;
+};
+
 export type ClientUpdateWithoutAddressDataInput = {
   active?: Maybe<Scalars['Boolean']>;
   createdAt?: Maybe<Scalars['DateTime']>;
@@ -9953,7 +10540,7 @@ export type ClientUpdateWithoutAddressDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -10032,16 +10619,16 @@ export type SupplierUpdateOneWithoutPaymentsInput = {
   upsert?: Maybe<SupplierUpsertWithoutPaymentsInput>;
 };
 
-export type FileUpdateManyWithoutPaymentInput = {
-  create?: Maybe<Array<FileCreateWithoutPaymentInput>>;
+export type FileUpdateManyWithoutPaymentsInput = {
+  create?: Maybe<Array<FileCreateWithoutPaymentsInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutPaymentInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutPaymentsInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutPaymentInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutPaymentsInput>>;
 };
 
 export type BankAccountUpdateOneWithoutPaymentsInput = {
@@ -10070,7 +10657,7 @@ export type ClientCreateWithoutContactPersonsInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -10083,7 +10670,7 @@ export type ClientCreateWithoutContactPersonsInput = {
 
 export type MovementCreateWithoutTransportsInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -10107,8 +10694,10 @@ export type MovementCreateWithoutTransportsInput = {
   comments?: Maybe<MessageCreateManyWithoutMovementInput>;
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type TransporterCreateWithoutTransportsInput = {
@@ -10119,28 +10708,36 @@ export type TransporterCreateWithoutTransportsInput = {
   notes?: Maybe<Scalars['String']>;
   identifications?: Maybe<TransporterCreateidentificationsInput>;
   transportAgency?: Maybe<TransportAgencyCreateOneWithoutTransportersInput>;
-  images?: Maybe<FileCreateManyWithoutTransporterInput>;
+  images?: Maybe<FileCreateManyWithoutTransportersInput>;
 };
 
-export type FileCreateWithoutTransporterInput = {
+export type FileCreateWithoutTransportersInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type TransportCreateWithoutTransporterInput = {
@@ -10172,7 +10769,7 @@ export type ClientCreateWithoutPaymentsInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -10213,16 +10810,16 @@ export type TransporterUpdateidentificationsInput = {
   set?: Maybe<Array<Scalars['String']>>;
 };
 
-export type FileUpdateManyWithoutTransporterInput = {
-  create?: Maybe<Array<FileCreateWithoutTransporterInput>>;
+export type FileUpdateManyWithoutTransportersInput = {
+  create?: Maybe<Array<FileCreateWithoutTransportersInput>>;
   connect?: Maybe<Array<FileWhereUniqueInput>>;
   set?: Maybe<Array<FileWhereUniqueInput>>;
   disconnect?: Maybe<Array<FileWhereUniqueInput>>;
   delete?: Maybe<Array<FileWhereUniqueInput>>;
-  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutTransporterInput>>;
+  update?: Maybe<Array<FileUpdateWithWhereUniqueWithoutTransportersInput>>;
   updateMany?: Maybe<Array<FileUpdateManyWithWhereNestedInput>>;
   deleteMany?: Maybe<Array<FileScalarWhereInput>>;
-  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutTransporterInput>>;
+  upsert?: Maybe<Array<FileUpsertWithWhereUniqueWithoutTransportersInput>>;
 };
 
 export type TransportUpdateManyWithoutTransporterInput = {
@@ -10264,7 +10861,7 @@ export type ClientCreateWithoutInventoriesInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
   reservations?: Maybe<ReservationCreateManyWithoutClientInput>;
@@ -10312,25 +10909,33 @@ export type ContactPersonCreateWithoutManufacturerInput = {
   warehouse?: Maybe<WarehouseCreateOneWithoutContactPersonsInput>;
 };
 
-export type FileCreateWithoutManufacturerInput = {
+export type FileCreateWithoutManufacturersInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type AddressCreateWithoutManufacturerInput = {
@@ -10347,8 +10952,10 @@ export type AddressCreateWithoutManufacturerInput = {
   clientBillingAddress?: Maybe<ClientCreateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingCreateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingCreateOneWithoutBillingAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyCreateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyCreateOneWithoutBillingAddressInput>;
   Warehouse?: Maybe<WarehouseCreateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyCreateManyWithoutAddressInput>;
 };
 
 export type ManufacturerCreateWithoutBatchesInput = {
@@ -10363,13 +10970,13 @@ export type ManufacturerCreateWithoutBatchesInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutManufacturerInput>;
-  images?: Maybe<FileCreateManyWithoutManufacturerInput>;
+  images?: Maybe<FileCreateManyWithoutManufacturersInput>;
   products?: Maybe<ProductCreateManyWithoutManufacturerInput>;
   address?: Maybe<AddressCreateOneWithoutManufacturerInput>;
 };
 
 export type InventoryCreateWithoutBatchInput = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -10387,7 +10994,7 @@ export type InventoryCreateWithoutBatchInput = {
 
 export type MovementCreateWithoutBatchInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   createdAt?: Maybe<Scalars['DateTime']>;
   date: Scalars['DateTime'];
   id?: Maybe<Scalars['String']>;
@@ -10411,8 +11018,10 @@ export type MovementCreateWithoutBatchInput = {
   reservation?: Maybe<ReservationCreateOneWithoutMovementInput>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceCreateOneWithoutMovementsInput>;
-  documents?: Maybe<FileCreateManyWithoutMovementInput>;
+  documents?: Maybe<FileCreateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentCreateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementCreateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementCreateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ClientCreateWithoutInteractionsInput = {
@@ -10433,7 +11042,7 @@ export type ClientCreateWithoutInteractionsInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
   reservations?: Maybe<ReservationCreateManyWithoutClientInput>;
@@ -10446,43 +11055,59 @@ export type ClientCreateWithoutInteractionsInput = {
 export type FileCreateWithoutImageCategoryInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   bannerCategory?: Maybe<CategoryCreateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type FileCreateWithoutBannerCategoryInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url: Scalars['String'];
-  manufacturer?: Maybe<ManufacturerCreateOneWithoutImagesInput>;
-  message?: Maybe<MessageCreateOneWithoutImagesInput>;
-  client?: Maybe<ClientCreateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierCreateOneWithoutImagesInput>;
-  product?: Maybe<ProductCreateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyCreateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterCreateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
+  messages?: Maybe<MessageCreateManyWithoutImagesInput>;
+  clients?: Maybe<ClientCreateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
+  products?: Maybe<ProductCreateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyCreateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterCreateManyWithoutImagesInput>;
   settings?: Maybe<SettingCreateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceCreateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryCreateManyWithoutImageInput>;
-  Movement?: Maybe<MovementCreateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentCreateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementCreateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentCreateManyWithoutDocumentsInput>;
 };
 
 export type CategoryCreateWithoutCategoryInput = {
@@ -10503,6 +11128,76 @@ export type CategoryCreateWithoutSubCategoriesInput = {
   bannerImage?: Maybe<FileCreateOneWithoutBannerCategoryInput>;
   products?: Maybe<ProductCreateManyWithoutCategoriesInput>;
   Category?: Maybe<CategoryCreateOneWithoutSubCategoriesInput>;
+};
+
+export type ProductCreateWithoutConsumersInput = {
+  id?: Maybe<Scalars['String']>;
+  productId: Scalars['Int'];
+  ASIN?: Maybe<Scalars['String']>;
+  EAN?: Maybe<Scalars['String']>;
+  ISBN?: Maybe<Scalars['String']>;
+  UPC?: Maybe<Scalars['String']>;
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Float']>;
+  source?: Maybe<Scalars['String']>;
+  isListed?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<ProductCreatetagsInput>;
+  dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
+  manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
+  batches?: Maybe<BatchCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
+  interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
+  inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
+  movements?: Maybe<MovementCreateManyWithoutProductInput>;
+  notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
+  units?: Maybe<UnitCreateManyWithoutProductInput>;
+  taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
+  variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
+  categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+};
+
+export type ProductCreateWithoutConsumablesInput = {
+  id?: Maybe<Scalars['String']>;
+  productId: Scalars['Int'];
+  ASIN?: Maybe<Scalars['String']>;
+  EAN?: Maybe<Scalars['String']>;
+  ISBN?: Maybe<Scalars['String']>;
+  UPC?: Maybe<Scalars['String']>;
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Float']>;
+  source?: Maybe<Scalars['String']>;
+  isListed?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<ProductCreatetagsInput>;
+  dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
+  manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
+  batches?: Maybe<BatchCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
+  interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
+  inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
+  movements?: Maybe<MovementCreateManyWithoutProductInput>;
+  notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
+  units?: Maybe<UnitCreateManyWithoutProductInput>;
+  taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
+  variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
+  categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type BatchUpdateWithWhereUniqueWithoutManufacturerInput = {
@@ -10527,15 +11222,15 @@ export type ContactPersonUpsertWithWhereUniqueWithoutManufacturerInput = {
   create: ContactPersonCreateWithoutManufacturerInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutManufacturerInput = {
+export type FileUpdateWithWhereUniqueWithoutManufacturersInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutManufacturerDataInput;
+  data: FileUpdateWithoutManufacturersDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutManufacturerInput = {
+export type FileUpsertWithWhereUniqueWithoutManufacturersInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutManufacturerDataInput;
-  create: FileCreateWithoutManufacturerInput;
+  update: FileUpdateWithoutManufacturersDataInput;
+  create: FileCreateWithoutManufacturersInput;
 };
 
 export type AddressUpdateWithoutManufacturerDataInput = {
@@ -10552,8 +11247,10 @@ export type AddressUpdateWithoutManufacturerDataInput = {
   clientBillingAddress?: Maybe<ClientUpdateOneWithoutBillingAddressInput>;
   address?: Maybe<SettingUpdateOneWithoutAddressInput>;
   billingAddress?: Maybe<SettingUpdateOneWithoutBillingAddressInput>;
-  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
+  transportAgencyAddress?: Maybe<TransportAgencyUpdateOneWithoutAddressInput>;
+  transportAgencyBillingAddress?: Maybe<TransportAgencyUpdateOneWithoutBillingAddressInput>;
   Warehouse?: Maybe<WarehouseUpdateManyWithoutAddressInput>;
+  TransportAgency?: Maybe<TransportAgencyUpdateManyWithoutAddressInput>;
 };
 
 export type AddressUpsertWithoutManufacturerInput = {
@@ -10642,183 +11339,164 @@ export type CategoryUpdateOneWithoutSubCategoriesInput = {
   upsert?: Maybe<CategoryUpsertWithoutSubCategoriesInput>;
 };
 
-export type ManufacturerUpdateWithoutImagesDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  fiscalNumber?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  batches?: Maybe<BatchUpdateManyWithoutManufacturerInput>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutManufacturerInput>;
-  products?: Maybe<ProductUpdateManyWithoutManufacturerInput>;
-  address?: Maybe<AddressUpdateOneWithoutManufacturerInput>;
+export type ProductUpdateOneRequiredWithoutConsumersInput = {
+  create?: Maybe<ProductCreateWithoutConsumersInput>;
+  connect?: Maybe<ProductWhereUniqueInput>;
+  update?: Maybe<ProductUpdateWithoutConsumersDataInput>;
+  upsert?: Maybe<ProductUpsertWithoutConsumersInput>;
 };
 
-export type ManufacturerUpsertWithoutImagesInput = {
+export type ProductUpdateOneRequiredWithoutConsumablesInput = {
+  create?: Maybe<ProductCreateWithoutConsumablesInput>;
+  connect?: Maybe<ProductWhereUniqueInput>;
+  update?: Maybe<ProductUpdateWithoutConsumablesDataInput>;
+  upsert?: Maybe<ProductUpsertWithoutConsumablesInput>;
+};
+
+export type ManufacturerUpdateWithWhereUniqueWithoutImagesInput = {
+  where: ManufacturerWhereUniqueInput;
+  data: ManufacturerUpdateWithoutImagesDataInput;
+};
+
+export type ManufacturerUpsertWithWhereUniqueWithoutImagesInput = {
+  where: ManufacturerWhereUniqueInput;
   update: ManufacturerUpdateWithoutImagesDataInput;
   create: ManufacturerCreateWithoutImagesInput;
 };
 
-export type MessageUpdateWithoutImagesDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  id?: Maybe<Scalars['String']>;
-  recipient?: Maybe<Scalars['String']>;
-  sender?: Maybe<Scalars['String']>;
-  text?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  mentions?: Maybe<MessageUpdatementionsInput>;
-  channel?: Maybe<ChannelUpdateOneWithoutMessagesInput>;
-  movement?: Maybe<MovementUpdateOneWithoutCommentsInput>;
+export type MessageUpdateWithWhereUniqueWithoutImagesInput = {
+  where: MessageWhereUniqueInput;
+  data: MessageUpdateWithoutImagesDataInput;
 };
 
-export type MessageUpsertWithoutImagesInput = {
+export type MessageUpsertWithWhereUniqueWithoutImagesInput = {
+  where: MessageWhereUniqueInput;
   update: MessageUpdateWithoutImagesDataInput;
   create: MessageCreateWithoutImagesInput;
 };
 
-export type ClientUpdateWithoutImagesDataInput = {
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  fiscalNumber?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  language?: Maybe<Language>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  clientId?: Maybe<Scalars['Int']>;
-  phone?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  website?: Maybe<Scalars['String']>;
-  withAccount?: Maybe<Scalars['Boolean']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  stripeId?: Maybe<Scalars['String']>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
-  inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
-  movements?: Maybe<MovementUpdateManyWithoutClientInput>;
-  reservations?: Maybe<ReservationUpdateManyWithoutClientInput>;
-  address?: Maybe<AddressUpdateOneWithoutClientAddressInput>;
-  billingAddress?: Maybe<AddressUpdateOneWithoutClientBillingAddressInput>;
-  invoices?: Maybe<InvoiceUpdateManyWithoutClientInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutClientInput>;
+export type ClientUpdateWithWhereUniqueWithoutImagesInput = {
+  where: ClientWhereUniqueInput;
+  data: ClientUpdateWithoutImagesDataInput;
 };
 
-export type ClientUpsertWithoutImagesInput = {
+export type ClientUpdateManyWithWhereNestedInput = {
+  where: ClientScalarWhereInput;
+  data: ClientUpdateManyDataInput;
+};
+
+export type ClientScalarWhereInput = {
+  active?: Maybe<BooleanFilter>;
+  createdAt?: Maybe<DateTimeFilter>;
+  email?: Maybe<NullableStringFilter>;
+  fiscalNumber?: Maybe<NullableStringFilter>;
+  id?: Maybe<StringFilter>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<NullableStringFilter>;
+  name?: Maybe<StringFilter>;
+  clientId?: Maybe<IntFilter>;
+  phone?: Maybe<NullableStringFilter>;
+  updatedAt?: Maybe<DateTimeFilter>;
+  website?: Maybe<NullableStringFilter>;
+  withAccount?: Maybe<NullableBooleanFilter>;
+  contactPersons?: Maybe<ContactPersonFilter>;
+  images?: Maybe<FileFilter>;
+  interactions?: Maybe<InteractionFilter>;
+  inventories?: Maybe<InventoryFilter>;
+  movements?: Maybe<MovementFilter>;
+  reservations?: Maybe<ReservationFilter>;
+  addressId?: Maybe<NullableStringFilter>;
+  billingAddressId?: Maybe<NullableStringFilter>;
+  invoices?: Maybe<InvoiceFilter>;
+  source?: Maybe<NullableStringFilter>;
+  notes?: Maybe<NullableStringFilter>;
+  payments?: Maybe<PaymentFilter>;
+  stripeId?: Maybe<NullableStringFilter>;
+  AND?: Maybe<Array<ClientScalarWhereInput>>;
+  OR?: Maybe<Array<ClientScalarWhereInput>>;
+  NOT?: Maybe<Array<ClientScalarWhereInput>>;
+};
+
+export type ClientUpsertWithWhereUniqueWithoutImagesInput = {
+  where: ClientWhereUniqueInput;
   update: ClientUpdateWithoutImagesDataInput;
   create: ClientCreateWithoutImagesInput;
 };
 
-export type SupplierUpdateWithoutImagesDataInput = {
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  fiscalNumber?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  language?: Maybe<Language>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  supplierId?: Maybe<Scalars['Int']>;
-  phone?: Maybe<Scalars['String']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  website?: Maybe<Scalars['String']>;
-  withAccount?: Maybe<Scalars['Boolean']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
-  billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
-  inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
-  movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutSupplierInput>;
+export type SupplierUpdateWithWhereUniqueWithoutImagesInput = {
+  where: SupplierWhereUniqueInput;
+  data: SupplierUpdateWithoutImagesDataInput;
 };
 
-export type SupplierUpsertWithoutImagesInput = {
+export type SupplierUpdateManyWithWhereNestedInput = {
+  where: SupplierScalarWhereInput;
+  data: SupplierUpdateManyDataInput;
+};
+
+export type SupplierScalarWhereInput = {
+  active?: Maybe<BooleanFilter>;
+  createdAt?: Maybe<DateTimeFilter>;
+  email?: Maybe<NullableStringFilter>;
+  fiscalNumber?: Maybe<NullableStringFilter>;
+  id?: Maybe<StringFilter>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<NullableStringFilter>;
+  name?: Maybe<StringFilter>;
+  supplierId?: Maybe<IntFilter>;
+  phone?: Maybe<NullableStringFilter>;
+  addressId?: Maybe<NullableStringFilter>;
+  billingAddressId?: Maybe<NullableStringFilter>;
+  updatedAt?: Maybe<DateTimeFilter>;
+  website?: Maybe<NullableStringFilter>;
+  withAccount?: Maybe<NullableBooleanFilter>;
+  contactPersons?: Maybe<ContactPersonFilter>;
+  images?: Maybe<FileFilter>;
+  interactions?: Maybe<InteractionFilter>;
+  inventories?: Maybe<InventoryFilter>;
+  movements?: Maybe<MovementFilter>;
+  source?: Maybe<NullableStringFilter>;
+  notes?: Maybe<NullableStringFilter>;
+  payments?: Maybe<PaymentFilter>;
+  AND?: Maybe<Array<SupplierScalarWhereInput>>;
+  OR?: Maybe<Array<SupplierScalarWhereInput>>;
+  NOT?: Maybe<Array<SupplierScalarWhereInput>>;
+};
+
+export type SupplierUpsertWithWhereUniqueWithoutImagesInput = {
+  where: SupplierWhereUniqueInput;
   update: SupplierUpdateWithoutImagesDataInput;
   create: SupplierCreateWithoutImagesInput;
 };
 
-export type ProductUpdateWithoutImagesDataInput = {
-  id?: Maybe<Scalars['String']>;
-  productId?: Maybe<Scalars['Int']>;
-  ASIN?: Maybe<Scalars['String']>;
-  EAN?: Maybe<Scalars['String']>;
-  ISBN?: Maybe<Scalars['String']>;
-  UPC?: Maybe<Scalars['String']>;
-  active?: Maybe<Scalars['Boolean']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  description?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  material?: Maybe<Scalars['String']>;
-  color?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Float']>;
-  source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  isListed?: Maybe<Scalars['Boolean']>;
-  tags?: Maybe<ProductUpdatetagsInput>;
-  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
-  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
-  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
-  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
-  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
-  units?: Maybe<UnitUpdateManyWithoutProductInput>;
-  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
-  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
-  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+export type ProductUpdateWithWhereUniqueWithoutImagesInput = {
+  where: ProductWhereUniqueInput;
+  data: ProductUpdateWithoutImagesDataInput;
 };
 
-export type ProductUpsertWithoutImagesInput = {
+export type ProductUpsertWithWhereUniqueWithoutImagesInput = {
+  where: ProductWhereUniqueInput;
   update: ProductUpdateWithoutImagesDataInput;
   create: ProductCreateWithoutImagesInput;
 };
 
-export type TransportAgencyUpdateWithoutImagesDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
-  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+export type TransportAgencyUpdateWithWhereUniqueWithoutImagesInput = {
+  where: TransportAgencyWhereUniqueInput;
+  data: TransportAgencyUpdateWithoutImagesDataInput;
 };
 
-export type TransportAgencyUpsertWithoutImagesInput = {
+export type TransportAgencyUpsertWithWhereUniqueWithoutImagesInput = {
+  where: TransportAgencyWhereUniqueInput;
   update: TransportAgencyUpdateWithoutImagesDataInput;
   create: TransportAgencyCreateWithoutImagesInput;
 };
 
-export type TransporterUpdateWithoutImagesDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  id?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  type?: Maybe<TransportType>;
-  notes?: Maybe<Scalars['String']>;
-  identifications?: Maybe<TransporterUpdateidentificationsInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutTransportersInput>;
-  transports?: Maybe<TransportUpdateManyWithoutTransporterInput>;
+export type TransporterUpdateWithWhereUniqueWithoutImagesInput = {
+  where: TransporterWhereUniqueInput;
+  data: TransporterUpdateWithoutImagesDataInput;
 };
 
-export type TransporterUpsertWithoutImagesInput = {
+export type TransporterUpsertWithWhereUniqueWithoutImagesInput = {
+  where: TransporterWhereUniqueInput;
   update: TransporterUpdateWithoutImagesDataInput;
   create: TransporterCreateWithoutImagesInput;
 };
@@ -10856,68 +11534,24 @@ export type CategoryUpsertWithWhereUniqueWithoutBannerImageInput = {
   create: CategoryCreateWithoutBannerImageInput;
 };
 
-export type MovementUpdateWithoutDocumentsDataInput = {
-  active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  date?: Maybe<Scalars['DateTime']>;
-  id?: Maybe<Scalars['String']>;
-  status?: Maybe<MovementStatus>;
-  movementId?: Maybe<Scalars['Int']>;
-  notes?: Maybe<Scalars['String']>;
-  sendMail?: Maybe<Scalars['Boolean']>;
-  storageNumber?: Maybe<Scalars['String']>;
-  type?: Maybe<MovementType>;
-  unitPrice?: Maybe<Scalars['Float']>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
-  invoiceId?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  client?: Maybe<ClientUpdateOneWithoutMovementsInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutMovementsInput>;
-  batch?: Maybe<BatchUpdateOneWithoutMovementsInput>;
-  inventory?: Maybe<InventoryUpdateOneWithoutMovementsInput>;
-  product?: Maybe<ProductUpdateOneRequiredWithoutMovementsInput>;
-  warehouse?: Maybe<WarehouseUpdateOneWithoutMovementsInput>;
-  interactions?: Maybe<InteractionUpdateManyWithoutMovementInput>;
-  comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
-  reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
-  transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
-  invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+export type MovementUpdateWithWhereUniqueWithoutDocumentsInput = {
+  where: MovementWhereUniqueInput;
+  data: MovementUpdateWithoutDocumentsDataInput;
 };
 
-export type MovementUpsertWithoutDocumentsInput = {
+export type MovementUpsertWithWhereUniqueWithoutDocumentsInput = {
+  where: MovementWhereUniqueInput;
   update: MovementUpdateWithoutDocumentsDataInput;
   create: MovementCreateWithoutDocumentsInput;
 };
 
-export type PaymentUpdateWithoutDocumentsDataInput = {
-  id?: Maybe<Scalars['String']>;
-  paymentId?: Maybe<Scalars['Int']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
-  type?: Maybe<PaymentType>;
-  status?: Maybe<PaymentStatus>;
-  dueDate?: Maybe<Scalars['DateTime']>;
-  date?: Maybe<Scalars['DateTime']>;
-  source?: Maybe<Scalars['String']>;
-  concept?: Maybe<Scalars['String']>;
-  amount?: Maybe<Scalars['Float']>;
-  currency?: Maybe<Scalars['String']>;
-  recipient?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  paymentMethod?: Maybe<Scalars['String']>;
-  stripePaymentIntentId?: Maybe<Scalars['String']>;
-  stripeClientSecret?: Maybe<Scalars['String']>;
-  group?: Maybe<GroupUpdateOneWithoutPaymentsInput>;
-  taxRate?: Maybe<TaxRateUpdateOneWithoutPaymentsInput>;
-  movement?: Maybe<MovementUpdateOneWithoutPaymentsInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
-  client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
+export type PaymentUpdateWithWhereUniqueWithoutDocumentsInput = {
+  where: PaymentWhereUniqueInput;
+  data: PaymentUpdateWithoutDocumentsDataInput;
 };
 
-export type PaymentUpsertWithoutDocumentsInput = {
+export type PaymentUpsertWithWhereUniqueWithoutDocumentsInput = {
+  where: PaymentWhereUniqueInput;
   update: PaymentUpdateWithoutDocumentsDataInput;
   create: PaymentCreateWithoutDocumentsInput;
 };
@@ -10984,25 +11618,33 @@ export type ClientUpdateOneRequiredWithoutInvoicesInput = {
   upsert?: Maybe<ClientUpsertWithoutInvoicesInput>;
 };
 
-export type FileUpdateWithoutMovementDataInput = {
+export type FileUpdateWithoutMovementsDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type PaymentUpdateWithoutMovementDataInput = {
@@ -11027,8 +11669,40 @@ export type PaymentUpdateWithoutMovementDataInput = {
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
   client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
   supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
-  documents?: Maybe<FileUpdateManyWithoutPaymentInput>;
+  documents?: Maybe<FileUpdateManyWithoutPaymentsInput>;
   bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
+};
+
+export type MovementUpdateWithoutConsumedFromDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  amount?: Maybe<Scalars['Float']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  date?: Maybe<Scalars['DateTime']>;
+  id?: Maybe<Scalars['String']>;
+  status?: Maybe<MovementStatus>;
+  movementId?: Maybe<Scalars['Int']>;
+  notes?: Maybe<Scalars['String']>;
+  sendMail?: Maybe<Scalars['Boolean']>;
+  storageNumber?: Maybe<Scalars['String']>;
+  type?: Maybe<MovementType>;
+  unitPrice?: Maybe<Scalars['Float']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  invoiceId?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  client?: Maybe<ClientUpdateOneWithoutMovementsInput>;
+  supplier?: Maybe<SupplierUpdateOneWithoutMovementsInput>;
+  batch?: Maybe<BatchUpdateOneWithoutMovementsInput>;
+  inventory?: Maybe<InventoryUpdateOneWithoutMovementsInput>;
+  product?: Maybe<ProductUpdateOneRequiredWithoutMovementsInput>;
+  warehouse?: Maybe<WarehouseUpdateOneWithoutMovementsInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutMovementInput>;
+  comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
+  reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
+  transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
+  invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
 };
 
 export type ProductCreateManyWithoutManufacturerInput = {
@@ -11067,10 +11741,10 @@ export type SettingScalarWhereInput = {
   logoId?: Maybe<NullableStringFilter>;
   name?: Maybe<StringFilter>;
   timezone?: Maybe<NullableStringFilter>;
-  transports?: Maybe<BooleanFilter>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<BooleanFilter>;
   warehouses?: Maybe<BooleanFilter>;
-  packaging?: Maybe<BooleanFilter>;
+  consumables?: Maybe<BooleanFilter>;
   shop?: Maybe<BooleanFilter>;
   accounting?: Maybe<BooleanFilter>;
   presets?: Maybe<PresetFilter>;
@@ -11111,7 +11785,7 @@ export type ManufacturerUpdateWithoutContactPersonsDataInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchUpdateManyWithoutManufacturerInput>;
-  images?: Maybe<FileUpdateManyWithoutManufacturerInput>;
+  images?: Maybe<FileUpdateManyWithoutManufacturersInput>;
   products?: Maybe<ProductUpdateManyWithoutManufacturerInput>;
   address?: Maybe<AddressUpdateOneWithoutManufacturerInput>;
 };
@@ -11139,7 +11813,7 @@ export type SupplierUpdateWithoutContactPersonsDataInput = {
   notes?: Maybe<Scalars['String']>;
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
@@ -11161,11 +11835,13 @@ export type TransportAgencyUpdateWithoutContactPersonsDataInput = {
   website?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
 };
 
 export type TransportAgencyUpsertWithoutContactPersonsInput = {
@@ -11213,7 +11889,7 @@ export type SupplierUpdateWithoutInteractionsDataInput = {
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentUpdateManyWithoutSupplierInput>;
@@ -11226,7 +11902,7 @@ export type SupplierUpsertWithoutInteractionsInput = {
 
 export type MovementUpdateWithoutInteractionsDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -11250,8 +11926,10 @@ export type MovementUpdateWithoutInteractionsDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpsertWithoutInteractionsInput = {
@@ -11276,23 +11954,22 @@ export type ProductUpdateWithoutInteractionsDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutInteractionsInput = {
@@ -11319,7 +11996,7 @@ export type SupplierUpdateWithoutInventoriesDataInput = {
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
   payments?: Maybe<PaymentUpdateManyWithoutSupplierInput>;
@@ -11364,23 +12041,22 @@ export type ProductUpdateWithoutInventoriesDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutInventoriesInput = {
@@ -11443,7 +12119,7 @@ export type MessageUpsertWithWhereUniqueWithoutMovementInput = {
 };
 
 export type InventoryUpdateWithoutReservationsDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -11466,7 +12142,7 @@ export type InventoryUpsertWithoutReservationsInput = {
 
 export type MovementUpdateWithoutReservationDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -11490,8 +12166,10 @@ export type MovementUpdateWithoutReservationDataInput = {
   comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpsertWithoutReservationInput = {
@@ -11512,7 +12190,7 @@ export type ManufacturerUpdateWithoutAddressDataInput = {
   notes?: Maybe<Scalars['String']>;
   batches?: Maybe<BatchUpdateManyWithoutManufacturerInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutManufacturerInput>;
-  images?: Maybe<FileUpdateManyWithoutManufacturerInput>;
+  images?: Maybe<FileUpdateManyWithoutManufacturersInput>;
   products?: Maybe<ProductUpdateManyWithoutManufacturerInput>;
 };
 
@@ -11520,35 +12198,6 @@ export type ManufacturerUpdateManyDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   email?: Maybe<Scalars['String']>;
   fiscalNumber?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-};
-
-export type TransportAgencyUpdateWithoutAddressDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
-  transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
-  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
-};
-
-export type TransportAgencyUpdateManyDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   mobile?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -11586,25 +12235,45 @@ export type WarehouseUpdateManyDataInput = {
   notes?: Maybe<Scalars['String']>;
 };
 
+export type TransportAgencyUpdateManyDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+};
+
 export type FileUpdateWithoutInvoiceDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type FileUpsertWithoutInvoiceInput = {
@@ -11653,7 +12322,7 @@ export type TaxRateUpsertWithoutPaymentsInput = {
 
 export type MovementUpdateWithoutPaymentsDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -11678,7 +12347,9 @@ export type MovementUpdateWithoutPaymentsDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpsertWithoutPaymentsInput = {
@@ -11697,10 +12368,12 @@ export type TransportAgencyUpdateWithoutPaymentsDataInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
   transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
 };
 
 export type TransportAgencyUpsertWithoutPaymentsInput = {
@@ -11727,7 +12400,7 @@ export type SupplierUpdateWithoutPaymentsDataInput = {
   address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
   billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
-  images?: Maybe<FileUpdateManyWithoutSupplierInput>;
+  images?: Maybe<FileUpdateManyWithoutSuppliersInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
   movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
@@ -11738,15 +12411,15 @@ export type SupplierUpsertWithoutPaymentsInput = {
   create: SupplierCreateWithoutPaymentsInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutPaymentInput = {
+export type FileUpdateWithWhereUniqueWithoutPaymentsInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutPaymentDataInput;
+  data: FileUpdateWithoutPaymentsDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutPaymentInput = {
+export type FileUpsertWithWhereUniqueWithoutPaymentsInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutPaymentDataInput;
-  create: FileCreateWithoutPaymentInput;
+  update: FileUpdateWithoutPaymentsDataInput;
+  create: FileCreateWithoutPaymentsInput;
 };
 
 export type BankAccountUpdateWithoutPaymentsDataInput = {
@@ -11776,7 +12449,7 @@ export type ClientUpdateWithoutContactPersonsDataInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -11794,7 +12467,7 @@ export type ClientUpsertWithoutContactPersonsInput = {
 
 export type MovementUpdateWithoutTransportsDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -11818,8 +12491,10 @@ export type MovementUpdateWithoutTransportsDataInput = {
   comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type MovementUpsertWithoutTransportsInput = {
@@ -11835,7 +12510,7 @@ export type TransporterUpdateWithoutTransportsDataInput = {
   notes?: Maybe<Scalars['String']>;
   identifications?: Maybe<TransporterUpdateidentificationsInput>;
   transportAgency?: Maybe<TransportAgencyUpdateOneWithoutTransportersInput>;
-  images?: Maybe<FileUpdateManyWithoutTransporterInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportersInput>;
 };
 
 export type TransporterUpsertWithoutTransportsInput = {
@@ -11843,15 +12518,15 @@ export type TransporterUpsertWithoutTransportsInput = {
   create: TransporterCreateWithoutTransportsInput;
 };
 
-export type FileUpdateWithWhereUniqueWithoutTransporterInput = {
+export type FileUpdateWithWhereUniqueWithoutTransportersInput = {
   where: FileWhereUniqueInput;
-  data: FileUpdateWithoutTransporterDataInput;
+  data: FileUpdateWithoutTransportersDataInput;
 };
 
-export type FileUpsertWithWhereUniqueWithoutTransporterInput = {
+export type FileUpsertWithWhereUniqueWithoutTransportersInput = {
   where: FileWhereUniqueInput;
-  update: FileUpdateWithoutTransporterDataInput;
-  create: FileCreateWithoutTransporterInput;
+  update: FileUpdateWithoutTransportersDataInput;
+  create: FileCreateWithoutTransportersInput;
 };
 
 export type TransportUpdateWithWhereUniqueWithoutTransporterInput = {
@@ -11883,7 +12558,7 @@ export type ClientUpdateWithoutPaymentsDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -11916,7 +12591,7 @@ export type ClientUpdateWithoutInventoriesDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
   reservations?: Maybe<ReservationUpdateManyWithoutClientInput>;
@@ -11960,25 +12635,33 @@ export type ContactPersonUpdateWithoutManufacturerDataInput = {
   warehouse?: Maybe<WarehouseUpdateOneWithoutContactPersonsInput>;
 };
 
-export type FileUpdateWithoutManufacturerDataInput = {
+export type FileUpdateWithoutManufacturersDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type ManufacturerUpdateWithoutBatchesDataInput = {
@@ -11993,7 +12676,7 @@ export type ManufacturerUpdateWithoutBatchesDataInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutManufacturerInput>;
-  images?: Maybe<FileUpdateManyWithoutManufacturerInput>;
+  images?: Maybe<FileUpdateManyWithoutManufacturersInput>;
   products?: Maybe<ProductUpdateManyWithoutManufacturerInput>;
   address?: Maybe<AddressUpdateOneWithoutManufacturerInput>;
 };
@@ -12043,7 +12726,7 @@ export type ClientUpdateWithoutInteractionsDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
   reservations?: Maybe<ReservationUpdateManyWithoutClientInput>;
@@ -12061,22 +12744,30 @@ export type ClientUpsertWithoutInteractionsInput = {
 export type FileUpdateWithoutImageCategoryDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type FileUpsertWithoutImageCategoryInput = {
@@ -12087,22 +12778,30 @@ export type FileUpsertWithoutImageCategoryInput = {
 export type FileUpdateWithoutBannerCategoryDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type FileUpsertWithoutBannerCategoryInput = {
@@ -12136,25 +12835,268 @@ export type CategoryUpsertWithoutSubCategoriesInput = {
   create: CategoryCreateWithoutSubCategoriesInput;
 };
 
-export type ProductUpdateManyWithoutManufacturerInput = {
-  create?: Maybe<Array<ProductCreateWithoutManufacturerInput>>;
-  connect?: Maybe<Array<ProductWhereUniqueInput>>;
-  set?: Maybe<Array<ProductWhereUniqueInput>>;
-  disconnect?: Maybe<Array<ProductWhereUniqueInput>>;
-  delete?: Maybe<Array<ProductWhereUniqueInput>>;
-  update?: Maybe<Array<ProductUpdateWithWhereUniqueWithoutManufacturerInput>>;
-  updateMany?: Maybe<Array<ProductUpdateManyWithWhereNestedInput>>;
-  deleteMany?: Maybe<Array<ProductScalarWhereInput>>;
-  upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutManufacturerInput>>;
+export type ProductUpdateWithoutConsumersDataInput = {
+  id?: Maybe<Scalars['String']>;
+  productId?: Maybe<Scalars['Int']>;
+  ASIN?: Maybe<Scalars['String']>;
+  EAN?: Maybe<Scalars['String']>;
+  ISBN?: Maybe<Scalars['String']>;
+  UPC?: Maybe<Scalars['String']>;
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Float']>;
+  source?: Maybe<Scalars['String']>;
+  isListed?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<ProductUpdatetagsInput>;
+  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
+  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
+  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
+  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
+  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
+  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
+  units?: Maybe<UnitUpdateManyWithoutProductInput>;
+  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
+  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
+  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
 };
 
-export type TransportAgencyUpdateOneWithoutTransportersInput = {
-  create?: Maybe<TransportAgencyCreateWithoutTransportersInput>;
-  connect?: Maybe<TransportAgencyWhereUniqueInput>;
-  disconnect?: Maybe<Scalars['Boolean']>;
-  delete?: Maybe<Scalars['Boolean']>;
-  update?: Maybe<TransportAgencyUpdateWithoutTransportersDataInput>;
-  upsert?: Maybe<TransportAgencyUpsertWithoutTransportersInput>;
+export type ProductUpsertWithoutConsumersInput = {
+  update: ProductUpdateWithoutConsumersDataInput;
+  create: ProductCreateWithoutConsumersInput;
+};
+
+export type ProductUpdateWithoutConsumablesDataInput = {
+  id?: Maybe<Scalars['String']>;
+  productId?: Maybe<Scalars['Int']>;
+  ASIN?: Maybe<Scalars['String']>;
+  EAN?: Maybe<Scalars['String']>;
+  ISBN?: Maybe<Scalars['String']>;
+  UPC?: Maybe<Scalars['String']>;
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Float']>;
+  source?: Maybe<Scalars['String']>;
+  isListed?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<ProductUpdatetagsInput>;
+  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
+  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
+  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
+  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
+  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
+  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
+  units?: Maybe<UnitUpdateManyWithoutProductInput>;
+  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
+  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
+  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
+};
+
+export type ProductUpsertWithoutConsumablesInput = {
+  update: ProductUpdateWithoutConsumablesDataInput;
+  create: ProductCreateWithoutConsumablesInput;
+};
+
+export type ManufacturerUpdateWithoutImagesDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  fiscalNumber?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  batches?: Maybe<BatchUpdateManyWithoutManufacturerInput>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutManufacturerInput>;
+  products?: Maybe<ProductUpdateManyWithoutManufacturerInput>;
+  address?: Maybe<AddressUpdateOneWithoutManufacturerInput>;
+};
+
+export type MessageUpdateWithoutImagesDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  id?: Maybe<Scalars['String']>;
+  recipient?: Maybe<Scalars['String']>;
+  sender?: Maybe<Scalars['String']>;
+  text?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  mentions?: Maybe<MessageUpdatementionsInput>;
+  channel?: Maybe<ChannelUpdateOneWithoutMessagesInput>;
+  movement?: Maybe<MovementUpdateOneWithoutCommentsInput>;
+};
+
+export type ClientUpdateWithoutImagesDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  fiscalNumber?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['Int']>;
+  phone?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  website?: Maybe<Scalars['String']>;
+  withAccount?: Maybe<Scalars['Boolean']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  stripeId?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
+  inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
+  movements?: Maybe<MovementUpdateManyWithoutClientInput>;
+  reservations?: Maybe<ReservationUpdateManyWithoutClientInput>;
+  address?: Maybe<AddressUpdateOneWithoutClientAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutClientBillingAddressInput>;
+  invoices?: Maybe<InvoiceUpdateManyWithoutClientInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutClientInput>;
+};
+
+export type ClientUpdateManyDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  fiscalNumber?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['Int']>;
+  phone?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  website?: Maybe<Scalars['String']>;
+  withAccount?: Maybe<Scalars['Boolean']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  stripeId?: Maybe<Scalars['String']>;
+};
+
+export type SupplierUpdateWithoutImagesDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  fiscalNumber?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['Int']>;
+  phone?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  website?: Maybe<Scalars['String']>;
+  withAccount?: Maybe<Scalars['Boolean']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  address?: Maybe<AddressUpdateOneWithoutSupplierAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutSupplierBillingAddressInput>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutSupplierInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutSupplierInput>;
+  inventories?: Maybe<InventoryUpdateManyWithoutSupplierInput>;
+  movements?: Maybe<MovementUpdateManyWithoutSupplierInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutSupplierInput>;
+};
+
+export type SupplierUpdateManyDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  fiscalNumber?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  language?: Maybe<Language>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['Int']>;
+  phone?: Maybe<Scalars['String']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  website?: Maybe<Scalars['String']>;
+  withAccount?: Maybe<Scalars['Boolean']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+};
+
+export type ProductUpdateWithoutImagesDataInput = {
+  id?: Maybe<Scalars['String']>;
+  productId?: Maybe<Scalars['Int']>;
+  ASIN?: Maybe<Scalars['String']>;
+  EAN?: Maybe<Scalars['String']>;
+  ISBN?: Maybe<Scalars['String']>;
+  UPC?: Maybe<Scalars['String']>;
+  active?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Float']>;
+  source?: Maybe<Scalars['String']>;
+  isListed?: Maybe<Scalars['Boolean']>;
+  tags?: Maybe<ProductUpdatetagsInput>;
+  dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
+  manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
+  batches?: Maybe<BatchUpdateManyWithoutProductInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
+  inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
+  movements?: Maybe<MovementUpdateManyWithoutProductInput>;
+  notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
+  units?: Maybe<UnitUpdateManyWithoutProductInput>;
+  taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
+  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
+  categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
+};
+
+export type TransportAgencyUpdateWithoutImagesDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
+  transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+};
+
+export type TransporterUpdateWithoutImagesDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  type?: Maybe<TransportType>;
+  notes?: Maybe<Scalars['String']>;
+  identifications?: Maybe<TransporterUpdateidentificationsInput>;
+  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutTransportersInput>;
+  transports?: Maybe<TransportUpdateManyWithoutTransporterInput>;
 };
 
 export type InvoiceUpdateWithoutPdfDataInput = {
@@ -12186,6 +13128,64 @@ export type CategoryUpdateWithoutBannerImageDataInput = {
   Category?: Maybe<CategoryUpdateOneWithoutSubCategoriesInput>;
 };
 
+export type MovementUpdateWithoutDocumentsDataInput = {
+  active?: Maybe<Scalars['Boolean']>;
+  amount?: Maybe<Scalars['Float']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  date?: Maybe<Scalars['DateTime']>;
+  id?: Maybe<Scalars['String']>;
+  status?: Maybe<MovementStatus>;
+  movementId?: Maybe<Scalars['Int']>;
+  notes?: Maybe<Scalars['String']>;
+  sendMail?: Maybe<Scalars['Boolean']>;
+  storageNumber?: Maybe<Scalars['String']>;
+  type?: Maybe<MovementType>;
+  unitPrice?: Maybe<Scalars['Float']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+  invoiceId?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  client?: Maybe<ClientUpdateOneWithoutMovementsInput>;
+  supplier?: Maybe<SupplierUpdateOneWithoutMovementsInput>;
+  batch?: Maybe<BatchUpdateOneWithoutMovementsInput>;
+  inventory?: Maybe<InventoryUpdateOneWithoutMovementsInput>;
+  product?: Maybe<ProductUpdateOneRequiredWithoutMovementsInput>;
+  warehouse?: Maybe<WarehouseUpdateOneWithoutMovementsInput>;
+  interactions?: Maybe<InteractionUpdateManyWithoutMovementInput>;
+  comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
+  reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
+  transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
+  invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
+};
+
+export type PaymentUpdateWithoutDocumentsDataInput = {
+  id?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['Int']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+  type?: Maybe<PaymentType>;
+  status?: Maybe<PaymentStatus>;
+  dueDate?: Maybe<Scalars['DateTime']>;
+  date?: Maybe<Scalars['DateTime']>;
+  source?: Maybe<Scalars['String']>;
+  concept?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['Float']>;
+  currency?: Maybe<Scalars['String']>;
+  recipient?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  paymentMethod?: Maybe<Scalars['String']>;
+  stripePaymentIntentId?: Maybe<Scalars['String']>;
+  stripeClientSecret?: Maybe<Scalars['String']>;
+  group?: Maybe<GroupUpdateOneWithoutPaymentsInput>;
+  taxRate?: Maybe<TaxRateUpdateOneWithoutPaymentsInput>;
+  movement?: Maybe<MovementUpdateOneWithoutPaymentsInput>;
+  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutPaymentsInput>;
+  client?: Maybe<ClientUpdateOneWithoutPaymentsInput>;
+  supplier?: Maybe<SupplierUpdateOneWithoutPaymentsInput>;
+  bankAccount?: Maybe<BankAccountUpdateOneWithoutPaymentsInput>;
+};
+
 export type ProductCreateWithoutBatchesInput = {
   id?: Maybe<Scalars['String']>;
   productId: Scalars['Int'];
@@ -12203,23 +13203,22 @@ export type ProductCreateWithoutBatchesInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type ClientCreateWithoutReservationsInput = {
@@ -12240,7 +13239,7 @@ export type ClientCreateWithoutReservationsInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -12261,10 +13260,12 @@ export type TransportAgencyCreateWithoutTransportsInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
   transporters?: Maybe<TransporterCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type ClientCreateWithoutInvoicesInput = {
@@ -12285,7 +13286,7 @@ export type ClientCreateWithoutInvoicesInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutClientInput>;
-  images?: Maybe<FileCreateManyWithoutClientInput>;
+  images?: Maybe<FileCreateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutClientInput>;
   inventories?: Maybe<InventoryCreateManyWithoutClientInput>;
   movements?: Maybe<MovementCreateManyWithoutClientInput>;
@@ -12312,23 +13313,22 @@ export type ProductUpdateWithoutBatchesDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpsertWithoutBatchesInput = {
@@ -12354,7 +13354,7 @@ export type ClientUpdateWithoutReservationsDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -12396,7 +13396,7 @@ export type ClientUpdateWithoutInvoicesDataInput = {
   notes?: Maybe<Scalars['String']>;
   stripeId?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutClientInput>;
-  images?: Maybe<FileUpdateManyWithoutClientInput>;
+  images?: Maybe<FileUpdateManyWithoutClientsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutClientInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutClientInput>;
   movements?: Maybe<MovementUpdateManyWithoutClientInput>;
@@ -12428,23 +13428,22 @@ export type ProductCreateWithoutManufacturerInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryCreateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type TransportAgencyCreateWithoutTransportersInput = {
@@ -12458,10 +13457,12 @@ export type TransportAgencyCreateWithoutTransportersInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonCreateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileCreateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileCreateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportCreateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressCreateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressCreateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentCreateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressCreateOneWithoutTransportAgencyInput>;
 };
 
 export type ProductCreateWithoutCategoriesInput = {
@@ -12481,23 +13482,22 @@ export type ProductCreateWithoutCategoriesInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
-  images?: Maybe<FileCreateManyWithoutProductInput>;
+  images?: Maybe<FileCreateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionCreateManyWithoutProductInput>;
   inventories?: Maybe<InventoryCreateManyWithoutProductInput>;
   movements?: Maybe<MovementCreateManyWithoutProductInput>;
   notifications?: Maybe<NotificationCreateManyWithoutProductInput>;
   units?: Maybe<UnitCreateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductCreateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductCreateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductCreateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductCreateManyWithoutVariantsInput>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableCreateManyWithoutProductInput>;
 };
 
 export type SettingUpdateWithoutLogoDataInput = {
@@ -12510,10 +13510,10 @@ export type SettingUpdateWithoutLogoDataInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -12548,10 +13548,10 @@ export type SettingUpdateManyDataInput = {
   stripeCustomerId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   timezone?: Maybe<Scalars['String']>;
-  transports?: Maybe<Scalars['Boolean']>;
   plan?: Maybe<AccountPlan>;
+  transports?: Maybe<Scalars['Boolean']>;
   warehouses?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<Scalars['Boolean']>;
   shop?: Maybe<Scalars['Boolean']>;
   accounting?: Maybe<Scalars['Boolean']>;
   fiscalNumber?: Maybe<Scalars['String']>;
@@ -12573,9 +13573,21 @@ export type SettingUpdateManyDataInput = {
   warehouseFields?: Maybe<SettingUpdatewarehouseFieldsInput>;
 };
 
+export type ProductUpdateManyWithoutManufacturerInput = {
+  create?: Maybe<Array<ProductCreateWithoutManufacturerInput>>;
+  connect?: Maybe<Array<ProductWhereUniqueInput>>;
+  set?: Maybe<Array<ProductWhereUniqueInput>>;
+  disconnect?: Maybe<Array<ProductWhereUniqueInput>>;
+  delete?: Maybe<Array<ProductWhereUniqueInput>>;
+  update?: Maybe<Array<ProductUpdateWithWhereUniqueWithoutManufacturerInput>>;
+  updateMany?: Maybe<Array<ProductUpdateManyWithWhereNestedInput>>;
+  deleteMany?: Maybe<Array<ProductScalarWhereInput>>;
+  upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutManufacturerInput>>;
+};
+
 export type MovementUpdateWithoutInventoryDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -12599,8 +13611,10 @@ export type MovementUpdateWithoutInventoryDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type ReservationUpdateWithoutInventoryDataInput = {
@@ -12622,12 +13636,12 @@ export type MessageUpdateWithoutMovementDataInput = {
   updatedAt?: Maybe<Scalars['DateTime']>;
   mentions?: Maybe<MessageUpdatementionsInput>;
   channel?: Maybe<ChannelUpdateOneWithoutMessagesInput>;
-  images?: Maybe<FileUpdateManyWithoutMessageInput>;
+  images?: Maybe<FileUpdateManyWithoutMessagesInput>;
 };
 
 export type MovementUpdateWithoutInvoiceDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -12651,50 +13665,77 @@ export type MovementUpdateWithoutInvoiceDataInput = {
   comments?: Maybe<MessageUpdateManyWithoutMovementInput>;
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
-export type FileUpdateWithoutPaymentDataInput = {
+export type FileUpdateWithoutPaymentsDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
-  transporter?: Maybe<TransporterUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
 };
 
-export type FileUpdateWithoutTransporterDataInput = {
+export type TransportAgencyUpdateOneWithoutTransportersInput = {
+  create?: Maybe<TransportAgencyCreateWithoutTransportersInput>;
+  connect?: Maybe<TransportAgencyWhereUniqueInput>;
+  disconnect?: Maybe<Scalars['Boolean']>;
+  delete?: Maybe<Scalars['Boolean']>;
+  update?: Maybe<TransportAgencyUpdateWithoutTransportersDataInput>;
+  upsert?: Maybe<TransportAgencyUpsertWithoutTransportersInput>;
+};
+
+export type FileUpdateWithoutTransportersDataInput = {
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
+  manufacturerId?: Maybe<Scalars['String']>;
+  messageId?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  supplierId?: Maybe<Scalars['String']>;
+  clientId?: Maybe<Scalars['String']>;
   smallUrl?: Maybe<Scalars['String']>;
+  transportAgencyId?: Maybe<Scalars['String']>;
+  transporterId?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  manufacturer?: Maybe<ManufacturerUpdateOneWithoutImagesInput>;
-  message?: Maybe<MessageUpdateOneWithoutImagesInput>;
-  client?: Maybe<ClientUpdateOneWithoutImagesInput>;
-  supplier?: Maybe<SupplierUpdateOneWithoutImagesInput>;
-  product?: Maybe<ProductUpdateOneWithoutImagesInput>;
-  transportAgency?: Maybe<TransportAgencyUpdateOneWithoutImagesInput>;
+  movementId?: Maybe<Scalars['String']>;
+  paymentId?: Maybe<Scalars['String']>;
+  manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
+  messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
+  clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
+  suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
+  products?: Maybe<ProductUpdateManyWithoutImagesInput>;
+  transportAgencies?: Maybe<TransportAgencyUpdateManyWithoutImagesInput>;
   settings?: Maybe<SettingUpdateManyWithoutLogoInput>;
   Invoice?: Maybe<InvoiceUpdateManyWithoutPdfInput>;
   imageCategory?: Maybe<CategoryUpdateManyWithoutImageInput>;
   bannerCategory?: Maybe<CategoryUpdateManyWithoutBannerImageInput>;
-  Movement?: Maybe<MovementUpdateOneWithoutDocumentsInput>;
-  Payment?: Maybe<PaymentUpdateOneWithoutDocumentsInput>;
+  movements?: Maybe<MovementUpdateManyWithoutDocumentsInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutDocumentsInput>;
 };
 
 export type TransportUpdateWithoutTransporterDataInput = {
@@ -12709,7 +13750,7 @@ export type TransportUpdateWithoutTransporterDataInput = {
 };
 
 export type InventoryUpdateWithoutBatchDataInput = {
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
   storageNumber?: Maybe<Scalars['String']>;
@@ -12727,7 +13768,7 @@ export type InventoryUpdateWithoutBatchDataInput = {
 
 export type MovementUpdateWithoutBatchDataInput = {
   active?: Maybe<Scalars['Boolean']>;
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   date?: Maybe<Scalars['DateTime']>;
   id?: Maybe<Scalars['String']>;
@@ -12751,8 +13792,10 @@ export type MovementUpdateWithoutBatchDataInput = {
   reservation?: Maybe<ReservationUpdateOneWithoutMovementInput>;
   transports?: Maybe<TransportUpdateManyWithoutMovementInput>;
   invoice?: Maybe<InvoiceUpdateOneWithoutMovementsInput>;
-  documents?: Maybe<FileUpdateManyWithoutMovementInput>;
+  documents?: Maybe<FileUpdateManyWithoutMovementsInput>;
   payments?: Maybe<PaymentUpdateManyWithoutMovementInput>;
+  consumablesMovements?: Maybe<MovementUpdateManyWithoutConsumedFromInput>;
+  consumedFrom?: Maybe<MovementUpdateOneWithoutConsumablesMovementsInput>;
 };
 
 export type CategoryUpdateWithoutCategoryDataInput = {
@@ -12777,6 +13820,30 @@ export type ProductUpdateManyWithoutCategoriesInput = {
   upsert?: Maybe<Array<ProductUpsertWithWhereUniqueWithoutCategoriesInput>>;
 };
 
+export type TransportAgencyUpdateWithoutTransportsDataInput = {
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  mobile?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  website?: Maybe<Scalars['String']>;
+  source?: Maybe<Scalars['String']>;
+  notes?: Maybe<Scalars['String']>;
+  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
+  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
+  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+};
+
+export type TransportAgencyUpsertWithoutTransportsInput = {
+  update: TransportAgencyUpdateWithoutTransportsDataInput;
+  create: TransportAgencyCreateWithoutTransportsInput;
+};
+
 export type ProductUpdateWithWhereUniqueWithoutManufacturerInput = {
   where: ProductWhereUniqueInput;
   data: ProductUpdateWithoutManufacturerDataInput;
@@ -12799,37 +13866,17 @@ export type TransportAgencyUpdateWithoutTransportersDataInput = {
   source?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
+  images?: Maybe<FileUpdateManyWithoutTransportAgenciesInput>;
   transports?: Maybe<TransportUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
+  address?: Maybe<AddressUpdateOneWithoutTransportAgencyAddressInput>;
+  billingAddress?: Maybe<AddressUpdateOneWithoutTransportAgencyBillingAddressInput>;
   payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
+  Address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
 };
 
 export type TransportAgencyUpsertWithoutTransportersInput = {
   update: TransportAgencyUpdateWithoutTransportersDataInput;
   create: TransportAgencyCreateWithoutTransportersInput;
-};
-
-export type TransportAgencyUpdateWithoutTransportsDataInput = {
-  createdAt?: Maybe<Scalars['DateTime']>;
-  email?: Maybe<Scalars['String']>;
-  id?: Maybe<Scalars['String']>;
-  mobile?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  phone?: Maybe<Scalars['String']>;
-  website?: Maybe<Scalars['String']>;
-  source?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  contactPersons?: Maybe<ContactPersonUpdateManyWithoutTransportAgencyInput>;
-  images?: Maybe<FileUpdateManyWithoutTransportAgencyInput>;
-  transporters?: Maybe<TransporterUpdateManyWithoutTransportAgencyInput>;
-  address?: Maybe<AddressUpdateOneWithoutTransportAgencyInput>;
-  payments?: Maybe<PaymentUpdateManyWithoutTransportAgencyInput>;
-};
-
-export type TransportAgencyUpsertWithoutTransportsInput = {
-  update: TransportAgencyUpdateWithoutTransportsDataInput;
-  create: TransportAgencyCreateWithoutTransportsInput;
 };
 
 export type ProductUpdateWithWhereUniqueWithoutCategoriesInput = {
@@ -12860,23 +13907,22 @@ export type ProductUpdateWithoutManufacturerDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
   categories?: Maybe<CategoryUpdateManyWithoutProductsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type ProductUpdateWithoutCategoriesDataInput = {
@@ -12896,23 +13942,22 @@ export type ProductUpdateWithoutCategoriesDataInput = {
   color?: Maybe<Scalars['String']>;
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   isListed?: Maybe<Scalars['Boolean']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
-  images?: Maybe<FileUpdateManyWithoutProductInput>;
+  images?: Maybe<FileUpdateManyWithoutProductsInput>;
   interactions?: Maybe<InteractionUpdateManyWithoutProductInput>;
   inventories?: Maybe<InventoryUpdateManyWithoutProductInput>;
   movements?: Maybe<MovementUpdateManyWithoutProductInput>;
   notifications?: Maybe<NotificationUpdateManyWithoutProductInput>;
   units?: Maybe<UnitUpdateManyWithoutProductInput>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
   variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
-  packagedProduct?: Maybe<ProductUpdateOneWithoutPackagingInput>;
-  variantProduct?: Maybe<ProductUpdateOneWithoutVariantsInput>;
+  variantProduct?: Maybe<ProductUpdateManyWithoutVariantsInput>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  consumers?: Maybe<ConsumableUpdateManyWithoutProductInput>;
 };
 
 export type Query = {
@@ -13354,6 +14399,7 @@ export type Mutation = {
   deleteOneProduct?: Maybe<Product>;
   deleteOneUnit?: Maybe<Unit>;
   deleteOneFile?: Maybe<File>;
+  deleteOneConsumable?: Maybe<Consumable>;
   assignRole: ValidationPayload;
   createOneRole: Role;
   updateOneRole: ValidationPayload;
@@ -13576,20 +14622,21 @@ export type MutationDeleteOneTransporterArgs = {
 
 export type MutationCreateOneOutgoingMovementArgs = {
   inventoryId: Scalars['String'];
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   notes?: Maybe<Scalars['String']>;
   sendMail: Scalars['Boolean'];
   clientId: Scalars['String'];
   date: Scalars['DateTime'];
   unitPrice?: Maybe<Scalars['Float']>;
-  status: MovementStatus;
+  status?: Maybe<MovementStatus>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   documents?: Maybe<Array<Scalars['Upload']>>;
+  consumedFrom?: Maybe<Array<ConsumableInput>>;
 };
 
 
 export type MutationCreateOneIncomingMovementArgs = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   notes?: Maybe<Scalars['String']>;
   sendMail: Scalars['Boolean'];
   supplierId: Scalars['ID'];
@@ -13598,16 +14645,17 @@ export type MutationCreateOneIncomingMovementArgs = {
   batchNumber?: Maybe<Scalars['String']>;
   unitPrice?: Maybe<Scalars['Float']>;
   bestBefore?: Maybe<Scalars['DateTime']>;
-  status: MovementStatus;
+  status?: Maybe<MovementStatus>;
   transports?: Maybe<TransportCreateManyWithoutMovementInput>;
   documents?: Maybe<Array<Scalars['Upload']>>;
   warehouseId?: Maybe<Scalars['ID']>;
+  consumedFrom?: Maybe<Array<ConsumableInput>>;
 };
 
 
 export type MutationUpdateOneMovementArgs = {
   id: Scalars['ID'];
-  amount?: Maybe<Scalars['Int']>;
+  amount?: Maybe<Scalars['Float']>;
   notes?: Maybe<Scalars['String']>;
   sendMail?: Maybe<Scalars['Boolean']>;
   date?: Maybe<Scalars['DateTime']>;
@@ -13634,7 +14682,7 @@ export type Mutation_CreateOneNotificationArgs = {
 
 
 export type MutationCreateOneNotificationArgs = {
-  amount: Scalars['Int'];
+  amount: Scalars['Float'];
   product?: Maybe<ProductCreateOneWithoutNotificationsInput>;
   type: NotificationType;
   warehouse?: Maybe<WarehouseCreateOneWithoutNotificationInput>;
@@ -13747,11 +14795,10 @@ export type MutationCreateOneProductArgs = {
   color?: Maybe<Scalars['String']>;
   material?: Maybe<Scalars['String']>;
   images?: Maybe<Array<Scalars['Upload']>>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
-  packaging?: Maybe<ProductCreateManyWithoutPackagedProductInput>;
   variants?: Maybe<Array<VariantProductInput>>;
   isListed?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
 };
 
 
@@ -13770,10 +14817,9 @@ export type MutationUpdateOneProductArgs = {
   material?: Maybe<Scalars['String']>;
   images?: Maybe<Array<Scalars['Upload']>>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
-  isPackaging?: Maybe<Scalars['Boolean']>;
-  packaging?: Maybe<ProductUpdateManyWithoutPackagedProductInput>;
-  variants?: Maybe<ProductUpdateManyWithoutVariantProductInput>;
+  variants?: Maybe<Array<VariantProductInput>>;
   isListed?: Maybe<Scalars['Boolean']>;
+  consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
 };
 
 
@@ -13789,6 +14835,11 @@ export type MutationDeleteOneUnitArgs = {
 
 export type MutationDeleteOneFileArgs = {
   where: FileWhereUniqueInput;
+};
+
+
+export type MutationDeleteOneConsumableArgs = {
+  where: ConsumableWhereUniqueInput;
 };
 
 
@@ -13947,16 +14998,16 @@ export type Get_ProductQueryVariables = Exact<{
 
 
 export type Get_ProductQuery = { listedProduct: (
-    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'currencySymbol' | 'description'>
-    & { images: Array<Pick<File, 'id' | 'url'>>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount' | 'listPrice'>> }
+    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'weight' | 'weightUnit' | 'material' | 'color' | 'lengthUnit' | 'currencySymbol' | 'description'>
+    & { dimensions: Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>, images: Array<Pick<File, 'id' | 'url'>>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount' | 'listPrice'>> }
   ) };
 
 export type Get_ProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type Get_ProductsQuery = { listedProducts: Array<(
-    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'currencySymbol'>
-    & { listedInventories: Array<Pick<ListedInventory, 'id' | 'amount'>>, images: Array<Pick<File, 'id' | 'url'>> }
+    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'material' | 'color' | 'weight' | 'weightUnit' | 'lengthUnit' | 'currencySymbol'>
+    & { dimensions: Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount'>>, images: Array<Pick<File, 'id' | 'url'>> }
   )> };
 
 
@@ -13991,6 +15042,17 @@ export const Get_ProductDocument = gql`
     id
     name
     slug
+    weight
+    weightUnit
+    material
+    color
+    dimensions {
+      id
+      height
+      width
+      depth
+    }
+    lengthUnit
     images {
       id
       url
@@ -14015,6 +15077,17 @@ export const Get_ProductsDocument = gql`
     id
     name
     slug
+    material
+    color
+    weight
+    weightUnit
+    lengthUnit
+    dimensions {
+      id
+      height
+      width
+      depth
+    }
     listedInventories {
       id
       amount

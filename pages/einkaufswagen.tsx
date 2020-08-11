@@ -81,6 +81,11 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
       })),
     })
 
+    if (response.error) {
+      setIsLoading(false)
+      return
+    }
+
     const stripe = await loadStripe(process.env.STRIPE_PUBLIC_KEY, {
       stripeAccount: response.data.createOneCheckout.stripeAccountId,
     })

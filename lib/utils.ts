@@ -1,4 +1,5 @@
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
+import { Dimension } from 'generated'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Media, MediaUploadOptions } from 'tinacms'
 import { createClient } from 'urql'
@@ -121,4 +122,19 @@ export const getObjectKeyByString = (o: any, s: string) => {
     }
   }
   return o
+}
+
+export const constructDimensionString = (
+  dimensions: Partial<Dimension>,
+  lengthUnit: string
+) => {
+  if (!dimensions.width && !dimensions.depth) {
+    return `${dimensions.height}${lengthUnit}.`
+  }
+
+  if (!dimensions.depth) {
+    return `${dimensions.height}x${dimensions.width}${lengthUnit}.`
+  }
+
+  return `${dimensions.height}x${dimensions.width}x${dimensions.depth}${lengthUnit}.`
 }
