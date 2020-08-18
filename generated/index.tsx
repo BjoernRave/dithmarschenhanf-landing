@@ -58,6 +58,7 @@ export type File = {
   name?: Maybe<Scalars['String']>;
   url: Scalars['String'];
   smallUrl?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
 };
 
 export type Address = {
@@ -112,6 +113,13 @@ export type IntegrationRequest = {
 
 export type DashboardLink = {
   href: Scalars['String'];
+};
+
+export type SubscriptionPayload = {
+  email: Scalars['String'];
+  plan: Scalars['String'];
+  customerId: Scalars['String'];
+  subDomain: Scalars['String'];
 };
 
 export type Message = {
@@ -604,6 +612,8 @@ export type Product = {
   isListed?: Maybe<Scalars['Boolean']>;
   variantProduct: Array<Product>;
   inventories: Array<Inventory>;
+  tags: Array<Scalars['String']>;
+  quantity?: Maybe<Scalars['Float']>;
 };
 
 
@@ -679,17 +689,19 @@ export type ListedProduct = {
   id: Scalars['String'];
   description: Scalars['String'];
   name: Scalars['String'];
-  weight: Scalars['Float'];
-  weightUnit: Scalars['String'];
-  material: Scalars['String'];
-  color: Scalars['String'];
-  dimensions: Dimension;
-  lengthUnit: Scalars['String'];
+  weightUnit?: Maybe<Scalars['String']>;
+  lengthUnit?: Maybe<Scalars['String']>;
   currency: Scalars['String'];
   currencySymbol: Scalars['String'];
-  listedInventories: Array<ListedInventory>;
   slug: Scalars['String'];
+  listedInventories: Array<ListedInventory>;
+  weight?: Maybe<Scalars['Float']>;
+  material?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
+  dimensions?: Maybe<Dimension>;
+  quantity?: Maybe<Scalars['Float']>;
   images: Array<File>;
+  variants?: Maybe<Array<ListedProduct>>;
 };
 
 export type VariantProductInput = {
@@ -697,7 +709,13 @@ export type VariantProductInput = {
   material?: Maybe<Scalars['String']>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   weight?: Maybe<Scalars['Float']>;
+  quantity?: Maybe<Scalars['Float']>;
   consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+};
+
+export type ImageOrderInput = {
+  order?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
 };
 
 export type Role = {
@@ -740,7 +758,9 @@ export enum ProductFields {
   Weight = 'weight',
   Variants = 'variants',
   Color = 'color',
-  Material = 'material'
+  Material = 'material',
+  Tags = 'tags',
+  Quantity = 'quantity'
 }
 
 export enum ManufacturerFields {
@@ -1090,24 +1110,24 @@ export type ClientWhereInput = {
 };
 
 export type ClientOrderByInput = {
-  active?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  email?: Maybe<OrderByArg>;
-  fiscalNumber?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  language?: Maybe<OrderByArg>;
-  mobile?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  clientId?: Maybe<OrderByArg>;
-  phone?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  website?: Maybe<OrderByArg>;
-  withAccount?: Maybe<OrderByArg>;
-  addressId?: Maybe<OrderByArg>;
-  billingAddressId?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
-  stripeId?: Maybe<OrderByArg>;
+  active?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  email?: Maybe<SortOrder>;
+  fiscalNumber?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  language?: Maybe<SortOrder>;
+  mobile?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  clientId?: Maybe<SortOrder>;
+  phone?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  website?: Maybe<SortOrder>;
+  withAccount?: Maybe<SortOrder>;
+  addressId?: Maybe<SortOrder>;
+  billingAddressId?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
+  stripeId?: Maybe<SortOrder>;
 };
 
 export type ClientCreateInput = {
@@ -1204,19 +1224,19 @@ export type InventoryWhereInput = {
 };
 
 export type InventoryOrderByInput = {
-  amount?: Maybe<OrderByArg>;
-  batchId?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  productId?: Maybe<OrderByArg>;
-  storageNumber?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  warehouseId?: Maybe<OrderByArg>;
-  supplierId?: Maybe<OrderByArg>;
-  clientId?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  isListed?: Maybe<OrderByArg>;
-  listPrice?: Maybe<OrderByArg>;
+  amount?: Maybe<SortOrder>;
+  batchId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  storageNumber?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  warehouseId?: Maybe<SortOrder>;
+  supplierId?: Maybe<SortOrder>;
+  clientId?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  isListed?: Maybe<SortOrder>;
+  listPrice?: Maybe<SortOrder>;
 };
 
 export type InvoiceWhereUniqueInput = {
@@ -1262,16 +1282,16 @@ export type WarehouseWhereInput = {
 };
 
 export type WarehouseOrderByInput = {
-  createdAt?: Maybe<OrderByArg>;
-  email?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  mobile?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  phone?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  website?: Maybe<OrderByArg>;
-  addressId?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
+  createdAt?: Maybe<SortOrder>;
+  email?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  mobile?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  phone?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  website?: Maybe<SortOrder>;
+  addressId?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
 };
 
 export type TransportAgencyWhereInput = {
@@ -1300,17 +1320,17 @@ export type TransportAgencyWhereInput = {
 };
 
 export type TransportAgencyOrderByInput = {
-  createdAt?: Maybe<OrderByArg>;
-  email?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  mobile?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  phone?: Maybe<OrderByArg>;
-  website?: Maybe<OrderByArg>;
-  addressId?: Maybe<OrderByArg>;
-  billingAddressId?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
+  createdAt?: Maybe<SortOrder>;
+  email?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  mobile?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  phone?: Maybe<SortOrder>;
+  website?: Maybe<SortOrder>;
+  addressId?: Maybe<SortOrder>;
+  billingAddressId?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
 };
 
 export type TransportAgencyWhereUniqueInput = {
@@ -1443,29 +1463,29 @@ export type MovementWhereInput = {
 };
 
 export type MovementOrderByInput = {
-  active?: Maybe<OrderByArg>;
-  amount?: Maybe<OrderByArg>;
-  batchId?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  date?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  status?: Maybe<OrderByArg>;
-  inventoryId?: Maybe<OrderByArg>;
-  movementId?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
-  productId?: Maybe<OrderByArg>;
-  sendMail?: Maybe<OrderByArg>;
-  storageNumber?: Maybe<OrderByArg>;
-  type?: Maybe<OrderByArg>;
-  unitPrice?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  warehouseId?: Maybe<OrderByArg>;
-  clientId?: Maybe<OrderByArg>;
-  supplierId?: Maybe<OrderByArg>;
-  invoiceId?: Maybe<OrderByArg>;
-  invoiceId_InvoiceToMovement?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  movementId_MovementToMovement?: Maybe<OrderByArg>;
+  active?: Maybe<SortOrder>;
+  amount?: Maybe<SortOrder>;
+  batchId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  date?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  status?: Maybe<SortOrder>;
+  inventoryId?: Maybe<SortOrder>;
+  movementId?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  sendMail?: Maybe<SortOrder>;
+  storageNumber?: Maybe<SortOrder>;
+  type?: Maybe<SortOrder>;
+  unitPrice?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  warehouseId?: Maybe<SortOrder>;
+  clientId?: Maybe<SortOrder>;
+  supplierId?: Maybe<SortOrder>;
+  invoiceId?: Maybe<SortOrder>;
+  invoiceId_InvoiceToMovement?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  movementId_MovementToMovement?: Maybe<SortOrder>;
 };
 
 export type NotificationCreateInput = {
@@ -1558,29 +1578,29 @@ export type PaymentWhereInput = {
 };
 
 export type PaymentOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  paymentId?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  type?: Maybe<OrderByArg>;
-  status?: Maybe<OrderByArg>;
-  dueDate?: Maybe<OrderByArg>;
-  date?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  concept?: Maybe<OrderByArg>;
-  groupId?: Maybe<OrderByArg>;
-  amount?: Maybe<OrderByArg>;
-  currency?: Maybe<OrderByArg>;
-  taxRateId?: Maybe<OrderByArg>;
-  recipient?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
-  movementId?: Maybe<OrderByArg>;
-  transportAgencyId?: Maybe<OrderByArg>;
-  clientId?: Maybe<OrderByArg>;
-  supplierId?: Maybe<OrderByArg>;
-  bankAccountId?: Maybe<OrderByArg>;
-  paymentMethod?: Maybe<OrderByArg>;
-  stripePaymentIntentId?: Maybe<OrderByArg>;
-  stripeClientSecret?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  paymentId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  type?: Maybe<SortOrder>;
+  status?: Maybe<SortOrder>;
+  dueDate?: Maybe<SortOrder>;
+  date?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  concept?: Maybe<SortOrder>;
+  groupId?: Maybe<SortOrder>;
+  amount?: Maybe<SortOrder>;
+  currency?: Maybe<SortOrder>;
+  taxRateId?: Maybe<SortOrder>;
+  recipient?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
+  movementId?: Maybe<SortOrder>;
+  transportAgencyId?: Maybe<SortOrder>;
+  clientId?: Maybe<SortOrder>;
+  supplierId?: Maybe<SortOrder>;
+  bankAccountId?: Maybe<SortOrder>;
+  paymentMethod?: Maybe<SortOrder>;
+  stripePaymentIntentId?: Maybe<SortOrder>;
+  stripeClientSecret?: Maybe<SortOrder>;
 };
 
 export type TaxRateCreateInput = {
@@ -1635,7 +1655,7 @@ export type ProductWhereUniqueInput = {
   ISBN?: Maybe<Scalars['String']>;
   UPC?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
-  name_color_material_dimensionId_weight?: Maybe<NameColorMaterialDimensionIdWeightCompoundUniqueInput>;
+  name_color_material_dimensionId_weight_quantity?: Maybe<NameColorMaterialDimensionIdWeightQuantityCompoundUniqueInput>;
 };
 
 export type ConsumableWhereUniqueInput = {
@@ -1672,6 +1692,7 @@ export type ProductWhereInput = {
   isListed?: Maybe<NullableBooleanFilter>;
   variants?: Maybe<ProductFilter>;
   variantProduct?: Maybe<ProductFilter>;
+  quantity?: Maybe<NullableFloatFilter>;
   categories?: Maybe<CategoryFilter>;
   consumables?: Maybe<ConsumableFilter>;
   consumers?: Maybe<ConsumableFilter>;
@@ -1683,25 +1704,27 @@ export type ProductWhereInput = {
 };
 
 export type ProductOrderByInput = {
-  id?: Maybe<OrderByArg>;
-  productId?: Maybe<OrderByArg>;
-  ASIN?: Maybe<OrderByArg>;
-  EAN?: Maybe<OrderByArg>;
-  ISBN?: Maybe<OrderByArg>;
-  UPC?: Maybe<OrderByArg>;
-  active?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  description?: Maybe<OrderByArg>;
-  manufacturerId?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  slug?: Maybe<OrderByArg>;
-  dimensionId?: Maybe<OrderByArg>;
-  material?: Maybe<OrderByArg>;
-  color?: Maybe<OrderByArg>;
-  weight?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  isListed?: Maybe<OrderByArg>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  ASIN?: Maybe<SortOrder>;
+  EAN?: Maybe<SortOrder>;
+  ISBN?: Maybe<SortOrder>;
+  UPC?: Maybe<SortOrder>;
+  active?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+  manufacturerId?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  dimensionId?: Maybe<SortOrder>;
+  material?: Maybe<SortOrder>;
+  color?: Maybe<SortOrder>;
+  weight?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  isListed?: Maybe<SortOrder>;
+  tags?: Maybe<SortOrder>;
+  quantity?: Maybe<SortOrder>;
 };
 
 export type UnitCreateInput = {
@@ -1730,6 +1753,7 @@ export type ProductCreateInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -1766,6 +1790,7 @@ export type ProductUpdateInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -1963,23 +1988,23 @@ export type SupplierWhereInput = {
 };
 
 export type SupplierOrderByInput = {
-  active?: Maybe<OrderByArg>;
-  createdAt?: Maybe<OrderByArg>;
-  email?: Maybe<OrderByArg>;
-  fiscalNumber?: Maybe<OrderByArg>;
-  id?: Maybe<OrderByArg>;
-  language?: Maybe<OrderByArg>;
-  mobile?: Maybe<OrderByArg>;
-  name?: Maybe<OrderByArg>;
-  supplierId?: Maybe<OrderByArg>;
-  phone?: Maybe<OrderByArg>;
-  addressId?: Maybe<OrderByArg>;
-  billingAddressId?: Maybe<OrderByArg>;
-  updatedAt?: Maybe<OrderByArg>;
-  website?: Maybe<OrderByArg>;
-  withAccount?: Maybe<OrderByArg>;
-  source?: Maybe<OrderByArg>;
-  notes?: Maybe<OrderByArg>;
+  active?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  email?: Maybe<SortOrder>;
+  fiscalNumber?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  language?: Maybe<SortOrder>;
+  mobile?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  supplierId?: Maybe<SortOrder>;
+  phone?: Maybe<SortOrder>;
+  addressId?: Maybe<SortOrder>;
+  billingAddressId?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  website?: Maybe<SortOrder>;
+  withAccount?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  notes?: Maybe<SortOrder>;
 };
 
 export type SupplierCreateInput = {
@@ -2237,7 +2262,7 @@ export type AddressWhereInput = {
   transportAgencyBillingAddress?: Maybe<TransportAgencyWhereInput>;
 };
 
-export enum OrderByArg {
+export enum SortOrder {
   Asc = 'asc',
   Desc = 'desc'
 }
@@ -2878,12 +2903,13 @@ export type TaxRateUpdateOneWithoutGroupInput = {
   upsert?: Maybe<TaxRateUpsertWithoutGroupInput>;
 };
 
-export type NameColorMaterialDimensionIdWeightCompoundUniqueInput = {
+export type NameColorMaterialDimensionIdWeightQuantityCompoundUniqueInput = {
   name: Scalars['String'];
   color: Scalars['String'];
   material: Scalars['String'];
   dimensionId: Scalars['String'];
   weight: Scalars['Float'];
+  quantity: Scalars['Float'];
 };
 
 export type BatchFilter = {
@@ -3585,6 +3611,7 @@ export type FileWhereInput = {
   movementId?: Maybe<NullableStringFilter>;
   payments?: Maybe<PaymentFilter>;
   paymentId?: Maybe<NullableStringFilter>;
+  order?: Maybe<NullableIntFilter>;
   AND?: Maybe<Array<FileWhereInput>>;
   OR?: Maybe<Array<FileWhereInput>>;
   NOT?: Maybe<Array<FileWhereInput>>;
@@ -3699,6 +3726,7 @@ export type FileCreateWithoutMessagesInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
@@ -3751,6 +3779,7 @@ export type FileScalarWhereInput = {
   movementId?: Maybe<NullableStringFilter>;
   payments?: Maybe<PaymentFilter>;
   paymentId?: Maybe<NullableStringFilter>;
+  order?: Maybe<NullableIntFilter>;
   AND?: Maybe<Array<FileScalarWhereInput>>;
   OR?: Maybe<Array<FileScalarWhereInput>>;
   NOT?: Maybe<Array<FileScalarWhereInput>>;
@@ -3899,6 +3928,7 @@ export type FileCreateWithoutClientsInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
@@ -4469,6 +4499,7 @@ export type FileCreateWithoutTransportAgenciesInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -4984,6 +5015,7 @@ export type ProductCreateWithoutNotificationsInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -5040,6 +5072,7 @@ export type ProductUpdateWithoutNotificationsDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -5088,6 +5121,7 @@ export type ProductCreateWithoutTaxRatesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -5162,6 +5196,7 @@ export type ProductUpdateWithoutTaxRatesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -5317,6 +5352,7 @@ export type ProductCreateWithoutUnitsInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -5395,6 +5431,7 @@ export type FileCreateWithoutProductsInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -5516,6 +5553,7 @@ export type ProductCreateWithoutVariantProductInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -5551,6 +5589,7 @@ export type ProductCreateWithoutVariantsInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -5813,6 +5852,7 @@ export type ProductScalarWhereInput = {
   isListed?: Maybe<NullableBooleanFilter>;
   variants?: Maybe<ProductFilter>;
   variantProduct?: Maybe<ProductFilter>;
+  quantity?: Maybe<NullableFloatFilter>;
   categories?: Maybe<CategoryFilter>;
   consumables?: Maybe<ConsumableFilter>;
   consumers?: Maybe<ConsumableFilter>;
@@ -6008,6 +6048,7 @@ export type FileCreateWithoutSettingsInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -6037,6 +6078,7 @@ export type FileUpdateWithoutSettingsDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -6268,6 +6310,7 @@ export type FileCreateWithoutSuppliersInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -6785,6 +6828,7 @@ export type FileUpdateWithoutMessagesDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
@@ -6814,6 +6858,7 @@ export type FileUpdateManyDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
 };
 
 export type MessageCreatementionsInput = {
@@ -7082,6 +7127,7 @@ export type FileUpdateWithoutClientsDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
@@ -7318,7 +7364,6 @@ export type ClientUpdateOneWithoutAddressInput = {
 };
 
 export type InvoiceUpdateWithoutClientDataInput = {
-  id?: Maybe<Scalars['Int']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   withTaxes?: Maybe<Scalars['Boolean']>;
   notes?: Maybe<Scalars['String']>;
@@ -7327,7 +7372,6 @@ export type InvoiceUpdateWithoutClientDataInput = {
 };
 
 export type InvoiceUpdateManyDataInput = {
-  id?: Maybe<Scalars['Int']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   withTaxes?: Maybe<Scalars['Boolean']>;
   notes?: Maybe<Scalars['String']>;
@@ -7444,6 +7488,7 @@ export type FileUpdateWithoutTransportAgenciesDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -7823,6 +7868,7 @@ export type FileUpdateWithoutProductsDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -7959,6 +8005,7 @@ export type ProductUpdateWithoutVariantProductDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -7994,6 +8041,7 @@ export type ProductUpdateManyDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
 };
 
@@ -8015,6 +8063,7 @@ export type ProductUpdateWithoutVariantsDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -8276,6 +8325,7 @@ export type FileUpdateWithoutSuppliersDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -8475,6 +8525,7 @@ export type ProductCreateWithoutMovementsInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -8562,6 +8613,7 @@ export type FileCreateWithoutMovementsInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -8786,6 +8838,7 @@ export type ProductUpdateWithoutMovementsDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -8867,7 +8920,6 @@ export type TransportUpsertWithWhereUniqueWithoutMovementInput = {
 };
 
 export type InvoiceUpdateWithoutMovementsDataInput = {
-  id?: Maybe<Scalars['Int']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   withTaxes?: Maybe<Scalars['Boolean']>;
   notes?: Maybe<Scalars['String']>;
@@ -9038,6 +9090,7 @@ export type ProductCreateWithoutImagesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -9385,6 +9438,7 @@ export type ProductCreateWithoutInteractionsInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -9457,6 +9511,7 @@ export type ProductCreateWithoutInventoriesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -9861,6 +9916,7 @@ export type FileCreateWithoutInvoiceInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -10016,6 +10072,7 @@ export type FileCreateWithoutPaymentsInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -10726,6 +10783,7 @@ export type FileCreateWithoutTransportersInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -10924,6 +10982,7 @@ export type FileCreateWithoutManufacturersInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierCreateManyWithoutImagesInput>;
@@ -11067,6 +11126,7 @@ export type FileCreateWithoutImageCategoryInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -11096,6 +11156,7 @@ export type FileCreateWithoutBannerCategoryInput = {
   url: Scalars['String'];
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerCreateManyWithoutImagesInput>;
   messages?: Maybe<MessageCreateManyWithoutImagesInput>;
   clients?: Maybe<ClientCreateManyWithoutImagesInput>;
@@ -11148,6 +11209,7 @@ export type ProductCreateWithoutConsumersInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -11183,6 +11245,7 @@ export type ProductCreateWithoutConsumablesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -11633,6 +11696,7 @@ export type FileUpdateWithoutMovementsDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -11955,6 +12019,7 @@ export type ProductUpdateWithoutInteractionsDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -12042,6 +12107,7 @@ export type ProductUpdateWithoutInventoriesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -12262,6 +12328,7 @@ export type FileUpdateWithoutInvoiceDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -12650,6 +12717,7 @@ export type FileUpdateWithoutManufacturersDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
   suppliers?: Maybe<SupplierUpdateManyWithoutImagesInput>;
@@ -12756,6 +12824,7 @@ export type FileUpdateWithoutImageCategoryDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -12790,6 +12859,7 @@ export type FileUpdateWithoutBannerCategoryDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -12853,6 +12923,7 @@ export type ProductUpdateWithoutConsumersDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -12893,6 +12964,7 @@ export type ProductUpdateWithoutConsumablesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -13052,6 +13124,7 @@ export type ProductUpdateWithoutImagesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -13100,7 +13173,6 @@ export type TransporterUpdateWithoutImagesDataInput = {
 };
 
 export type InvoiceUpdateWithoutPdfDataInput = {
-  id?: Maybe<Scalars['Int']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   withTaxes?: Maybe<Scalars['Boolean']>;
   notes?: Maybe<Scalars['String']>;
@@ -13204,6 +13276,7 @@ export type ProductCreateWithoutBatchesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -13314,6 +13387,7 @@ export type ProductUpdateWithoutBatchesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -13429,6 +13503,7 @@ export type ProductCreateWithoutManufacturerInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   batches?: Maybe<BatchCreateManyWithoutProductInput>;
@@ -13483,6 +13558,7 @@ export type ProductCreateWithoutCategoriesInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductCreatetagsInput>;
   dimensions?: Maybe<DimensionCreateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerCreateOneWithoutProductsInput>;
@@ -13686,6 +13762,7 @@ export type FileUpdateWithoutPaymentsDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -13724,6 +13801,7 @@ export type FileUpdateWithoutTransportersDataInput = {
   url?: Maybe<Scalars['String']>;
   movementId?: Maybe<Scalars['String']>;
   paymentId?: Maybe<Scalars['String']>;
+  order?: Maybe<Scalars['Int']>;
   manufacturers?: Maybe<ManufacturerUpdateManyWithoutImagesInput>;
   messages?: Maybe<MessageUpdateManyWithoutImagesInput>;
   clients?: Maybe<ClientUpdateManyWithoutImagesInput>;
@@ -13908,6 +13986,7 @@ export type ProductUpdateWithoutManufacturerDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   batches?: Maybe<BatchUpdateManyWithoutProductInput>;
@@ -13943,6 +14022,7 @@ export type ProductUpdateWithoutCategoriesDataInput = {
   weight?: Maybe<Scalars['Float']>;
   source?: Maybe<Scalars['String']>;
   isListed?: Maybe<Scalars['Boolean']>;
+  quantity?: Maybe<Scalars['Float']>;
   tags?: Maybe<ProductUpdatetagsInput>;
   dimensions?: Maybe<DimensionUpdateOneWithoutProductInput>;
   manufacturer?: Maybe<ManufacturerUpdateOneWithoutProductsInput>;
@@ -14049,7 +14129,7 @@ export type QueryClientArgs = {
 
 export type QueryClientsArgs = {
   where?: Maybe<ClientWhereInput>;
-  orderBy?: Maybe<ClientOrderByInput>;
+  orderBy?: Maybe<Array<ClientOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<ClientWhereUniqueInput>;
@@ -14075,7 +14155,7 @@ export type QueryInventoryArgs = {
 
 export type Query_InventoriesArgs = {
   where?: Maybe<InventoryWhereInput>;
-  orderBy?: Maybe<InventoryOrderByInput>;
+  orderBy?: Maybe<Array<InventoryOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<InventoryWhereUniqueInput>;
@@ -14084,7 +14164,7 @@ export type Query_InventoriesArgs = {
 
 export type QueryInventoriesArgs = {
   where?: Maybe<InventoryWhereInput>;
-  orderBy?: Maybe<InventoryOrderByInput>;
+  orderBy?: Maybe<Array<InventoryOrderByInput>>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
 };
@@ -14097,7 +14177,7 @@ export type QueryInventoryCountArgs = {
 
 export type QuerySupplierInventoriesArgs = {
   where?: Maybe<InventoryWhereInput>;
-  orderBy?: Maybe<InventoryOrderByInput>;
+  orderBy?: Maybe<Array<InventoryOrderByInput>>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
 };
@@ -14129,7 +14209,7 @@ export type QueryWarehouseArgs = {
 
 export type QueryWarehousesArgs = {
   where?: Maybe<WarehouseWhereInput>;
-  orderBy?: Maybe<WarehouseOrderByInput>;
+  orderBy?: Maybe<Array<WarehouseOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<WarehouseWhereUniqueInput>;
@@ -14138,7 +14218,7 @@ export type QueryWarehousesArgs = {
 
 export type QueryTransportAgenciesArgs = {
   where?: Maybe<TransportAgencyWhereInput>;
-  orderBy?: Maybe<TransportAgencyOrderByInput>;
+  orderBy?: Maybe<Array<TransportAgencyOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<TransportAgencyWhereUniqueInput>;
@@ -14167,7 +14247,7 @@ export type QueryMovementArgs = {
 
 export type QueryMovementsArgs = {
   where?: Maybe<MovementWhereInput>;
-  orderBy?: Maybe<MovementOrderByInput>;
+  orderBy?: Maybe<Array<MovementOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<MovementWhereUniqueInput>;
@@ -14181,7 +14261,7 @@ export type QueryMovementCountArgs = {
 
 export type QueryClientMovementsArgs = {
   where?: Maybe<MovementWhereInput>;
-  orderBy?: Maybe<MovementOrderByInput>;
+  orderBy?: Maybe<Array<MovementOrderByInput>>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
 };
@@ -14194,7 +14274,7 @@ export type QueryClientMovementCountArgs = {
 
 export type QuerySupplierMovementsArgs = {
   where?: Maybe<MovementWhereInput>;
-  orderBy?: Maybe<MovementOrderByInput>;
+  orderBy?: Maybe<Array<MovementOrderByInput>>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
 };
@@ -14243,7 +14323,7 @@ export type QueryPaymentArgs = {
 
 export type QueryPaymentsArgs = {
   where?: Maybe<PaymentWhereInput>;
-  orderBy?: Maybe<PaymentOrderByInput>;
+  orderBy?: Maybe<Array<PaymentOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<PaymentWhereUniqueInput>;
@@ -14267,7 +14347,7 @@ export type QueryProductArgs = {
 
 export type QueryProductsArgs = {
   where?: Maybe<ProductWhereInput>;
-  orderBy?: Maybe<ProductOrderByInput>;
+  orderBy?: Maybe<Array<ProductOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<ProductWhereUniqueInput>;
@@ -14298,7 +14378,7 @@ export type QueryListedProductArgs = {
 
 export type QueryListedProductsArgs = {
   where?: Maybe<ProductWhereInput>;
-  orderBy?: Maybe<ProductOrderByInput>;
+  orderBy?: Maybe<Array<ProductOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
 };
@@ -14329,7 +14409,7 @@ export type QuerySupplierArgs = {
 
 export type QuerySuppliersArgs = {
   where?: Maybe<SupplierWhereInput>;
-  orderBy?: Maybe<SupplierOrderByInput>;
+  orderBy?: Maybe<Array<SupplierOrderByInput>>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   cursor?: Maybe<SupplierWhereUniqueInput>;
@@ -14349,7 +14429,7 @@ export type Mutation = {
   updateOneUser: ValidationPayload;
   deleteOneUser: ValidationPayload;
   changePassword: ResetPasswordPayload;
-  createOneSubscription: ValidationPayload;
+  createOneSubscription: SubscriptionPayload;
   authenticateShopifyIntegration: ValidationPayload;
   createOneMessage: Message;
   updateOneMessage?: Maybe<Message>;
@@ -14400,6 +14480,7 @@ export type Mutation = {
   deleteOneUnit?: Maybe<Unit>;
   deleteOneFile?: Maybe<File>;
   deleteOneConsumable?: Maybe<Consumable>;
+  updateProductImages: Array<File>;
   assignRole: ValidationPayload;
   createOneRole: Role;
   updateOneRole: ValidationPayload;
@@ -14794,11 +14875,13 @@ export type MutationCreateOneProductArgs = {
   weight?: Maybe<Scalars['Float']>;
   color?: Maybe<Scalars['String']>;
   material?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['Float']>;
   images?: Maybe<Array<Scalars['Upload']>>;
   taxRates?: Maybe<TaxRateCreateManyWithoutProductInput>;
   variants?: Maybe<Array<VariantProductInput>>;
   isListed?: Maybe<Scalars['Boolean']>;
   consumables?: Maybe<ConsumableCreateManyWithoutConsumerInput>;
+  tags?: Maybe<ProductCreatetagsInput>;
 };
 
 
@@ -14815,11 +14898,13 @@ export type MutationUpdateOneProductArgs = {
   weight?: Maybe<Scalars['Float']>;
   color?: Maybe<Scalars['String']>;
   material?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['Float']>;
   images?: Maybe<Array<Scalars['Upload']>>;
   taxRates?: Maybe<TaxRateUpdateManyWithoutProductInput>;
   variants?: Maybe<Array<VariantProductInput>>;
   isListed?: Maybe<Scalars['Boolean']>;
   consumables?: Maybe<ConsumableUpdateManyWithoutConsumerInput>;
+  tags?: Maybe<ProductUpdatetagsInput>;
 };
 
 
@@ -14840,6 +14925,11 @@ export type MutationDeleteOneFileArgs = {
 
 export type MutationDeleteOneConsumableArgs = {
   where: ConsumableWhereUniqueInput;
+};
+
+
+export type MutationUpdateProductImagesArgs = {
+  orders?: Maybe<Array<ImageOrderInput>>;
 };
 
 
@@ -14998,16 +15088,19 @@ export type Get_ProductQueryVariables = Exact<{
 
 
 export type Get_ProductQuery = { listedProduct: (
-    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'weight' | 'weightUnit' | 'material' | 'color' | 'lengthUnit' | 'currencySymbol' | 'description'>
-    & { dimensions: Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>, images: Array<Pick<File, 'id' | 'url'>>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount' | 'listPrice'>> }
+    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'weightUnit' | 'material' | 'color' | 'weight' | 'lengthUnit' | 'currencySymbol' | 'description'>
+    & { dimensions?: Maybe<Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount' | 'listPrice'>>, variants?: Maybe<Array<(
+      Pick<ListedProduct, 'id' | 'description' | 'material' | 'color' | 'weight'>
+      & { dimensions?: Maybe<Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount' | 'listPrice'>> }
+    )>>, images: Array<Pick<File, 'id' | 'url'>> }
   ) };
 
 export type Get_ProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type Get_ProductsQuery = { listedProducts: Array<(
-    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'material' | 'color' | 'weight' | 'weightUnit' | 'lengthUnit' | 'currencySymbol'>
-    & { dimensions: Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>, listedInventories: Array<Pick<ListedInventory, 'id' | 'amount'>>, images: Array<Pick<File, 'id' | 'url'>> }
+    Pick<ListedProduct, 'id' | 'name' | 'slug' | 'material' | 'color' | 'weight' | 'quantity'>
+    & { dimensions?: Maybe<Pick<Dimension, 'id' | 'height' | 'width' | 'depth'>>, images: Array<Pick<File, 'id' | 'url'>> }
   )> };
 
 
@@ -15042,15 +15135,38 @@ export const Get_ProductDocument = gql`
     id
     name
     slug
-    weight
     weightUnit
-    material
-    color
     dimensions {
       id
       height
       width
       depth
+    }
+    material
+    color
+    weight
+    listedInventories {
+      id
+      amount
+      listPrice
+    }
+    variants {
+      id
+      description
+      dimensions {
+        id
+        height
+        width
+        depth
+      }
+      material
+      color
+      weight
+      listedInventories {
+        id
+        amount
+        listPrice
+      }
     }
     lengthUnit
     images {
@@ -15058,11 +15174,6 @@ export const Get_ProductDocument = gql`
       url
     }
     currencySymbol
-    listedInventories {
-      id
-      amount
-      listPrice
-    }
     description
   }
 }
@@ -15077,22 +15188,16 @@ export const Get_ProductsDocument = gql`
     id
     name
     slug
-    material
-    color
-    weight
-    weightUnit
-    lengthUnit
     dimensions {
       id
       height
       width
       depth
     }
-    listedInventories {
-      id
-      amount
-    }
-    currencySymbol
+    material
+    color
+    weight
+    quantity
     images {
       id
       url

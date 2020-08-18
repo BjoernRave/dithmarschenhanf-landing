@@ -111,10 +111,12 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
             <InnerCheckoutWrapper>
               <Total>
                 Gesamt:{' '}
-                {cart.reduce(
-                  (prev, next) => prev + next.amount * next.listPrice,
-                  0
-                )}
+                {cart
+                  .reduce(
+                    (prev, next) => prev + next.amount * next.listPrice,
+                    0
+                  )
+                  .toFixed(2)}
                 €
               </Total>
               <CheckoutButton onClick={() => handleCheckout()}>

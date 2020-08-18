@@ -14,22 +14,16 @@ const GET_PRODUCTS = gql`
       id
       name
       slug
-      material
-      color
-      weight
-      weightUnit
-      lengthUnit
       dimensions {
         id
         height
         width
         depth
       }
-      listedInventories {
-        id
-        amount
-      }
-      currencySymbol
+      material
+      color
+      weight
+      quantity
       images {
         id
         url
@@ -85,22 +79,36 @@ const StyledText = styled(Description)`
 const Products: NextPage<Props> = ({}) => {
   const [{ data, error }] = useGet_ProductsQuery()
 
+  const groupedProducts = data?.listedProducts.reduce((prev, next) => {
+    if (!prev[next.name]) {
+      return { ...prev, [next.name]: [next] }
+    } else {
+      return { ...prev, [next.name]: [...prev[next.name], next] }
+    }
+  }, {})
+
   return (
     <>
       <Title>Produkte</Title>
 
       <ProductsWrapper>
-        {data?.listedProducts ? (
-          data?.listedProducts.map(({ name, slug, images, id }) => (
-            <Link key={id} href={`/produkte2/${slug}`}>
-              <ProductWrapper>
-                {images?.length > 0 && (
-                  <ProductImage alt='Produkt Bild' src={images[0].url} />
-                )}
-                <ProductName>{name}</ProductName>
-              </ProductWrapper>
-            </Link>
-          ))
+        {groupedProducts ? (
+          Object.keys(groupedProducts).map((groupedProduct) => {
+            const { name, slug, images, id } = groupedProducts[
+              groupedProduct
+            ][0]
+
+            return (
+              <Link key={id} href={`/produkte2/${slug}`}>
+                <ProductWrapper>
+                  {images?.length > 0 && (
+                    <ProductImage alt='Produkt Bild' src={images[0].url} />
+                  )}
+                  <ProductName>{name}</ProductName>
+                </ProductWrapper>
+              </Link>
+            )
+          })
         ) : (
           <Loader />
         )}

@@ -4,7 +4,7 @@ import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
 import { Get_ProductQuery, ListedProduct } from 'generated'
 import gql from 'graphql-tag'
-import { constructDimensionString } from 'lib/utils'
+import { constructDimensionString, createVariantName } from 'lib/utils'
 import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
 import dynamic from 'next/dynamic'
@@ -23,15 +23,38 @@ const GET_PRODUCT = gql`
       id
       name
       slug
-      weight
       weightUnit
-      material
-      color
       dimensions {
         id
         height
         width
         depth
+      }
+      material
+      color
+      weight
+      listedInventories {
+        id
+        amount
+        listPrice
+      }
+      variants {
+        id
+        description
+        dimensions {
+          id
+          height
+          width
+          depth
+        }
+        material
+        color
+        weight
+        listedInventories {
+          id
+          amount
+          listPrice
+        }
       }
       lengthUnit
       images {
@@ -39,11 +62,6 @@ const GET_PRODUCT = gql`
         url
       }
       currencySymbol
-      listedInventories {
-        id
-        amount
-        listPrice
-      }
       description
     }
   }
@@ -145,16 +163,19 @@ const Product: NextPage<Props> = ({ product }) => {
   const { addToCart } = useShoppingCart()
   const [isModal, setIsModal] = useState(false)
   const { description, images, name, slug } = product
+  const [activeVariantId, setActiveVariantId] = useState(product.variants[0].id)
+
+  const activeVariant = product.variants.find((v) => v.id === activeVariantId)
 
   const handleAdd = () => {
     let left = amount
 
-    for (const listedInventory of product.listedInventories) {
+    for (const listedInventory of activeVariant.listedInventories) {
       if (left > 0) {
         addToCart({
           images: product.images.map(({ url }) => url),
           name: product.name,
-          total: product.listedInventories.reduce(
+          total: activeVariant.listedInventories.reduce(
             (prev, next) => prev + next.amount,
             0
           ),
@@ -176,12 +197,27 @@ const Product: NextPage<Props> = ({ product }) => {
         <StyledCarousel images={images.map((i) => i.url)} />
         <DescriptionWrapper>
           <Title>{name}</Title>
-          <Price>{product.listedInventories[0].listPrice}€</Price>
+          <Price>
+            {activeVariant.listedInventories[0].listPrice.toFixed(2)}€
+          </Price>
+          <StyledSelect
+            label='Variante'
+            onChange={(e) => setActiveVariantId(e.target.value)}
+            value={activeVariantId}
+            options={product.variants.map((variant) => ({
+              value: variant.id,
+              label: createVariantName(
+                variant,
+                product.lengthUnit,
+                product.weightUnit
+              ),
+            }))}
+          />
           <BuySection>
             <StyledSelect
               label='Menge'
               options={new Array(
-                product.listedInventories.reduce(
+                activeVariant.listedInventories.reduce(
                   (prev, next) => prev + next.amount,
                   0
                 )
@@ -196,39 +232,39 @@ const Product: NextPage<Props> = ({ product }) => {
               <CartAdd size={40} style={{ marginLeft: 5 }} />
             </BuyButton>
           </BuySection>
-          {(product.material ||
-            product.color ||
-            product.weight ||
-            product.dimensions) && (
+          {(activeVariant.material ||
+            activeVariant.color ||
+            activeVariant.weight ||
+            activeVariant.dimensions) && (
             <Properties>
               <tbody>
-                {product.material && (
+                {activeVariant.material && (
                   <tr>
                     <td>Material:</td>
-                    <td>{product.material}</td>
+                    <td>{activeVariant.material}</td>
                   </tr>
                 )}
-                {product.color && (
+                {activeVariant.color && (
                   <tr>
                     <td>Farbe:</td>
-                    <td>{product.color}</td>
+                    <td>{activeVariant.color}</td>
                   </tr>
                 )}
-                {product.weight && (
+                {activeVariant.weight && (
                   <tr>
                     <td>Gewicht:</td>
                     <td>
-                      {product.weight}
+                      {activeVariant.weight}
                       {product.weightUnit}.
                     </td>
                   </tr>
                 )}
-                {product.dimensions && (
+                {activeVariant.dimensions && (
                   <tr>
                     <td>Abmaße:</td>
                     <td>
                       {constructDimensionString(
-                        product.dimensions,
+                        activeVariant.dimensions,
                         product.lengthUnit
                       )}
                     </td>

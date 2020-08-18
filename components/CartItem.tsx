@@ -89,7 +89,7 @@ const CartItem: FC<Props> = ({ cartItem }) => {
             label: String(ind + 1),
           }))}
         />
-        <Price>{listPrice * amount}€</Price>
+        <Price>{(listPrice * amount).toFixed(2)}€</Price>
         <RemoveButton
           title='Artikel entfernen'
           onClick={() => removeFromCart(id)}>

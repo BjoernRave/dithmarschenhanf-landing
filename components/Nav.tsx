@@ -122,9 +122,6 @@ const Nav: FC<Props> = ({}) => {
 
   const Navigation = () => (
     <>
-      {/* <Link href='/aktuelles'>
-        <NavItem>Aktuelles</NavItem>
-      </Link> */}
       <Link href='/verkaufstellen'>
         <NavItem>Verkaufstellen</NavItem>
       </Link>

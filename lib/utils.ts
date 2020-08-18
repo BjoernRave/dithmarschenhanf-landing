@@ -1,5 +1,5 @@
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
-import { Dimension } from 'generated'
+import { Dimension, ListedProductVariant } from 'generated'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Media, MediaUploadOptions } from 'tinacms'
 import { createClient } from 'urql'
@@ -137,4 +137,34 @@ export const constructDimensionString = (
   }
 
   return `${dimensions.height}x${dimensions.width}x${dimensions.depth}${lengthUnit}.`
+}
+
+export const createVariantName = (
+  variant: ListedProductVariant,
+  lengthUnit: string,
+  weightUnit: string
+) => {
+  const variantName = []
+
+  if (variant.color) {
+    variantName.push(variant.color)
+  }
+
+  if (variant.dimensions) {
+    variantName.push(constructDimensionString(variant.dimensions, lengthUnit))
+  }
+
+  if (variant.material) {
+    variantName.push(variant.material)
+  }
+
+  if (variant.weight) {
+    variantName.push(`${variant.weight}${weightUnit}.`)
+  }
+
+  if (variant.quantity) {
+    variantName.push(`${variant.quantity} Stück`)
+  }
+
+  return variantName.join(' - ')
 }
