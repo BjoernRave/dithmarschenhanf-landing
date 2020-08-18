@@ -8,6 +8,7 @@ import { constructDimensionString, createVariantName } from 'lib/utils'
 import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
@@ -40,6 +41,7 @@ const GET_PRODUCT = gql`
       }
       variants {
         id
+        slug
         description
         dimensions {
           id
@@ -159,27 +161,36 @@ const StyledCarousel = styled(ImageCarousel)`
 `
 
 const Product: NextPage<Props> = ({ product }) => {
+  const router = useRouter()
   const [amount, setAmount] = useState(1)
   const { addToCart } = useShoppingCart()
   const [isModal, setIsModal] = useState(false)
-  const { description, images, name, slug } = product
-  const [activeVariantId, setActiveVariantId] = useState(product.variants[0].id)
-
-  const activeVariant = product.variants.find((v) => v.id === activeVariantId)
+  const {
+    description,
+    images,
+    name,
+    variants,
+    listedInventories,
+    material,
+    quantity,
+    color,
+    weight,
+    dimensions,
+    weightUnit,
+    lengthUnit,
+  } = product
 
   const handleAdd = () => {
     let left = amount
 
-    for (const listedInventory of activeVariant.listedInventories) {
+    for (const listedInventory of listedInventories) {
       if (left > 0) {
         addToCart({
-          images: product.images.map(({ url }) => url),
-          name: product.name,
-          total: activeVariant.listedInventories.reduce(
+          total: listedInventories.reduce(
             (prev, next) => prev + next.amount,
             0
           ),
-          slug: product.slug,
+          product,
           id: listedInventory.id,
           listPrice: listedInventory.listPrice,
           amount:
@@ -197,15 +208,18 @@ const Product: NextPage<Props> = ({ product }) => {
         <StyledCarousel images={images.map((i) => i.url)} />
         <DescriptionWrapper>
           <Title>{name}</Title>
-          <Price>
-            {activeVariant.listedInventories[0].listPrice.toFixed(2)}€
-          </Price>
+          <Price>{listedInventories[0].listPrice.toFixed(2)}€</Price>
           <StyledSelect
             label='Variante'
-            onChange={(e) => setActiveVariantId(e.target.value)}
-            value={activeVariantId}
-            options={product.variants.map((variant) => ({
-              value: variant.id,
+            onChange={(e) =>
+              router.replace(
+                `/produkte2/[slug]`,
+                `/produkte2/${e.target.value}`
+              )
+            }
+            value={product}
+            options={[product, ...variants].map((variant) => ({
+              value: variant.slug,
               label: createVariantName(
                 variant,
                 product.lengthUnit,
@@ -217,10 +231,7 @@ const Product: NextPage<Props> = ({ product }) => {
             <StyledSelect
               label='Menge'
               options={new Array(
-                activeVariant.listedInventories.reduce(
-                  (prev, next) => prev + next.amount,
-                  0
-                )
+                listedInventories.reduce((prev, next) => prev + next.amount, 0)
               )
                 .fill(0)
                 .map((v, ind) => ({ value: ind + 1, label: String(ind + 1) }))}
@@ -232,42 +243,40 @@ const Product: NextPage<Props> = ({ product }) => {
               <CartAdd size={40} style={{ marginLeft: 5 }} />
             </BuyButton>
           </BuySection>
-          {(activeVariant.material ||
-            activeVariant.color ||
-            activeVariant.weight ||
-            activeVariant.dimensions) && (
+          {(material || color || weight || dimensions || quantity) && (
             <Properties>
               <tbody>
-                {activeVariant.material && (
+                {material && (
                   <tr>
                     <td>Material:</td>
-                    <td>{activeVariant.material}</td>
+                    <td>{material}</td>
                   </tr>
                 )}
-                {activeVariant.color && (
+                {color && (
                   <tr>
                     <td>Farbe:</td>
-                    <td>{activeVariant.color}</td>
+                    <td>{color}</td>
                   </tr>
                 )}
-                {activeVariant.weight && (
+                {weight && (
                   <tr>
                     <td>Gewicht:</td>
                     <td>
-                      {activeVariant.weight}
-                      {product.weightUnit}.
+                      {weight}
+                      {weightUnit}.
                     </td>
                   </tr>
                 )}
-                {activeVariant.dimensions && (
+                {dimensions && (
                   <tr>
                     <td>Abmaße:</td>
-                    <td>
-                      {constructDimensionString(
-                        activeVariant.dimensions,
-                        product.lengthUnit
-                      )}
-                    </td>
+                    <td>{constructDimensionString(dimensions, lengthUnit)}</td>
+                  </tr>
+                )}
+                {quantity && (
+                  <tr>
+                    <td>Menge:</td>
+                    <td>{quantity} Stück</td>
                   </tr>
                 )}
               </tbody>
@@ -294,9 +303,8 @@ Product.getInitialProps = async ({ urqlClient, query }: NextPageContext) => {
   const response: OperationResult<Get_ProductQuery> = await urqlClient
     .query(GET_PRODUCT, { slug: query.slug as string })
     .toPromise()
-  console.log(response)
 
-  return { product: response?.data?.listedProduct }
+  return { product: response?.data?.listedProduct as any }
 }
 
 // export async function getStaticProps({ params }) {

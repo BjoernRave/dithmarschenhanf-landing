@@ -1,5 +1,6 @@
 import { XCircle } from '@styled-icons/boxicons-solid/XCircle'
 import Select from 'components/Select'
+import { createVariantName } from 'lib/utils'
 import Link from 'next/link'
 import React, { FC } from 'react'
 import styled from 'styled-components'
@@ -35,6 +36,7 @@ const Price = styled.span`
   font-size: 28px;
   font-weight: bold;
   margin: 0 20px;
+  width: 100px;
 `
 
 const Numbers = styled.div`
@@ -57,14 +59,20 @@ const StyledX = styled(XCircle)`
 
 const CartItem: FC<Props> = ({ cartItem }) => {
   const { removeFromCart, setCart, cart } = useShoppingCart()
-  const { listPrice, id, name, amount, total, images, slug } = cartItem
+  const { listPrice, id, amount, total, product } = cartItem
   return (
     <ItemWrapper>
       <LeftImageWrapper>
-        <ItemImage src={images[0]} alt={name} />
-        <Link passHref href={`/produkte2/${slug}`}>
+        <ItemImage src={product.images[0].url} alt={name} />
+        <Link passHref href={`/produkte2/${product.slug}`}>
           <a>
-            <ItemName>{name}</ItemName>
+            <ItemName>
+              {`${product.name} ${createVariantName(
+                product,
+                product.lengthUnit,
+                product.weightUnit
+              )}`}
+            </ItemName>
           </a>
         </Link>
       </LeftImageWrapper>

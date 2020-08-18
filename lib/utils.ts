@@ -1,5 +1,5 @@
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
-import { Dimension, ListedProductVariant } from 'generated'
+import { Dimension, ListedProduct } from 'generated'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Media, MediaUploadOptions } from 'tinacms'
 import { createClient } from 'urql'
@@ -140,7 +140,7 @@ export const constructDimensionString = (
 }
 
 export const createVariantName = (
-  variant: ListedProductVariant,
+  variant: Partial<ListedProduct>,
   lengthUnit: string,
   weightUnit: string
 ) => {

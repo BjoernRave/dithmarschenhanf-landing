@@ -103,7 +103,7 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
         <>
           <ItemsWrapper>
             {cart.map((cartItem) => (
-              <CartItem key={cartItem.slug} cartItem={cartItem} />
+              <CartItem key={cartItem.product.slug} cartItem={cartItem} />
             ))}
           </ItemsWrapper>
 

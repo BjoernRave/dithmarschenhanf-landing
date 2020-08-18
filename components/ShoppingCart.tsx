@@ -1,13 +1,12 @@
+import { ListedProduct } from 'generated'
 import { createContext, Dispatch, SetStateAction, useContext } from 'react'
 
 export interface CartItem {
-  name: string
-  slug: string
   amount: number
   total: number
   listPrice: number
   id: string
-  images: string[]
+  product: Partial<ListedProduct>
 }
 
 const initialValues: {
