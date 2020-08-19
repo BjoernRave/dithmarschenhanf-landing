@@ -16,6 +16,7 @@ const Content = styled.footer`
   justify-content: space-around;
   margin-top: -20px;
   padding-bottom: 50px;
+  align-items: center;
 
   @media (max-width: 767px) {
     flex-direction: column-reverse;
@@ -40,6 +41,7 @@ const ItemSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin: 20px 0;
 
   @media (max-width: 767px) {
     align-items: center;
@@ -64,8 +66,7 @@ const Copyright = styled.span`
   bottom: 10px;
   left: 0;
   right: 0;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
   width: 500px;
   text-align: center;
 
@@ -83,7 +84,7 @@ const SocialIcon = styled.img`
 const EmailLink = styled.a`
   color: white;
   cursor: pointer;
-  margin-top: 20px;
+  margin: 20px 0;
 `
 
 const Footer: FC<Props> = (props) => {
@@ -112,6 +113,9 @@ const Footer: FC<Props> = (props) => {
         </SocialSection>
 
         <ItemSection>
+          <Link href='/agb'>
+            <FooterLink>Allgemeine Geschäftsbedingungen</FooterLink>
+          </Link>
           <Link href='/datenschutz'>
             <FooterLink>Datenschutzerklärung</FooterLink>
           </Link>
