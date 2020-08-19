@@ -1,7 +1,13 @@
 import { ChevronLeft } from '@styled-icons/boxicons-regular/ChevronLeft'
 import { ChevronRight } from '@styled-icons/boxicons-regular/ChevronRight'
 import { useEmblaCarousel } from 'embla-carousel/react'
-import React, { CSSProperties, FC, useCallback, useState } from 'react'
+import React, {
+  CSSProperties,
+  FC,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
@@ -160,10 +166,21 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
     (index) => {
       if (!embla || !emblaThumbs) return
       if (emblaThumbs.clickAllowed()) embla.scrollTo(index)
-      setSelectedIndex(embla.selectedScrollSnap())
     },
     [embla, emblaThumbs]
   )
+
+  const onSelect = useCallback(() => {
+    if (!embla || !emblaThumbs) return
+    setSelectedIndex(embla.selectedScrollSnap())
+    emblaThumbs.scrollTo(embla.selectedScrollSnap())
+  }, [embla, emblaThumbs, setSelectedIndex])
+
+  useEffect(() => {
+    if (!embla) return
+    onSelect()
+    embla.on('select', onSelect)
+  }, [embla, onSelect])
 
   return (
     <div {...props}>
