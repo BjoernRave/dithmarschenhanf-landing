@@ -142,7 +142,7 @@ const Thumb = ({ selected, onClick, imgSrc }) => (
   </div>
 )
 
-const ImageCarousel: FC<Props> = ({ images, ...props }) => {
+const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
   const [EmblaCarouselReact, embla] = useEmblaCarousel({
     loop: true,
     containScroll: 'keepSnaps',
@@ -166,44 +166,41 @@ const ImageCarousel: FC<Props> = ({ images, ...props }) => {
   )
 
   return (
-    <Wrapper {...props}>
-      <EmblaCarouselReact className='embla__viewport'>
-        <div className='embla__container'>
-          {images.map((image, index) => (
-            <div className='embla__slide' key={index}>
-              <div className='embla__slide__inner'>
-                <img
-                  className='embla__slide__img'
-                  src={image}
-                  // style={{ height: 400, width: 'auto' }}
-                  alt={`${name}_${index}`}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </EmblaCarouselReact>
-      <div className='embla embla--thumb'>
-        <EmblaCarouselReactThumbs className='embla__viewport'>
-          <div className='embla__container embla__container--thumb'>
+    <div {...props}>
+      <Wrapper>
+        <EmblaCarouselReact className='embla__viewport'>
+          <div className='embla__container'>
             {images.map((image, index) => (
-              <Thumb
-                onClick={() => onThumbClick(index)}
-                selected={index === selectedIndex}
-                imgSrc={image}
-                key={index}
-              />
+              <div className='embla__slide' key={index}>
+                <div className='embla__slide__inner'>
+                  <img className='embla__slide__img' src={image} alt={name} />
+                </div>
+              </div>
             ))}
           </div>
-        </EmblaCarouselReactThumbs>
-      </div>
-      <NextButton onClick={() => scrollNext()}>
-        <ChevronRight />
-      </NextButton>
-      <PrevButton onClick={() => scrollPrev()}>
-        <ChevronLeft />
-      </PrevButton>
-    </Wrapper>
+        </EmblaCarouselReact>
+        <div className='embla embla--thumb'>
+          <EmblaCarouselReactThumbs className='embla__viewport'>
+            <div className='embla__container embla__container--thumb'>
+              {images.map((image, index) => (
+                <Thumb
+                  onClick={() => onThumbClick(index)}
+                  selected={index === selectedIndex}
+                  imgSrc={image}
+                  key={index}
+                />
+              ))}
+            </div>
+          </EmblaCarouselReactThumbs>
+        </div>
+        <NextButton onClick={() => scrollNext()}>
+          <ChevronRight />
+        </NextButton>
+        <PrevButton onClick={() => scrollPrev()}>
+          <ChevronLeft />
+        </PrevButton>
+      </Wrapper>
+    </div>
   )
 }
 
@@ -212,4 +209,5 @@ export default ImageCarousel
 interface Props {
   images: string[]
   style?: CSSProperties
+  name: string
 }

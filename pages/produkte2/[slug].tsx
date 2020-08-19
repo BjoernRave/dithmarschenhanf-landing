@@ -1,5 +1,6 @@
 import { CartAdd } from '@styled-icons/boxicons-solid/CartAdd'
 import EinkaufswagenModal from 'components/EinkaufswagenModal'
+import ImageCarousel from 'components/ImageCarousel'
 import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
 import { Get_ProductQuery, ListedProduct } from 'generated'
@@ -7,16 +8,11 @@ import gql from 'graphql-tag'
 import { constructDimensionString, createVariantName } from 'lib/utils'
 import { NextPage, NextPageContext } from 'next'
 import { withUrqlClient } from 'next-urql'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
 import { OperationResult } from 'urql'
-
-const ImageCarousel = dynamic(() => import('components/ImageCarousel'), {
-  ssr: false,
-})
 
 const GET_PRODUCT = gql`
   query GET_PRODUCT($slug: String!) {
@@ -205,7 +201,7 @@ const Product: NextPage<Props> = ({ product }) => {
   return (
     <ProductWrapper>
       <ContentWrapper>
-        <StyledCarousel images={images.map((i) => i.url)} />
+        <StyledCarousel name={name} images={images.map((i) => i.url)} />
         <DescriptionWrapper>
           <Title>{name}</Title>
           <Price>{listedInventories[0].listPrice.toFixed(2)}€</Price>

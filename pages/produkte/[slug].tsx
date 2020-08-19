@@ -1,13 +1,9 @@
+import ImageCarousel from 'components/ImageCarousel'
 import { products } from 'lib/products'
 import { Product as ProductType } from 'lib/types'
 import { NextPage } from 'next'
-import dynamic from 'next/dynamic'
 import React from 'react'
 import styled from 'styled-components'
-
-const ImageCarousel = dynamic(() => import('components/ImageCarousel'), {
-  ssr: false,
-})
 
 const Haltbarkeit = styled.span`
   padding: 40px 0;
@@ -40,12 +36,12 @@ const NutrientWrapper = styled.div`
 `
 
 const Product: NextPage<Props> = ({ product }) => {
-  const { description, images, name, slug, nutrients } = product
+  const { description, images, name, nutrients } = product
 
   return (
     <ProductWrapper>
       <Title>{name}</Title>
-      <ImageCarousel images={images} />
+      <ImageCarousel name={name} images={images} />
       <Description>{description}</Description>
       {product.mhd && (
         <Haltbarkeit>Mindesthaltbarkeitsdatum: {product.mhd}</Haltbarkeit>
