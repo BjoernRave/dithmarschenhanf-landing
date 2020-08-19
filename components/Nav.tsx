@@ -49,15 +49,24 @@ const Actions = styled.nav`
   }
 `
 
-const MenuButton = styled.img`
+const MobileMenu = styled.div`
+  display: flex;
+  align-items: center;
+
+  @media (min-width: 767px) {
+    display: none;
+  }
+`
+
+const MenuButton = styled.button`
+  border: none;
+  background-color: transparent;
   cursor: pointer;
-  display: none;
+  margin-left: 20px;
+  transform: scale(1.2);
+
   height: 30px;
   width: 30px;
-
-  @media (max-width: 767px) {
-    display: block;
-  }
 `
 
 const Menu = styled.nav`
@@ -173,11 +182,26 @@ const Nav: FC<Props> = ({}) => {
               </Link>
             )}
           </Actions>
-          <MenuButton
-            onClick={() => setIsMenu(true)}
-            alt='open-mobile-menu'
-            src='/menu.svg'
-          />
+          <MobileMenu>
+            {(query.shop || process.env.NODE_ENV === 'development') && (
+              <Link href='/einkaufswagen'>
+                <ShoppingCart>
+                  <ShoppingBag size={30} />
+                  <ShoppingCartAmount>
+                    {' '}
+                    {cart.reduce((prev, next) => prev + next.amount, 0)}
+                  </ShoppingCartAmount>
+                </ShoppingCart>
+              </Link>
+            )}
+            <MenuButton>
+              <img
+                onClick={() => setIsMenu(true)}
+                alt='open-mobile-menu'
+                src='/menu.svg'
+              />
+            </MenuButton>
+          </MobileMenu>
         </NavWrapper>
       </Headroom>
       {isMenu && (

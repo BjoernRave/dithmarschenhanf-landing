@@ -183,7 +183,9 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
   }, [embla, onSelect])
 
   return (
-    <div {...props}>
+    <div
+      {...props}
+      style={{ padding: '0 30px', boxSizing: 'border-box', ...props?.style }}>
       <Wrapper>
         <EmblaCarouselReact className='embla__viewport'>
           <div className='embla__container'>

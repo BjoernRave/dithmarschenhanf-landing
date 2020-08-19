@@ -71,8 +71,12 @@ const ProductWrapper = styled.div`
 
 const Title = styled.h1`
   display: table;
-  margin: 20px auto 100px auto;
+  margin: 20px auto 80px auto;
   font-size: 45px;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
 `
 
 const Description = styled.p`
@@ -156,6 +160,29 @@ const StyledCarousel = styled(ImageCarousel)`
   }
 `
 
+const ProductInfos = styled.section`
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    margin: 10px 0;
+  }
+
+  @media (max-width: 767px) {
+    align-items: center;
+  }
+`
+
+const MobileTitle = styled.h1`
+  font-size: 45px;
+  display: table;
+  margin: 20px auto;
+
+  @media (min-width: 767px) {
+    display: none;
+  }
+`
+
 const Product: NextPage<Props> = ({ product }) => {
   const router = useRouter()
   const [amount, setAmount] = useState(1)
@@ -200,84 +227,95 @@ const Product: NextPage<Props> = ({ product }) => {
 
   return (
     <ProductWrapper>
+      <MobileTitle>{name}</MobileTitle>
       <ContentWrapper>
         <StyledCarousel name={name} images={images.map((i) => i.url)} />
         <DescriptionWrapper>
           <Title>{name}</Title>
-          <Price>{listedInventories[0].listPrice.toFixed(2)}€</Price>
-          <StyledSelect
-            label='Variante'
-            onChange={(e) =>
-              router.replace(
-                `/produkte2/[slug]`,
-                `/produkte2/${e.target.value}`
-              )
-            }
-            value={product}
-            options={[product, ...variants].map((variant) => ({
-              value: variant.slug,
-              label: createVariantName(
-                variant,
-                product.lengthUnit,
-                product.weightUnit
-              ),
-            }))}
-          />
-          <BuySection>
+          <ProductInfos>
+            <Price>{listedInventories[0].listPrice.toFixed(2)}€</Price>
             <StyledSelect
-              label='Menge'
-              options={new Array(
-                listedInventories.reduce((prev, next) => prev + next.amount, 0)
-              )
-                .fill(0)
-                .map((v, ind) => ({ value: ind + 1, label: String(ind + 1) }))}
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              label='Variante'
+              onChange={(e) =>
+                router.replace(
+                  `/produkte2/[slug]`,
+                  `/produkte2/${e.target.value}`
+                )
+              }
+              value={product}
+              options={[product, ...variants].map((variant) => ({
+                value: variant.slug,
+                label: createVariantName(
+                  variant,
+                  product.lengthUnit,
+                  product.weightUnit
+                ),
+              }))}
             />
-            <BuyButton onClick={() => handleAdd()}>
-              In den Warenkorb
-              <CartAdd size={40} style={{ marginLeft: 5 }} />
-            </BuyButton>
-          </BuySection>
-          {(material || color || weight || dimensions || quantity) && (
-            <Properties>
-              <tbody>
-                {material && (
-                  <tr>
-                    <td>Material:</td>
-                    <td>{material}</td>
-                  </tr>
-                )}
-                {color && (
-                  <tr>
-                    <td>Farbe:</td>
-                    <td>{color}</td>
-                  </tr>
-                )}
-                {weight && (
-                  <tr>
-                    <td>Gewicht:</td>
-                    <td>
-                      {weight}
-                      {weightUnit}.
-                    </td>
-                  </tr>
-                )}
-                {dimensions && (
-                  <tr>
-                    <td>Abmaße:</td>
-                    <td>{constructDimensionString(dimensions, lengthUnit)}</td>
-                  </tr>
-                )}
-                {quantity && (
-                  <tr>
-                    <td>Menge:</td>
-                    <td>{quantity} Stück</td>
-                  </tr>
-                )}
-              </tbody>
-            </Properties>
-          )}
+            <BuySection>
+              <StyledSelect
+                label='Menge'
+                options={new Array(
+                  listedInventories.reduce(
+                    (prev, next) => prev + next.amount,
+                    0
+                  )
+                )
+                  .fill(0)
+                  .map((v, ind) => ({
+                    value: ind + 1,
+                    label: String(ind + 1),
+                  }))}
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+              />
+              <BuyButton onClick={() => handleAdd()}>
+                In den Warenkorb
+                <CartAdd size={40} style={{ marginLeft: 5 }} />
+              </BuyButton>
+            </BuySection>
+            {(material || color || weight || dimensions || quantity) && (
+              <Properties>
+                <tbody>
+                  {material && (
+                    <tr>
+                      <td>Material:</td>
+                      <td>{material}</td>
+                    </tr>
+                  )}
+                  {color && (
+                    <tr>
+                      <td>Farbe:</td>
+                      <td>{color}</td>
+                    </tr>
+                  )}
+                  {weight && (
+                    <tr>
+                      <td>Gewicht:</td>
+                      <td>
+                        {weight}
+                        {weightUnit}.
+                      </td>
+                    </tr>
+                  )}
+                  {dimensions && (
+                    <tr>
+                      <td>Abmaße:</td>
+                      <td>
+                        {constructDimensionString(dimensions, lengthUnit)}
+                      </td>
+                    </tr>
+                  )}
+                  {quantity && (
+                    <tr>
+                      <td>Menge:</td>
+                      <td>{quantity} Stück</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Properties>
+            )}
+          </ProductInfos>
           <Description>
             <Markdown source={description} />
           </Description>

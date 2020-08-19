@@ -18,9 +18,15 @@ import { useMutation } from 'urql'
 const Wrapper = styled.div`
   margin: 10px 50px;
   min-height: calc(100vh - ${NavHeight}px - ${FooterHeight}px - 22px);
+
+  @media (max-width: 767px) {
+    margin: 10px 20px;
+  }
 `
 
-const ItemsWrapper = styled.ul``
+const ItemsWrapper = styled.ul`
+  padding: 0;
+`
 
 const CheckoutButton = styled.button`
   padding: 10px 20px;
@@ -43,6 +49,10 @@ const CheckoutWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+
+  @media (max-width: 767px) {
+    align-items: center;
+  }
 `
 
 const Total = styled.span`
@@ -106,7 +116,6 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
               <CartItem key={cartItem.product.slug} cartItem={cartItem} />
             ))}
           </ItemsWrapper>
-
           <CheckoutWrapper>
             <InnerCheckoutWrapper>
               <Total>

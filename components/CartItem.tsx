@@ -16,6 +16,12 @@ const ItemWrapper = styled.li`
   border-radius: 10px;
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
   font-size: 20px;
+
+  @media (max-width: 950px) {
+    padding: 0 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 `
 
 const ItemName = styled.span``
@@ -25,6 +31,10 @@ const ItemImage = styled.img`
   width: auto;
   margin-right: 10px;
   border-radius: 10px 0 0 10px;
+
+  @media (max-width: 950px) {
+    display: none;
+  }
 `
 
 const LeftImageWrapper = styled.div`
