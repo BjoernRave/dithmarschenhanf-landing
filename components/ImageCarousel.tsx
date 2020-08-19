@@ -1,67 +1,209 @@
-import Carousel, { arrowsPlugin, Dots } from '@brainhubeu/react-carousel'
 import { ChevronLeft } from '@styled-icons/boxicons-regular/ChevronLeft'
 import { ChevronRight } from '@styled-icons/boxicons-regular/ChevronRight'
-import React, { CSSProperties, FC, useState } from 'react'
+import { useEmblaCarousel } from 'embla-carousel/react'
+import React, { CSSProperties, FC, useCallback, useState } from 'react'
 import styled from 'styled-components'
 
-const ArrowButton = styled.button`
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
+const Wrapper = styled.div`
+  position: relative;
+  padding: 20px;
+  max-width: 670px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .embla__viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .embla__viewport.is-draggable {
+    cursor: move;
+    cursor: grab;
+  }
+
+  .embla__viewport.is-dragging {
+    cursor: grabbing;
+  }
+
+  .embla__container {
+    display: flex;
+    user-select: none;
+    margin-left: -10px;
+  }
+
+  .embla__slide {
+    position: relative;
+    padding-left: 10px;
+    min-width: 100%;
+  }
+
+  .embla__slide__inner {
+    position: relative;
+    overflow: hidden;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .embla__slide__img {
+    position: absolute;
+    display: block;
+    height: 400px;
+    width: auto;
+  }
+
+  .embla--thumb {
+    padding-top: 0;
+    margin-top: 10px;
+  }
+
+  .embla__container--thumb {
+    cursor: default;
+    margin-left: -8px;
+  }
+
+  .embla__slide--thumb {
+    padding-left: 8px;
+    min-width: 20%;
+  }
+
+  .embla__slide__inner--thumb {
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    margin: 0;
+    padding: 0;
+    height: 100px;
+    width: 100%;
+    background-color: transparent;
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  .embla__slide__thumbnail {
+    position: absolute;
+    opacity: 0.2;
+    top: 0;
+    bottom: 0;
+    left: -10000%;
+    right: -10000%;
+    margin: auto;
+    min-width: 1000%;
+    min-height: 1000%;
+    max-width: none;
+    transform: scale(0.1);
+    transition: opacity 0.2s;
+  }
+
+  .embla__slide--thumb.is-selected .embla__slide__thumbnail {
+    opacity: 1;
+  }
 `
 
+const ArrowButton = styled.button`
+  outline: 0;
+  cursor: pointer;
+  background-color: transparent;
+  touch-action: manipulation;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  fill: #1bcacd;
+  padding: 0;
+`
+
+const NextButton = styled(ArrowButton)`
+  right: -30px;
+`
+
+const PrevButton = styled(ArrowButton)`
+  left: -30px;
+`
+
+const Thumb = ({ selected, onClick, imgSrc }) => (
+  <div
+    className={`embla__slide embla__slide--thumb ${
+      selected ? 'is-selected' : ''
+    }`}>
+    <button
+      onClick={onClick}
+      className='embla__slide__inner embla__slide__inner--thumb'
+      type='button'>
+      <img className='embla__slide__thumbnail' src={imgSrc} alt='A cool cat.' />
+    </button>
+  </div>
+)
+
 const ImageCarousel: FC<Props> = ({ images, ...props }) => {
-  const [slide, setSlide] = useState(0)
+  const [EmblaCarouselReact, embla] = useEmblaCarousel({
+    loop: true,
+    containScroll: 'keepSnaps',
+  })
+  const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla])
+  const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla])
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [EmblaCarouselReactThumbs, emblaThumbs] = useEmblaCarousel({
+    containScroll: 'keepSnaps',
+    selectedClass: '',
+    draggable: false,
+  })
 
-  const imageTags = images.map((image, index) => (
-    <img
-      style={{ height: 400, width: 'auto' }}
-      alt={`${name}_${index}`}
-      src={image}
-    />
-  ))
-
-  const thumbnailTags = images.map((image, index) => (
-    <img
-      style={{ height: 60, width: 'auto' }}
-      alt={`${name}_${index}`}
-      src={image}
-    />
-  ))
+  const onThumbClick = useCallback(
+    (index) => {
+      if (!embla || !emblaThumbs) return
+      if (emblaThumbs.clickAllowed()) embla.scrollTo(index)
+      setSelectedIndex(embla.selectedScrollSnap())
+    },
+    [embla, emblaThumbs]
+  )
 
   return (
-    <div {...props}>
-      <Carousel
-        value={slide}
-        slides={imageTags}
-        onChange={(val) => setSlide(Number(val))}
-        plugins={[
-          {
-            resolve: arrowsPlugin,
-            options: {
-              arrowLeft: (
-                <ArrowButton>
-                  <ChevronLeft size={40} />
-                </ArrowButton>
-              ),
-              arrowRight: (
-                <ArrowButton>
-                  <ChevronRight size={40} />
-                </ArrowButton>
-              ),
-              addArrowClickHandler: true,
-            },
-          },
-          'infinite',
-        ]}
-      />
-      <Dots
-        number={thumbnailTags.length}
-        thumbnails={thumbnailTags}
-        value={slide}
-        onChange={(val) => setSlide(Number(val))}
-      />
-    </div>
+    <Wrapper {...props}>
+      <EmblaCarouselReact className='embla__viewport'>
+        <div className='embla__container'>
+          {images.map((image, index) => (
+            <div className='embla__slide' key={index}>
+              <div className='embla__slide__inner'>
+                <img
+                  className='embla__slide__img'
+                  src={image}
+                  // style={{ height: 400, width: 'auto' }}
+                  alt={`${name}_${index}`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </EmblaCarouselReact>
+      <div className='embla embla--thumb'>
+        <EmblaCarouselReactThumbs className='embla__viewport'>
+          <div className='embla__container embla__container--thumb'>
+            {images.map((image, index) => (
+              <Thumb
+                onClick={() => onThumbClick(index)}
+                selected={index === selectedIndex}
+                imgSrc={image}
+                key={index}
+              />
+            ))}
+          </div>
+        </EmblaCarouselReactThumbs>
+      </div>
+      <NextButton onClick={() => scrollNext()}>
+        <ChevronRight />
+      </NextButton>
+      <PrevButton onClick={() => scrollPrev()}>
+        <ChevronLeft />
+      </PrevButton>
+    </Wrapper>
   )
 }
 
