@@ -1,46 +1,73 @@
-import Head from "next/head";
-import { FC } from "react";
+import { DefaultSeo, LocalBusinessJsonLd, LogoJsonLd } from 'next-seo'
+import Head from 'next/head'
+import { FC } from 'react'
+
+export const baseUrl = 'https://dithmarschenhanf.de'
 
 const Meta: FC = () => {
-  const title = "Dithmarschenhanf";
-  const url = "https://dithmarschenhanf.de";
-  const description =
-    "Dithmarschenhanf ist ein junges Projekt, welches Hanf als Nutzprodukt neu entdeckt und neu erfindet. Wir bauen den Nutzhanf auf unserem eigenen Feld an.";
+  const title = 'Dithmarschenhanf'
 
-  const logo = `${url}/logoCircle.png`;
+  const description =
+    'Dithmarschenhanf ist ein junges Projekt, welches Hanf als Nutzprodukt neu entdeckt und neu erfindet. Wir bauen den Nutzhanf auf unserem eigenen Feld an.'
+
+  const logo = `${baseUrl}/logoCircle.png`
 
   return (
-    <Head>
-      <meta charSet="utf-8" />
-      <link rel="shortcut icon" href="/logo_32.png" />
-      <meta httpEquiv="X-UA-Compatible" content="IE=edge"></meta>
-
-      <title>{title}</title>
-      <meta name="description" content={description} />
-
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:image" content={logo} />
-
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="Dithmarschenhanf" />
-      <meta property="og:image" content={logo} />
-
-      <link rel="canonical" href={url} />
-
-      <meta name="twitter:url" content={url} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={url} />
-
-      <link
-        href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
-        rel="stylesheet"
+    <>
+      <LogoJsonLd logo={logo} url={baseUrl} />
+      <LocalBusinessJsonLd
+        name={title}
+        images={[logo]}
+        type='Store'
+        id={baseUrl}
+        url={baseUrl}
+        description={description}
+        geo={{
+          latitude: '53.935109',
+          longitude: '9.047654',
+        }}
+        address={{
+          addressCountry: 'Deutschland',
+          postalCode: '25724',
+          addressRegion: 'Schleswig-Holstein',
+          addressLocality: 'Schmedeswurth',
+          streetAddress: 'Ostermenghusen 1a',
+        }}
       />
-    </Head>
-  );
-};
+      <DefaultSeo
+        openGraph={{
+          type: 'website',
+          locale: 'de_DE',
+          site_name: 'Dithmarschenhanf',
+          description,
+          title,
+          url: baseUrl,
+          images: [
+            {
+              url: logo,
+              alt: 'Dithmarschenhanf Logo',
+              height: 1050,
+              width: 1052,
+            },
+          ],
+        }}
+        title={title}
+        description={description}
+      />
+      <Head>
+        <meta charSet='utf-8' />
+        <link rel='shortcut icon' href='/logo_32.png' />
+        <meta httpEquiv='X-UA-Compatible' content='IE=edge'></meta>
 
-export default Meta;
+        <title>{title}</title>
+
+        <link
+          href='https://fonts.googleapis.com/css?family=Roboto&display=swap'
+          rel='stylesheet'
+        />
+      </Head>
+    </>
+  )
+}
+
+export default Meta

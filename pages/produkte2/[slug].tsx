@@ -1,12 +1,14 @@
 import { CartAdd } from '@styled-icons/boxicons-solid/CartAdd'
 import EinkaufswagenModal from 'components/EinkaufswagenModal'
 import ImageCarousel from 'components/ImageCarousel'
+import { baseUrl } from 'components/Meta'
 import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
 import { Get_ProductQuery, ListedProduct } from 'generated'
 import gql from 'graphql-tag'
 import { constructDimensionString, createVariantName } from 'lib/utils'
 import { NextPage, NextPageContext } from 'next'
+import { ProductJsonLd } from 'next-seo'
 import { withUrqlClient } from 'next-urql'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -192,6 +194,7 @@ const Product: NextPage<Props> = ({ product }) => {
     description,
     images,
     name,
+    slug,
     variants,
     listedInventories,
     material,
@@ -225,104 +228,122 @@ const Product: NextPage<Props> = ({ product }) => {
     setIsModal(true)
   }
 
+  const price = listedInventories[0].listPrice.toFixed(2)
+
   return (
-    <ProductWrapper>
-      <MobileTitle>{name}</MobileTitle>
-      <ContentWrapper>
-        <StyledCarousel name={name} images={images.map((i) => i.url)} />
-        <DescriptionWrapper>
-          <Title>{name}</Title>
-          <ProductInfos>
-            <Price>{listedInventories[0].listPrice.toFixed(2)}€</Price>
-            <StyledSelect
-              label='Variante'
-              onChange={(e) =>
-                router.replace(
-                  `/produkte2/[slug]`,
-                  `/produkte2/${e.target.value}`
-                )
-              }
-              value={product}
-              options={[product, ...variants].map((variant) => ({
-                value: variant.slug,
-                label: createVariantName(
-                  variant,
-                  product.lengthUnit,
-                  product.weightUnit
-                ),
-              }))}
-            />
-            <BuySection>
+    <>
+      <ProductJsonLd
+        productName={name}
+        brand='Dithmarschenhanf'
+        offers={[
+          {
+            price,
+            seller: { name: 'Dithmarschenhanf' },
+            priceCurrency: 'EUR',
+            itemCondition: 'https://schema.org/NewCondition',
+            availability: 'https://schema.org/InStock',
+            url: `${baseUrl}/produkte2/${slug}`,
+          },
+        ]}
+      />
+      <ProductWrapper>
+        <MobileTitle>{name}</MobileTitle>
+        <ContentWrapper>
+          <StyledCarousel name={name} images={images.map((i) => i.url)} />
+          <DescriptionWrapper>
+            <Title>{name}</Title>
+            <ProductInfos>
+              <Price>{price}€</Price>
               <StyledSelect
-                label='Menge'
-                options={new Array(
-                  listedInventories.reduce(
-                    (prev, next) => prev + next.amount,
-                    0
+                label='Variante'
+                onChange={(e) =>
+                  router.replace(
+                    `/produkte2/[slug]`,
+                    `/produkte2/${e.target.value}`
                   )
-                )
-                  .fill(0)
-                  .map((v, ind) => ({
-                    value: ind + 1,
-                    label: String(ind + 1),
-                  }))}
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
+                }
+                value={product}
+                options={[product, ...variants].map((variant) => ({
+                  value: variant.slug,
+                  label: createVariantName(
+                    variant,
+                    product.lengthUnit,
+                    product.weightUnit
+                  ),
+                }))}
               />
-              <BuyButton onClick={() => handleAdd()}>
-                In den Warenkorb
-                <CartAdd size={40} style={{ marginLeft: 5 }} />
-              </BuyButton>
-            </BuySection>
-            {(material || color || weight || dimensions || quantity) && (
-              <Properties>
-                <tbody>
-                  {material && (
-                    <tr>
-                      <td>Material:</td>
-                      <td>{material}</td>
-                    </tr>
-                  )}
-                  {color && (
-                    <tr>
-                      <td>Farbe:</td>
-                      <td>{color}</td>
-                    </tr>
-                  )}
-                  {weight && (
-                    <tr>
-                      <td>Gewicht:</td>
-                      <td>
-                        {weight}
-                        {weightUnit}.
-                      </td>
-                    </tr>
-                  )}
-                  {dimensions && (
-                    <tr>
-                      <td>Abmaße:</td>
-                      <td>
-                        {constructDimensionString(dimensions, lengthUnit)}
-                      </td>
-                    </tr>
-                  )}
-                  {quantity && (
-                    <tr>
-                      <td>Menge:</td>
-                      <td>{quantity} Stück</td>
-                    </tr>
-                  )}
-                </tbody>
-              </Properties>
-            )}
-          </ProductInfos>
-          <Description>
-            <Markdown source={description} />
-          </Description>
-        </DescriptionWrapper>
-      </ContentWrapper>
-      {isModal && <EinkaufswagenModal onClose={() => setIsModal(false)} />}
-    </ProductWrapper>
+              <BuySection>
+                <StyledSelect
+                  label='Menge'
+                  options={new Array(
+                    listedInventories.reduce(
+                      (prev, next) => prev + next.amount,
+                      0
+                    )
+                  )
+                    .fill(0)
+                    .map((v, ind) => ({
+                      value: ind + 1,
+                      label: String(ind + 1),
+                    }))}
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                />
+                <BuyButton onClick={() => handleAdd()}>
+                  In den Warenkorb
+                  <CartAdd size={40} style={{ marginLeft: 5 }} />
+                </BuyButton>
+              </BuySection>
+              {(material || color || weight || dimensions || quantity) && (
+                <Properties>
+                  <tbody>
+                    {material && (
+                      <tr>
+                        <td>Material:</td>
+                        <td>{material}</td>
+                      </tr>
+                    )}
+                    {color && (
+                      <tr>
+                        <td>Farbe:</td>
+                        <td>{color}</td>
+                      </tr>
+                    )}
+                    {weight && (
+                      <tr>
+                        <td>Gewicht:</td>
+                        <td>
+                          {weight}
+                          {weightUnit}.
+                        </td>
+                      </tr>
+                    )}
+                    {dimensions && (
+                      <tr>
+                        <td>Abmaße:</td>
+                        <td>
+                          {constructDimensionString(dimensions, lengthUnit)}
+                        </td>
+                      </tr>
+                    )}
+                    {quantity && (
+                      <tr>
+                        <td>Menge:</td>
+                        <td>{quantity} Stück</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Properties>
+              )}
+            </ProductInfos>
+            <Description>
+              <Markdown source={description} />
+            </Description>
+          </DescriptionWrapper>
+        </ContentWrapper>
+        {isModal && <EinkaufswagenModal onClose={() => setIsModal(false)} />}
+      </ProductWrapper>
+    </>
   )
 }
 
