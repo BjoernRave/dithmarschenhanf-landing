@@ -190,6 +190,9 @@ const Product: NextPage<Props> = ({ product }) => {
   const [amount, setAmount] = useState(1)
   const { addToCart } = useShoppingCart()
   const [isModal, setIsModal] = useState(false)
+
+  console.log(product)
+
   const {
     description,
     images,
@@ -358,6 +361,7 @@ Product.getInitialProps = async ({ urqlClient, query }: NextPageContext) => {
   const response: OperationResult<Get_ProductQuery> = await urqlClient
     .query(GET_PRODUCT, { slug: query.slug as string })
     .toPromise()
+  console.log(response)
 
   return { product: response?.data?.listedProduct as any }
 }
