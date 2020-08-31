@@ -37,6 +37,10 @@ const ProductsWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+
+  @media (max-width: 767px) {
+    margin: 20px;
+  }
 `
 
 const ProductWrapper = styled.div`

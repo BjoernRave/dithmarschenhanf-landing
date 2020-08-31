@@ -73,7 +73,9 @@ const CartItem: FC<Props> = ({ cartItem }) => {
   return (
     <ItemWrapper>
       <LeftImageWrapper>
-        <ItemImage src={product.images[0].url} alt={name} />
+        {product?.images?.length > 0 && (
+          <ItemImage src={product?.images[0].url} alt={name} />
+        )}
         <Link passHref href={`/produkte2/${product.slug}`}>
           <a>
             <ItemName>

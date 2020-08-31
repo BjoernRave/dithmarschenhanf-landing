@@ -88,6 +88,11 @@ const Description = styled.p`
 const BuySection = styled.div`
   display: flex;
   align-items: flex-end;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `
 
 const BuyButton = styled.button`
@@ -129,6 +134,14 @@ const DescriptionWrapper = styled.section`
 const StyledSelect = styled(Select)`
   font-size: 24px;
   margin: 0 10px;
+
+  @media (max-width: 767px) {
+    margin: 20px;
+  }
+
+  select {
+    height: 60px;
+  }
 `
 
 const Price = styled.span`
@@ -185,58 +198,57 @@ const MobileTitle = styled.h1`
   }
 `
 
+const ProductLoadingError = styled.h1`
+  display: table;
+  margin: 50px auto;
+`
+
 const Product: NextPage<Props> = ({ product }) => {
   const router = useRouter()
   const [amount, setAmount] = useState(1)
   const { addToCart } = useShoppingCart()
   const [isModal, setIsModal] = useState(false)
 
+  if (!product) {
+    return (
+      <ProductLoadingError>
+        Es gab ein Problem das Produkt zu laden, bitte versuchen sie es erneut.
+      </ProductLoadingError>
+    )
+  }
   console.log(product)
-
-  const {
-    description,
-    images,
-    name,
-    slug,
-    variants,
-    listedInventories,
-    material,
-    quantity,
-    color,
-    weight,
-    dimensions,
-    weightUnit,
-    lengthUnit,
-  } = product
 
   const handleAdd = () => {
     let left = amount
 
-    for (const listedInventory of listedInventories) {
-      if (left > 0) {
-        addToCart({
-          total: listedInventories.reduce(
-            (prev, next) => prev + next.amount,
-            0
-          ),
-          product,
-          id: listedInventory.id,
-          listPrice: listedInventory.listPrice,
-          amount:
-            amount > listedInventory.amount ? listedInventory.amount : amount,
-        })
-        left = left - listedInventory.amount
+    if (product?.listedInventories?.length > 0) {
+      for (const listedInventory of product?.listedInventories) {
+        if (left > 0) {
+          addToCart({
+            total: product?.listedInventories.reduce(
+              (prev, next) => prev + next.amount,
+              0
+            ),
+            product,
+            id: listedInventory.id,
+            listPrice: listedInventory.listPrice,
+            amount:
+              amount > listedInventory.amount ? listedInventory.amount : amount,
+          })
+          left = left - listedInventory.amount
+        }
       }
     }
+
     setIsModal(true)
   }
 
-  const price = listedInventories[0].listPrice.toFixed(2)
+  const price = product?.listedInventories[0].listPrice.toFixed(2)
 
   return (
     <>
       <ProductJsonLd
-        productName={name}
+        productName={product?.name}
         brand='Dithmarschenhanf'
         offers={[
           {
@@ -245,16 +257,21 @@ const Product: NextPage<Props> = ({ product }) => {
             priceCurrency: 'EUR',
             itemCondition: 'https://schema.org/NewCondition',
             availability: 'https://schema.org/InStock',
-            url: `${baseUrl}/produkte2/${slug}`,
+            url: `${baseUrl}/produkte2/${product?.slug}`,
           },
         ]}
       />
       <ProductWrapper>
-        <MobileTitle>{name}</MobileTitle>
+        <MobileTitle>{product?.name}</MobileTitle>
         <ContentWrapper>
-          <StyledCarousel name={name} images={images.map((i) => i.url)} />
+          {product?.images?.length > 0 && (
+            <StyledCarousel
+              name={product?.name}
+              images={product?.images.map((i) => i.url)}
+            />
+          )}
           <DescriptionWrapper>
-            <Title>{name}</Title>
+            <Title>{product?.name}</Title>
             <ProductInfos>
               <Price>{price}€</Price>
               <StyledSelect
@@ -266,12 +283,15 @@ const Product: NextPage<Props> = ({ product }) => {
                   )
                 }
                 value={product}
-                options={[product, ...variants].map((variant) => ({
-                  value: variant.slug,
+                options={[
+                  product,
+                  ...(product?.variants ? product.variants : []),
+                ].map((variant) => ({
+                  value: variant?.slug,
                   label: createVariantName(
                     variant,
-                    product.lengthUnit,
-                    product.weightUnit
+                    product?.lengthUnit,
+                    product?.weightUnit
                   ),
                 }))}
               />
@@ -279,7 +299,7 @@ const Product: NextPage<Props> = ({ product }) => {
                 <StyledSelect
                   label='Menge'
                   options={new Array(
-                    listedInventories.reduce(
+                    product?.listedInventories.reduce(
                       (prev, next) => prev + next.amount,
                       0
                     )
@@ -297,42 +317,49 @@ const Product: NextPage<Props> = ({ product }) => {
                   <CartAdd size={40} style={{ marginLeft: 5 }} />
                 </BuyButton>
               </BuySection>
-              {(material || color || weight || dimensions || quantity) && (
+              {(product?.material ||
+                product?.color ||
+                product?.weight ||
+                product?.dimensions ||
+                product?.quantity) && (
                 <Properties>
                   <tbody>
-                    {material && (
+                    {product?.material && (
                       <tr>
                         <td>Material:</td>
-                        <td>{material}</td>
+                        <td>{product?.material}</td>
                       </tr>
                     )}
-                    {color && (
+                    {product?.color && (
                       <tr>
                         <td>Farbe:</td>
-                        <td>{color}</td>
+                        <td>{product?.color}</td>
                       </tr>
                     )}
-                    {weight && (
+                    {product?.weight && (
                       <tr>
                         <td>Gewicht:</td>
                         <td>
-                          {weight}
-                          {weightUnit}.
+                          {product?.weight}
+                          {product?.weightUnit}.
                         </td>
                       </tr>
                     )}
-                    {dimensions && (
+                    {product?.dimensions && (
                       <tr>
                         <td>Abmaße:</td>
                         <td>
-                          {constructDimensionString(dimensions, lengthUnit)}
+                          {constructDimensionString(
+                            product?.dimensions,
+                            product?.lengthUnit
+                          )}
                         </td>
                       </tr>
                     )}
-                    {quantity && (
+                    {product?.quantity && (
                       <tr>
                         <td>Menge:</td>
-                        <td>{quantity} Stück</td>
+                        <td>{product?.quantity} Stück</td>
                       </tr>
                     )}
                   </tbody>
@@ -340,7 +367,7 @@ const Product: NextPage<Props> = ({ product }) => {
               )}
             </ProductInfos>
             <Description>
-              <Markdown source={description} />
+              <Markdown source={product?.description} />
             </Description>
           </DescriptionWrapper>
         </ContentWrapper>
