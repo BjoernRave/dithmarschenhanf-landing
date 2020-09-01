@@ -25,6 +25,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
       media: new MediaManager({
         accept: '*',
         persist: (files) => persistFiles(files),
+        previewSrc: null,
       }),
       apis: {
         github: new GithubClient({

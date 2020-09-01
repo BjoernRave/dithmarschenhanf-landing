@@ -153,9 +153,14 @@ const ProductLoadingError = styled.h1`
 
 const Product: NextPage<Props> = ({ product }) => {
   const router = useRouter()
+
   const [amount, setAmount] = useState(1)
   const { addToCart } = useShoppingCart()
   const [isModal, setIsModal] = useState(false)
+
+  if (router.isFallback) {
+    return <div>Loading...</div>
+  }
 
   if (!product) {
     return (
