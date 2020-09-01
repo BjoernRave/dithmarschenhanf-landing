@@ -48,14 +48,6 @@ const EinkaufsErfolg: FC<Props> = ({ file }) => {
         name: 'text',
         component: 'markdown',
       },
-      {
-        label: 'Image',
-        name: 'image',
-        component: 'image',
-        previewSrc: ({ image }) => image,
-        uploadDir: () => '/test',
-        parse: (fileName) => fileName,
-      },
     ],
   }
 
@@ -73,7 +65,6 @@ const EinkaufsErfolg: FC<Props> = ({ file }) => {
           <Button>Zur Startseite</Button>
         </a>
       </Link>
-      <img style={{ width: '70%' }} src={data.image} />
     </PageWrapper>
   )
 }

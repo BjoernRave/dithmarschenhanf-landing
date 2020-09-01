@@ -120,11 +120,11 @@ const ContentWrapper = styled.section`
   }
 `
 
-const DescriptionWrapper = styled.section`
+const DescriptionWrapper = styled.section<{ noImages: number }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 60%;
+  width: ${({ noImages }) => (noImages === 1 ? '100%' : '60%')};
 
   @media (max-width: 767px) {
     width: 100%;
@@ -216,7 +216,6 @@ const Product: NextPage<Props> = ({ product }) => {
       </ProductLoadingError>
     )
   }
-  console.log(product)
 
   const handleAdd = () => {
     let left = amount
@@ -270,7 +269,7 @@ const Product: NextPage<Props> = ({ product }) => {
               images={product?.images.map((i) => i.url)}
             />
           )}
-          <DescriptionWrapper>
+          <DescriptionWrapper noImages={product?.images?.length === 0 ? 1 : 0}>
             <Title>{product?.name}</Title>
             <ProductInfos>
               <Price>{price}€</Price>
@@ -388,7 +387,6 @@ Product.getInitialProps = async ({ urqlClient, query }: NextPageContext) => {
   const response: OperationResult<Get_ProductQuery> = await urqlClient
     .query(GET_PRODUCT, { slug: query.slug as string })
     .toPromise()
-  console.log(response)
 
   return { product: response?.data?.listedProduct as any }
 }

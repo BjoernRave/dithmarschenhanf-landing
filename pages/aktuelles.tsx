@@ -102,8 +102,6 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
                     },
                     uploadDir: () => '/test',
                     parse: (fileName) => {
-                      console.log(fileName)
-
                       return fileName
                     },
                   },
