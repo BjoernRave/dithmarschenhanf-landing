@@ -149,14 +149,14 @@ const Thumb = ({ selected, onClick, imgSrc }) => (
 )
 
 const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
-  const [EmblaCarouselReact, embla] = useEmblaCarousel({
+  const [emblaRef, embla] = useEmblaCarousel({
     loop: true,
     containScroll: 'keepSnaps',
   })
   const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla])
   const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla])
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [EmblaCarouselReactThumbs, emblaThumbs] = useEmblaCarousel({
+  const [emblaCarouselRef, emblaThumbs] = useEmblaCarousel({
     containScroll: 'keepSnaps',
     selectedClass: '',
     draggable: false,
@@ -187,7 +187,7 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
       {...props}
       style={{ padding: '0 30px', boxSizing: 'border-box', ...props?.style }}>
       <Wrapper>
-        <EmblaCarouselReact className='embla__viewport'>
+        <div style={{ overflow: 'hidden' }} className='embla' ref={emblaRef}>
           <div className='embla__container'>
             {images.map((image, index) => (
               <div className='embla__slide' key={index}>
@@ -197,9 +197,12 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
               </div>
             ))}
           </div>
-        </EmblaCarouselReact>
+        </div>
         <div className='embla embla--thumb'>
-          <EmblaCarouselReactThumbs className='embla__viewport'>
+          <div
+            style={{ overflow: 'hidden' }}
+            ref={emblaCarouselRef}
+            className='embla__viewport'>
             <div className='embla__container embla__container--thumb'>
               {images.map((image, index) => (
                 <Thumb
@@ -210,7 +213,7 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
                 />
               ))}
             </div>
-          </EmblaCarouselReactThumbs>
+          </div>
         </div>
         <NextButton onClick={() => scrollNext()}>
           <ChevronRight />

@@ -85,7 +85,7 @@ export async function getStaticPaths() {
     params: { slug: product.slug },
   }))
 
-  return { paths, fallback: false }
+  return { paths, fallback: true }
 }
 
 interface Props {
