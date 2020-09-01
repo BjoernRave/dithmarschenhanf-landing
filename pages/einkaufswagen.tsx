@@ -86,7 +86,7 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
     const baseUrl =
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:3001'
-        : 'https://dithmarschenhanf'
+        : 'https://dithmarschenhanf.de'
 
     const response = await createCheckout({
       cancelUrl: `${baseUrl}/einkaufswagen`,
