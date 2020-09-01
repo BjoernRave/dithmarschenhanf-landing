@@ -36,17 +36,15 @@ const NutrientWrapper = styled.div`
 `
 
 const Product: NextPage<Props> = ({ product }) => {
-  const { description, images, name, nutrients } = product
-
   return (
     <ProductWrapper>
-      <Title>{name}</Title>
-      <ImageCarousel name={name} images={images} />
-      <Description>{description}</Description>
+      <Title>{product?.name}</Title>
+      <ImageCarousel name={product?.name} images={product?.images} />
+      <Description>{product?.description}</Description>
       {product.mhd && (
         <Haltbarkeit>Mindesthaltbarkeitsdatum: {product.mhd}</Haltbarkeit>
       )}
-      {nutrients && (
+      {product?.nutrients && (
         <NutrientWrapper>
           <NutrientHeader>Nährwerte</NutrientHeader>
           <table>
@@ -57,7 +55,7 @@ const Product: NextPage<Props> = ({ product }) => {
               </tr>
             </thead>
             <tbody>
-              {nutrients.map((nutrient) => (
+              {product?.nutrients.map((nutrient) => (
                 <tr>
                   <td>{nutrient.name}</td>
                   <td>{nutrient.value}</td>
