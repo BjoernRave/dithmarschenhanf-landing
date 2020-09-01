@@ -82,9 +82,15 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
 
   const handleCheckout = async () => {
     setIsLoading(true)
+
+    const baseUrl =
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3001'
+        : 'https://dithmarschenhanf'
+
     const response = await createCheckout({
-      cancelUrl: 'http://localhost:3001/einkaufswagen',
-      successUrl: 'http://localhost:3001/einkauf/erfolg',
+      cancelUrl: `${baseUrl}/einkaufswagen`,
+      successUrl: `${baseUrl}/einkauf/erfolg`,
       inventories: cart.map((cartItem) => ({
         amount: cartItem.amount,
         id: cartItem.id,
