@@ -36,3 +36,78 @@ export const UPLOAD_FILES = gql`
     }
   }
 `
+
+export const GET_PRODUCTS = gql`
+  query GET_PRODUCTS {
+    listedProducts {
+      id
+      name
+      slug
+      dimensions {
+        id
+        height
+        width
+        depth
+      }
+      material
+      color
+      weight
+      quantity
+      images {
+        id
+        url
+      }
+    }
+  }
+`
+
+export const GET_PRODUCT = gql`
+  query GET_PRODUCT($slug: String!) {
+    listedProduct(where: { slug: $slug }) {
+      id
+      name
+      slug
+      weightUnit
+      dimensions {
+        id
+        height
+        width
+        depth
+      }
+      material
+      color
+      weight
+      listedInventories {
+        id
+        amount
+        listPrice
+      }
+      variants {
+        id
+        slug
+        description
+        dimensions {
+          id
+          height
+          width
+          depth
+        }
+        material
+        color
+        weight
+        listedInventories {
+          id
+          amount
+          listPrice
+        }
+      }
+      lengthUnit
+      images {
+        id
+        url
+      }
+      currencySymbol
+      description
+    }
+  }
+`

@@ -4,68 +4,16 @@ import ImageCarousel from 'components/ImageCarousel'
 import { baseUrl } from 'components/Meta'
 import Select from 'components/Select'
 import { useShoppingCart } from 'components/ShoppingCart'
-import { Get_ProductQuery, ListedProduct } from 'generated'
-import gql from 'graphql-tag'
+import { ListedProduct } from 'generated'
+import { GET_PRODUCT, GET_PRODUCTS } from 'lib/graphql'
 import { constructDimensionString, createVariantName } from 'lib/utils'
-import { NextPage, NextPageContext } from 'next'
+import { NextPage } from 'next'
 import { ProductJsonLd } from 'next-seo'
-import { withUrqlClient } from 'next-urql'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
 import styled from 'styled-components'
-import { OperationResult } from 'urql'
-
-const GET_PRODUCT = gql`
-  query GET_PRODUCT($slug: String!) {
-    listedProduct(where: { slug: $slug }) {
-      id
-      name
-      slug
-      weightUnit
-      dimensions {
-        id
-        height
-        width
-        depth
-      }
-      material
-      color
-      weight
-      listedInventories {
-        id
-        amount
-        listPrice
-      }
-      variants {
-        id
-        slug
-        description
-        dimensions {
-          id
-          height
-          width
-          depth
-        }
-        material
-        color
-        weight
-        listedInventories {
-          id
-          amount
-          listPrice
-        }
-      }
-      lengthUnit
-      images {
-        id
-        url
-      }
-      currencySymbol
-      description
-    }
-  }
-`
+import { Client } from 'urql'
 
 const ProductWrapper = styled.div`
   margin: 20px;
@@ -376,34 +324,32 @@ const Product: NextPage<Props> = ({ product }) => {
   )
 }
 
-export default withUrqlClient(
-  () => ({
-    url: `${process.env.API_URL}/api/graphql`,
-  }),
-  { ssr: true }
-)(Product)
+export default Product
 
-Product.getInitialProps = async ({ urqlClient, query }: NextPageContext) => {
-  const response: OperationResult<Get_ProductQuery> = await urqlClient
-    .query(GET_PRODUCT, { slug: query.slug as string })
+export async function getStaticProps({ params }) {
+  const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
+
+  const response = await client
+    .query(GET_PRODUCT, { slug: params.slug })
     .toPromise()
 
-  return { product: response?.data?.listedProduct as any }
+  return {
+    props: { product: response?.data?.listedProduct as any },
+    revalidate: 1,
+  }
 }
 
-// export async function getStaticProps({ params }) {
-//   const product = products.find((product) => product.slug === params.slug)
+export async function getStaticPaths() {
+  const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
 
-//   return { props: { product } }
-// }
+  const response = await client.query(GET_PRODUCTS).toPromise()
 
-// export async function getStaticPaths() {
-//   const paths = products.map((product) => ({
-//     params: { slug: product.slug },
-//   }))
+  const paths = response.data?.listedProducts.map((product) => ({
+    params: { slug: product.slug },
+  }))
 
-//   return { paths, fallback: false }
-// }
+  return { paths, fallback: false }
+}
 
 interface Props {
   product: Partial<ListedProduct>

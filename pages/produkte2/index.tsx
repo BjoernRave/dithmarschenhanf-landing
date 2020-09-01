@@ -1,36 +1,11 @@
 import Loader from 'components/Loader'
-import { useGet_ProductsQuery } from 'generated'
-import gql from 'graphql-tag'
+import { GET_PRODUCTS } from 'lib/graphql'
 import { Description, Title } from 'lib/styles'
 import { NextPage } from 'next'
-import { withUrqlClient } from 'next-urql'
 import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
-
-const GET_PRODUCTS = gql`
-  query GET_PRODUCTS {
-    listedProducts {
-      id
-      name
-      slug
-      dimensions {
-        id
-        height
-        width
-        depth
-      }
-      material
-      color
-      weight
-      quantity
-      images {
-        id
-        url
-      }
-    }
-  }
-`
+import { Client } from 'urql'
 
 const ProductsWrapper = styled.div`
   margin: 20px 50px;
@@ -80,10 +55,8 @@ const StyledText = styled(Description)`
   text-align: center;
 `
 
-const Products: NextPage<Props> = ({}) => {
-  const [{ data, error }] = useGet_ProductsQuery()
-
-  const groupedProducts = data?.listedProducts.reduce((prev, next) => {
+const Products: NextPage<Props> = ({ listedProducts }) => {
+  const groupedProducts = listedProducts.reduce((prev, next) => {
     if (!prev[next.name]) {
       return { ...prev, [next.name]: [next] }
     } else {
@@ -121,11 +94,19 @@ const Products: NextPage<Props> = ({}) => {
   )
 }
 
-export default withUrqlClient(
-  () => ({
-    url: `${process.env.API_URL}/api/graphql`,
-  }),
-  { ssr: true }
-)(Products)
+export default Products
 
-interface Props {}
+interface Props {
+  listedProducts: any[]
+}
+
+export async function getStaticProps() {
+  const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
+
+  const response = await client.query(GET_PRODUCTS).toPromise()
+
+  return {
+    props: { listedProducts: response.data.listedProducts },
+    revalidate: 1,
+  }
+}
