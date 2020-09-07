@@ -20,7 +20,7 @@ const Button = styled.button`
   transition: all linear 0.1s;
   box-shadow: ${({ theme }) => theme.boxShadows.default.google};
   font-size: 24px;
-  margin: 20px auto;
+  margin: 50px auto;
   display: table;
 
   :hover {

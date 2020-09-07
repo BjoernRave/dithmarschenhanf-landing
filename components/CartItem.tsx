@@ -104,10 +104,13 @@ const CartItem: FC<Props> = ({ cartItem }) => {
             ])
           }}
           value={amount}
-          options={new Array(total).fill(0).map((v, ind) => ({
-            value: ind + 1,
-            label: String(ind + 1),
-          }))}
+          options={new Array(total)
+            .fill(0)
+            .filter((val, index) => index < 100)
+            .map((v, ind) => ({
+              value: ind + 1,
+              label: String(ind + 1),
+            }))}
         />
         <Price>{(listPrice * amount).toFixed(2)}€</Price>
         <RemoveButton

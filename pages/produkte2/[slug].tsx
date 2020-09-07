@@ -257,6 +257,7 @@ const Product: NextPage<Props> = ({ product }) => {
                     )
                   )
                     .fill(0)
+                    .filter((val, index) => index < 100)
                     .map((v, ind) => ({
                       value: ind + 1,
                       label: String(ind + 1),
