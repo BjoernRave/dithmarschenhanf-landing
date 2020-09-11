@@ -117,6 +117,10 @@
       "title": "Hanf Samen Ernte",
       "items": [
         {
+          "_template": "content-block",
+          "content": "\ndann so, hat super geklappt!"
+        },
+        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-09-11T21:46:12.255Z_dithmarschenhanf_20200830_131349-2jpg"
         },
