@@ -4,6 +4,10 @@
       "title": "Winterpause",
       "items": [
         {
+          "_template": "content-block",
+          "content": "\nDieser kleine Hanfi möchte wohl auf dem gepflügten Feld gerne wieder loslegen (und ich kann das gut verstehen), aber nun ist Winterpause mit Kleegras..."
+        },
+        {
           "_template": "image-block",
           "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-09-21T21:20:08.539Z_dithmarschenhanf_img_20200921_191606jpg"
         }
