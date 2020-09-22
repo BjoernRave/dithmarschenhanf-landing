@@ -74,9 +74,9 @@ const CartItem: FC<Props> = ({ cartItem }) => {
     <ItemWrapper>
       <LeftImageWrapper>
         {product?.images?.length > 0 && (
-          <ItemImage src={product?.images[0].url} alt={name} />
+          <ItemImage src={product?.images[0].url} />
         )}
-        <Link passHref href={`/produkte2/${product.slug}`}>
+        <Link passHref href={`/produkte/${product.slug}`}>
           <a>
             <ItemName>
               {`${product.name} ${createVariantName(

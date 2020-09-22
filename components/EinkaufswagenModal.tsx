@@ -40,7 +40,7 @@ const EinkaufswagenModal: FC<Props> = ({ onClose }) => {
     <Modal onClose={onClose}>
       <Title>Der Artikel ist in ihrem Warenkorb</Title>
       <Buttons>
-        <Link href='/produkte2'>
+        <Link href='/produkte'>
           <a>
             <BuyButton>Zu den Produkten</BuyButton>
           </a>

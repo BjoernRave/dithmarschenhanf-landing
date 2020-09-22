@@ -154,7 +154,7 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
             Ihr Einkaufswagen ist momentan leer. Gehen sie hier zu unseren
             Produkten
           </NoItemsTitle>
-          <Link href='/produkte2'>
+          <Link href='/produkte'>
             <a>
               <CheckoutButton>Zu den Produkten</CheckoutButton>
             </a>

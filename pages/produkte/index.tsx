@@ -76,7 +76,7 @@ const Products: NextPage<Props> = ({ listedProducts }) => {
             ][0]
 
             return (
-              <Link key={id} href={`/produkte2/${slug}`}>
+              <Link key={id} href={`/produkte/${slug}`}>
                 <ProductWrapper>
                   {images?.length > 0 && (
                     <ProductImage alt='Produkt Bild' src={images[0].url} />

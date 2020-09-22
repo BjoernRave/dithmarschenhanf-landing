@@ -209,7 +209,7 @@ const Product: NextPage<Props> = ({ product }) => {
             priceCurrency: 'EUR',
             itemCondition: 'https://schema.org/NewCondition',
             availability: 'https://schema.org/InStock',
-            url: `${baseUrl}/produkte2/${product?.slug}`,
+            url: `${baseUrl}/produkte/${product?.slug}`,
           },
         ]}
       />
@@ -230,8 +230,8 @@ const Product: NextPage<Props> = ({ product }) => {
                 label='Variante'
                 onChange={(e) =>
                   router.replace(
-                    `/produkte2/[slug]`,
-                    `/produkte2/${e.target.value}`
+                    `/produkte/[slug]`,
+                    `/produkte/${e.target.value}`
                   )
                 }
                 value={product}
