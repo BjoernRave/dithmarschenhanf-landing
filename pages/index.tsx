@@ -49,7 +49,6 @@ const Home: NextPage<Props> = ({ file }) => {
     ],
   }
 
-  // Registers a JSON Tina Form
   const [data, form] = useGithubJsonForm(file, formOptions)
   usePlugin([form, MarkdownFieldPlugin])
 
