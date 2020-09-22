@@ -1,21 +1,15 @@
-import Loader from 'components/Loader'
-import { GET_PRODUCTS } from 'lib/graphql'
+import { products } from 'lib/products'
 import { Description, Title } from 'lib/styles'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
-import { Client } from 'urql'
 
 const ProductsWrapper = styled.div`
   margin: 20px 50px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-
-  @media (max-width: 767px) {
-    margin: 20px;
-  }
 `
 
 const ProductWrapper = styled.div`
@@ -55,40 +49,24 @@ const StyledText = styled(Description)`
   text-align: center;
 `
 
-const Products: NextPage<Props> = ({ listedProducts }) => {
-  const groupedProducts = listedProducts.reduce((prev, next) => {
-    if (!prev[next.name]) {
-      return { ...prev, [next.name]: [next] }
-    } else {
-      return { ...prev, [next.name]: [...prev[next.name], next] }
-    }
-  }, {})
-
+const Products: NextPage<Props> = ({}) => {
   return (
     <>
       <Title>Produkte</Title>
-
+      <StyledText>
+        Diese Produkte können wir Ihnen derzeit anbieten. Bei Interesse nehmen
+        Sie gerne <a href='mailto:info@dithmarschenhanf.de'>Kontakt</a> zu uns
+        auf.
+      </StyledText>
       <ProductsWrapper>
-        {groupedProducts ? (
-          Object.keys(groupedProducts).map((groupedProduct) => {
-            const { name, slug, images, id } = groupedProducts[
-              groupedProduct
-            ][0]
-
-            return (
-              <Link key={id} href={`/produkte2/${slug}`}>
-                <ProductWrapper>
-                  {images?.length > 0 && (
-                    <ProductImage alt='Produkt Bild' src={images[0].url} />
-                  )}
-                  <ProductName>{name}</ProductName>
-                </ProductWrapper>
-              </Link>
-            )
-          })
-        ) : (
-          <Loader />
-        )}
+        {products.map((product) => (
+          <Link key={product.slug} href={`/produkte/${product.slug}`}>
+            <ProductWrapper>
+              <ProductImage alt='Produkt Bild' src={product.images[0]} />
+              <ProductName>{product.name}</ProductName>
+            </ProductWrapper>
+          </Link>
+        ))}
       </ProductsWrapper>
     </>
   )
@@ -96,17 +74,4 @@ const Products: NextPage<Props> = ({ listedProducts }) => {
 
 export default Products
 
-interface Props {
-  listedProducts: any[]
-}
-
-export async function getStaticProps() {
-  const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
-
-  const response = await client.query(GET_PRODUCTS).toPromise()
-
-  return {
-    props: { listedProducts: response.data.listedProducts },
-    revalidate: 1,
-  }
-}
+interface Props {}

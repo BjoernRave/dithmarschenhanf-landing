@@ -134,12 +134,7 @@ const Nav: FC<Props> = ({}) => {
       <Link href='/verkaufstellen'>
         <NavItem>Verkaufstellen</NavItem>
       </Link>
-      <Link
-        href={
-          query.shop || process.env.NODE_ENV === 'development'
-            ? '/produkte2'
-            : '/produkte'
-        }>
+      <Link href='/produkte'>
         <NavItem>Produkte</NavItem>
       </Link>
       <Link href='/aktuelles'>
@@ -170,30 +165,27 @@ const Nav: FC<Props> = ({}) => {
           </Link>
           <Actions>
             <Navigation />
-            {(query.shop || process.env.NODE_ENV === 'development') && (
-              <Link href='/einkaufswagen'>
-                <ShoppingCart>
-                  <ShoppingBag size={30} />
-                  <ShoppingCartAmount>
-                    {' '}
-                    {cart.reduce((prev, next) => prev + next.amount, 0)}
-                  </ShoppingCartAmount>
-                </ShoppingCart>
-              </Link>
-            )}
+            <Link href='/einkaufswagen'>
+              <ShoppingCart>
+                <ShoppingBag size={30} />
+                <ShoppingCartAmount>
+                  {' '}
+                  {cart.reduce((prev, next) => prev + next.amount, 0)}
+                </ShoppingCartAmount>
+              </ShoppingCart>
+            </Link>
           </Actions>
           <MobileMenu>
-            {(query.shop || process.env.NODE_ENV === 'development') && (
-              <Link href='/einkaufswagen'>
-                <ShoppingCart>
-                  <ShoppingBag size={30} />
-                  <ShoppingCartAmount>
-                    {' '}
-                    {cart.reduce((prev, next) => prev + next.amount, 0)}
-                  </ShoppingCartAmount>
-                </ShoppingCart>
-              </Link>
-            )}
+            <Link href='/einkaufswagen'>
+              <ShoppingCart>
+                <ShoppingBag size={30} />
+                <ShoppingCartAmount>
+                  {' '}
+                  {cart.reduce((prev, next) => prev + next.amount, 0)}
+                </ShoppingCartAmount>
+              </ShoppingCart>
+            </Link>
+
             <MenuButton>
               <img
                 onClick={() => setIsMenu(true)}
