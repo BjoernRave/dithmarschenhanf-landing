@@ -166,5 +166,8 @@ export const createVariantName = (
     variantName.push(`${variant.quantity} Stück`)
   }
 
-  return variantName.join(' - ')
+  return (
+    variantName.join(' - ') +
+    `  ${variant.listedInventories[0].listPrice}${variant.currencySymbol}`
+  )
 }

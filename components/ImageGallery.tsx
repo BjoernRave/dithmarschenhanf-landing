@@ -22,7 +22,7 @@ const ImageGallery: FC<Props> = ({ photos }) => {
     setCurrentImage(0)
     setViewerIsOpen(false)
   }
-
+  console.log('photos', photos)
   return (
     <ImageGalleryWrapper>
       <Gallery margin={10} photos={photos} onClick={openLightbox} />

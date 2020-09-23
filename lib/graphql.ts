@@ -95,6 +95,7 @@ export const GET_PRODUCT = gql`
         material
         color
         weight
+        currencySymbol
         listedInventories {
           id
           amount

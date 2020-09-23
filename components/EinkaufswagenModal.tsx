@@ -33,6 +33,10 @@ const Buttons = styled.div`
   align-items: center;
   justify-content: center;
   margin: 50px 0;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
 `
 
 const EinkaufswagenModal: FC<Props> = ({ onClose }) => {

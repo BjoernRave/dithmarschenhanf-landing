@@ -226,27 +226,26 @@ const Product: NextPage<Props> = ({ product }) => {
             <Title>{product?.name}</Title>
             <ProductInfos>
               <Price>{price}€</Price>
-              <StyledSelect
-                label='Variante'
-                onChange={(e) =>
-                  router.replace(
-                    `/produkte/[slug]`,
-                    `/produkte/${e.target.value}`
-                  )
-                }
-                value={product}
-                options={[
-                  product,
-                  ...(product?.variants ? product.variants : []),
-                ].map((variant) => ({
-                  value: variant?.slug,
-                  label: createVariantName(
-                    variant,
-                    product?.lengthUnit,
-                    product?.weightUnit
-                  ),
-                }))}
-              />
+              {product?.variants?.length > 0 && (
+                <StyledSelect
+                  label='Variante'
+                  onChange={(e) =>
+                    router.replace(
+                      `/produkte/[slug]`,
+                      `/produkte/${e.target.value}`
+                    )
+                  }
+                  value={product}
+                  options={[product, ...product?.variants].map((variant) => ({
+                    value: variant?.slug,
+                    label: createVariantName(
+                      variant,
+                      product?.lengthUnit,
+                      product?.weightUnit
+                    ),
+                  }))}
+                />
+              )}
               <BuySection>
                 <StyledSelect
                   label='Menge'

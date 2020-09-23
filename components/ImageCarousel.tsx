@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react'
+import Carousel, { Modal, ModalGateway } from 'react-images'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
@@ -134,6 +135,8 @@ const PrevButton = styled(ArrowButton)`
   left: -30px;
 `
 
+const CarouselWrapper = styled.div``
+
 const Thumb = ({ selected, onClick, imgSrc }) => (
   <div
     className={`embla__slide embla__slide--thumb ${
@@ -153,9 +156,13 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
     loop: true,
     containScroll: 'keepSnaps',
   })
+
   const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla])
   const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla])
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [currentImage, setCurrentImage] = useState(0)
+  const [viewerIsOpen, setViewerIsOpen] = useState(false)
+
   const [emblaCarouselRef, emblaThumbs] = useEmblaCarousel({
     containScroll: 'keepSnaps',
     selectedClass: '',
@@ -182,6 +189,16 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
     embla.on('select', onSelect)
   }, [embla, onSelect])
 
+  const openLightbox = useCallback((index: number) => {
+    setCurrentImage(index)
+    setViewerIsOpen(true)
+  }, [])
+
+  const closeLightbox = () => {
+    setCurrentImage(0)
+    setViewerIsOpen(false)
+  }
+
   return (
     <div
       {...props}
@@ -192,7 +209,13 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
             {images.map((image, index) => (
               <div className='embla__slide' key={index}>
                 <div className='embla__slide__inner'>
-                  <img className='embla__slide__img' src={image} alt={name} />
+                  <img
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => openLightbox(index)}
+                    className='embla__slide__img'
+                    src={image}
+                    alt={name}
+                  />
                 </div>
               </div>
             ))}
@@ -222,6 +245,21 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
           <ChevronLeft />
         </PrevButton>
       </Wrapper>
+      <ModalGateway>
+        {viewerIsOpen ? (
+          <Modal onClose={closeLightbox}>
+            <CarouselWrapper>
+              <Carousel
+                currentIndex={currentImage}
+                views={images.map((x) => ({
+                  source: x,
+                  alt: name,
+                }))}
+              />
+            </CarouselWrapper>
+          </Modal>
+        ) : null}
+      </ModalGateway>
     </div>
   )
 }
