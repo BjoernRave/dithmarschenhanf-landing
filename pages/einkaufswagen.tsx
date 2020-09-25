@@ -75,6 +75,11 @@ const NoItemsWrapper = styled.section`
 
 const NoItemsTitle = styled.h2``
 
+const ShippingCost = styled.span`
+  font-size: 24px;
+  margin: 20px 0;
+`
+
 const Einkaufswagen: NextPage<Props> = ({}) => {
   const { cart } = useShoppingCart()
   const [isLoading, setIsLoading] = useState(false)
@@ -124,14 +129,15 @@ const Einkaufswagen: NextPage<Props> = ({}) => {
           </ItemsWrapper>
           <CheckoutWrapper>
             <InnerCheckoutWrapper>
+              <ShippingCost>Versandkosten: 4.00€</ShippingCost>
               <Total>
                 Gesamt:{' '}
-                {cart
-                  .reduce(
+                {(
+                  cart.reduce(
                     (prev, next) => prev + next.amount * next.listPrice,
                     0
-                  )
-                  .toFixed(2)}
+                  ) + 4
+                ).toFixed(2)}
                 €
               </Total>
               <CheckoutButton onClick={() => handleCheckout()}>
