@@ -317,6 +317,9 @@ const Product: NextPage<Props> = ({ product }) => {
                   </tbody>
                 </Properties>
               )}
+              <span style={{ textAlign: 'center' }}>
+                Vorraussichtliche Lieferzeit: 3-5 Werktage
+              </span>
             </ProductInfos>
             <Description>
               <Markdown source={product?.description} />
