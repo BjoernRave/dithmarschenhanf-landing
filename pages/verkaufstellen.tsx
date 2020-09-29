@@ -60,6 +60,16 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Gemüsehof Krogmann, <br /> Hauptstraße 64, <br /> 25704 Nindorf{' '}
+            <br />
+            <a
+              href='https://www.hof-krogmann.de'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
           <TextBlock>Weitere Verkaufsstellen folgen in Kürze...</TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
