@@ -1,6 +1,23 @@
 {
   "entries": [
     {
+      "title": "Küsten Magazin 3 2020",
+      "items": [
+        {
+          "_template": "content-block",
+          "content": "\nVielen Dank an Ellen Hinrichs für den netten Besuch und den schönen Beitrag im Küsten Magazin!"
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-10-08T20:17:35.704Z_dithmarschenhanf_unbenannt.PNG"
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-10-08T20:23:13.137Z_dithmarschenhanf_bild-kusten-magazin-3-2020.PNG"
+        }
+      ]
+    },
+    {
       "title": "Winterpause",
       "items": [
         {
