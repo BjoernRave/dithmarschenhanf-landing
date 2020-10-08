@@ -5,6 +5,14 @@
       "items": [
         {
           "_template": "content-block",
+          "content": "\nund da kommen sie schon, die kleinen Gras- und Kleepflanzen..."
+        },
+        {
+          "_template": "image-block",
+          "image": "https://inventhora.s3.eu-west-1.amazonaws.com/dithmarschenhanf/2020-10-08T20:09:56.569Z_dithmarschenhanf_img-20201008-wa0002.jpg"
+        },
+        {
+          "_template": "content-block",
           "content": "\nDieser kleine Hanfi möchte wohl auf dem gepflügten Feld gerne wieder loslegen (und ich kann das gut verstehen), aber nun ist Winterpause mit Kleegras..."
         },
         {
