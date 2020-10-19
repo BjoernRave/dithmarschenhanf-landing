@@ -1,9 +1,5 @@
-import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
 import { Dimension, ListedProduct } from 'generated'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Media, MediaUploadOptions } from 'tinacms'
-import { createClient } from 'urql'
-import { UPLOAD_FILES } from './graphql'
 
 export const isServer = typeof window === 'undefined'
 
@@ -65,29 +61,6 @@ export const useLocalStorage = <S>(
   }
 
   return [storedValue, setValue]
-}
-
-export const persistFiles = async (
-  files: MediaUploadOptions[]
-): Promise<Media[]> => {
-  const urql = createClient({
-    url: `${process.env.API_URL}/api/graphql`,
-    exchanges: [multipartFetchExchange],
-  })
-
-  const response = await urql
-    .mutation(UPLOAD_FILES, {
-      name: '/dithmarschenhanf',
-      isPublic: true,
-      files: files.map((file) => file.file),
-      key: process.env.UPLOAD_KEY,
-    })
-    .toPromise()
-
-  return response?.data?.createManyFiles.map((resultFile) => ({
-    filename: resultFile.url,
-    directory: resultFile.name,
-  }))
 }
 
 export const formatDate = (date: Date | string) => {
