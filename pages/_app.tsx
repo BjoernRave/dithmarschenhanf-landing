@@ -6,34 +6,35 @@ import TinaButton from 'components/TinaButton'
 import { pageView } from 'lib/analytics'
 import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
-import { persistFiles, useLocalStorage } from 'lib/utils'
+import { useLocalStorage } from 'lib/utils'
+import { NextGithubMediaStore } from 'next-tinacms-github'
 import { AppProps } from 'next/app'
 import Router from 'next/router'
 import { useState } from 'react'
 import { GithubClient, TinacmsGithubProvider } from 'react-tinacms-github'
 import { ThemeProvider } from 'styled-components'
 import { Normalize } from 'styled-normalize'
-import { MediaManager, TinaCMS, TinaProvider } from 'tinacms'
+import { TinaCMS, TinaProvider } from 'tinacms'
 
 Router.events.on('routeChangeComplete', (url) => {
   pageView(url)
 })
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
+  const githubClient = new GithubClient({
+    proxy: '/api/proxy-github',
+    authCallbackRoute: '/api/create-github-access-token',
+    clientId: process.env.GITHUB_CLIENT_ID,
+    baseRepoFullName: process.env.REPO_FULL_NAME,
+  })
+
+  const mediaStore = new NextGithubMediaStore(githubClient)
+
   const [cms] = useState(
     new TinaCMS({
-      media: new MediaManager({
-        accept: '*',
-        persist: (files) => persistFiles(files),
-        previewSrc: null,
-      }),
+      media: mediaStore,
       apis: {
-        github: new GithubClient({
-          proxy: '/api/proxy-github',
-          authCallbackRoute: '/api/create-github-access-token',
-          clientId: process.env.GITHUB_CLIENT_ID,
-          baseRepoFullName: process.env.REPO_FULL_NAME,
-        }),
+        github: githubClient,
       },
       enabled: pageProps.preview,
       sidebar: pageProps.preview,
