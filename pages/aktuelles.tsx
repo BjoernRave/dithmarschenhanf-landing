@@ -91,7 +91,7 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
                     name: 'image',
                     label: 'Bild',
                     component: 'image',
-                    parse: (media) => `/${media.filename}`,
+                    parse: (media) => `/uploads/${media.filename}`,
 
                     // Decide the file upload directory for the post
                     uploadDir: () => '/uploads',
