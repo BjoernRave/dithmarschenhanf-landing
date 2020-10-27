@@ -202,12 +202,7 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
             {images.map((image, index) => (
               <div className='embla__slide' key={index}>
                 <div className='embla__slide__inner'>
-                  <Image
-                    unsized
-                    className='embla__slide__img'
-                    src={image}
-                    alt={name}
-                  />
+                  <img className='embla__slide__img' src={image} alt={name} />
                 </div>
               </div>
             ))}
