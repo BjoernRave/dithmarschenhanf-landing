@@ -203,8 +203,7 @@ const ImageCarousel: FC<Props> = ({ images, name, ...props }) => {
               <div className='embla__slide' key={index}>
                 <div className='embla__slide__inner'>
                   <Image
-                    width={500}
-                    height={400}
+                    unsized
                     className='embla__slide__img'
                     src={image}
                     alt={name}
