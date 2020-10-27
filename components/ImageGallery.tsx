@@ -31,7 +31,9 @@ const ImageGallery: FC<Props> = ({ photos }) => {
         {viewerIsOpen ? (
           <Modal onClose={closeLightbox}>
             <Carousel
-              components={{ View: (data) => <Image unsized {...data} /> }}
+              components={{
+                View: (data) => <Image unsized {...(data as any)} />,
+              }}
               currentIndex={currentImage}
               views={photos.map((x) => ({
                 ...x,
