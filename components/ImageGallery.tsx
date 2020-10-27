@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React, { FC, useCallback, useState } from 'react'
 import Carousel, { Modal, ModalGateway } from 'react-images'
 import Gallery from 'react-photo-gallery'
@@ -30,6 +31,7 @@ const ImageGallery: FC<Props> = ({ photos }) => {
         {viewerIsOpen ? (
           <Modal onClose={closeLightbox}>
             <Carousel
+              components={{ View: (data) => <Image unsized {...data} /> }}
               currentIndex={currentImage}
               views={photos.map((x) => ({
                 ...x,

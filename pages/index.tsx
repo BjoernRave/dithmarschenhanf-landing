@@ -2,6 +2,7 @@ import FAQ from 'components/FAQ'
 import { Description, PageWrapper } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
+import NextImage from 'next/image'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { MarkdownFieldPlugin } from 'react-tinacms-editor'
@@ -16,7 +17,7 @@ const Title = styled.h1`
   font-size: 36px;
 `
 
-const TopBanner = styled.img`
+const TopBanner = styled(NextImage)`
   width: 100%;
 `
 const Images = styled.div`
@@ -29,7 +30,7 @@ const Images = styled.div`
   }
 `
 
-const Image = styled.img`
+const Image = styled(NextImage)`
   width: 300px;
   margin: 0 50px;
   height: auto;
@@ -54,15 +55,15 @@ const Home: NextPage<Props> = ({ file }) => {
 
   return (
     <>
-      <TopBanner alt='Hanffeld' src='/Header.jpg' />
+      <TopBanner height={530} width={1905} alt='Hanffeld' src='/Header.jpg' />
       <PageWrapper>
         <Title>{data.title}</Title>
         <Description style={{ fontSize: '22px', textAlign: 'center' }}>
           <ReactMarkdown source={data.description} />
         </Description>
         <Images>
-          <Image alt='Hanfsamen' src='/samen.png' />
-          <Image alt='Teetasse' src='/teetasse.png' />
+          <Image width={300} height={300} alt='Hanfsamen' src='/samen.png' />
+          <Image width={300} height={300} alt='Teetasse' src='/teetasse.png' />
         </Images>
         <FAQ />
       </PageWrapper>

@@ -11,4 +11,7 @@ module.exports = withBundleAnalyzer({
     API_URL: process.env.API_URL,
     STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
   },
+  images: {
+    domains: ['inventhora.s3.eu-west-1.amazonaws.com'],
+  },
 })

@@ -2,6 +2,7 @@ import { Description, PageWrapper, Title } from 'lib/styles'
 import { formatDate } from 'lib/utils'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
+import NextImage from 'next/image'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { DateFieldPlugin } from 'react-tinacms-date'
@@ -26,7 +27,7 @@ const EntryTitle = styled.h2`
   margin: 20px auto;
 `
 
-const Image = styled.img`
+const Image = styled(NextImage)`
   max-height: 1000px;
   width: auto;
   max-width: 100%;
@@ -119,8 +120,8 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
           <EntryTitle>{entry.title}</EntryTitle>
           <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
           {entry.items?.map((item, innerInd) => {
-            if (item._template === 'image-block') {
-              return <Image key={innerInd} src={item.image} />
+            if (item._template === 'image-block' && item.image) {
+              return <Image unsized key={innerInd} src={item.image} />
             }
             if (item._template === 'content-block') {
               return (

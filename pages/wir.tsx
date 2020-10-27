@@ -1,6 +1,7 @@
 import { Description, PageWrapper, Title } from 'lib/styles'
 import { GetStaticProps, NextPage } from 'next'
 import { getGithubPreviewProps, parseJson } from 'next-tinacms-github'
+import NextImage from 'next/image'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { MarkdownFieldPlugin } from 'react-tinacms-editor'
@@ -8,7 +9,7 @@ import { useGithubJsonForm } from 'react-tinacms-github'
 import styled from 'styled-components'
 import { usePlugin } from 'tinacms'
 
-const Image = styled.img`
+const Image = styled(NextImage)`
   width: 100%;
   border-radius: 10px;
   display: table;
@@ -54,9 +55,9 @@ const Wir: NextPage<Props> = ({ file }) => {
     <PageWrapper>
       <Title>{data.title}</Title>
       <ImageWrapper>
-        <Image alt='Nis' src='/nis.jpg' />
-        <MiddleImage alt='Wilm' src='/wilm.jpg' />
-        <Image src='/maren.jpg' alt='Maren' />
+        <Image alt='Nis' width={390} height={570} src='/nis.jpg' />
+        <MiddleImage width={390} height={570} alt='Wilm' src='/wilm.jpg' />
+        <Image src='/maren.jpg' width={390} height={570} alt='Maren' />
       </ImageWrapper>
       <Description>
         <ReactMarkdown source={data.text} />
