@@ -147,8 +147,7 @@ const Thumb = ({ selected, onClick, imgSrc }) => (
       className='embla__slide__inner embla__slide__inner--thumb'
       type='button'>
       <Image
-        width={130}
-        height={110}
+        unsized
         className='embla__slide__thumbnail'
         src={imgSrc}
         alt='A cool cat.'

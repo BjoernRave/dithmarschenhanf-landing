@@ -2,6 +2,7 @@ import Loader from 'components/Loader'
 import { GET_PRODUCTS } from 'lib/graphql'
 import { Description, Title } from 'lib/styles'
 import { NextPage } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
@@ -35,7 +36,7 @@ const ProductWrapper = styled.div`
   }
 `
 
-const ProductImage = styled.img`
+const ProductImage = styled(Image)`
   width: 100%;
   height: 200px;
   border-top-left-radius: 10px;
@@ -79,7 +80,12 @@ const Products: NextPage<Props> = ({ listedProducts }) => {
               <Link key={id} href={`/produkte/${slug}`}>
                 <ProductWrapper>
                   {images?.length > 0 && (
-                    <ProductImage alt='Produkt Bild' src={images[0].url} />
+                    <ProductImage
+                      width={300}
+                      height={200}
+                      alt='Produkt Bild'
+                      src={images[0].url}
+                    />
                   )}
                   <ProductName>{name}</ProductName>
                 </ProductWrapper>

@@ -12,6 +12,6 @@ module.exports = withBundleAnalyzer({
     STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
   },
   images: {
-    domains: ['inventhora.s3.eu-west-1.amazonaws.com'],
+    domains: ['inventhora.s3.eu-west-1.amazonaws.com', 'picsum.photos'],
   },
 })
