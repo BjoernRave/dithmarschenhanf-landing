@@ -30,10 +30,10 @@ const Images = styled.div`
   }
 `
 
-const Image = styled(NextImage)`
+const Image = styled.img`
   width: 300px;
   margin: 0 50px;
-  height: auto;
+  height: 300px;
 
   @media (max-width: 767px) {
     margin: 20px;
@@ -62,8 +62,8 @@ const Home: NextPage<Props> = ({ file }) => {
           <ReactMarkdown source={data.description} />
         </Description>
         <Images>
-          <Image width={300} height={300} alt='Hanfsamen' src='/samen.png' />
-          <Image width={300} height={300} alt='Teetasse' src='/teetasse.png' />
+          <Image alt='Hanfsamen' src='/samen.png' />
+          <Image alt='Teetasse' src='/teetasse.png' />
         </Images>
         <FAQ />
       </PageWrapper>
