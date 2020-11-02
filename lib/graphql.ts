@@ -43,7 +43,7 @@ export const GET_PRODUCTS = gql`
 
 export const GET_PRODUCT = gql`
   query GET_PRODUCT($slug: String!) {
-    listedProduct(where: { slug: $slug }) {
+    listedProduct(where: { slug: { equals: $slug } }) {
       id
       name
       slug
