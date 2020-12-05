@@ -1,7 +1,6 @@
 import { ChevronLeft } from '@styled-icons/boxicons-regular/ChevronLeft'
 import { ChevronRight } from '@styled-icons/boxicons-regular/ChevronRight'
 import { useEmblaCarousel } from 'embla-carousel/react'
-import Image from 'next/image'
 import React, {
   CSSProperties,
   FC,
@@ -146,12 +145,7 @@ const Thumb = ({ selected, onClick, imgSrc }) => (
       onClick={onClick}
       className='embla__slide__inner embla__slide__inner--thumb'
       type='button'>
-      <Image
-        unsized
-        className='embla__slide__thumbnail'
-        src={imgSrc}
-        alt='A cool cat.'
-      />
+      <img className='embla__slide__thumbnail' src={imgSrc} alt='A cool cat.' />
     </button>
   </div>
 )

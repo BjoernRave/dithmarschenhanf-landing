@@ -1,4 +1,4 @@
-import gql from 'graphql-tag'
+import { gql } from 'urql'
 
 export const CREATE_CHECKOUT = gql`
   mutation CREATE_CHECKOUT(
