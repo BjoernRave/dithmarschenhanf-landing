@@ -70,6 +70,9 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Heider Naturkost, <br /> Markt 7, <br /> 25746 Heide <br />
+          </TextBlock>
           <TextBlock>Weitere Verkaufsstellen folgen in Kürze...</TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
