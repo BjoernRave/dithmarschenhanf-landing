@@ -73,7 +73,16 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
           <TextBlock>
             Heider Naturkost, <br /> Markt 7, <br /> 25746 Heide <br />
           </TextBlock>
-          <TextBlock>Weitere Verkaufsstellen folgen in Kürze...</TextBlock>
+          <TextBlock>
+            Altfelder Hofladen, <br /> Altfelderweg 56, <br /> 25718
+            Friedrichskoog <br />
+            <a
+              href='https://www.altfelder-hofladen.de'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>
