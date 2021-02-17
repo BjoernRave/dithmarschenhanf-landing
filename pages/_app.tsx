@@ -1,12 +1,11 @@
 import Footer from 'components/Footer'
 import Meta from 'components/Meta'
 import Nav from 'components/Nav'
-import { CartItem, ShoppingCartProvider } from 'components/ShoppingCart'
+import { ShoppingCartProvider } from 'components/ShoppingCart'
 import TinaButton from 'components/TinaButton'
 import { pageView } from 'lib/analytics'
 import { GlobalStyles } from 'lib/styles'
 import theme from 'lib/theme'
-import { useLocalStorage } from 'lib/utils'
 import { NextGithubMediaStore } from 'next-tinacms-github'
 import { AppProps } from 'next/app'
 import Router from 'next/router'
@@ -42,41 +41,8 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     })
   )
 
-  const [cart, setCart] = useLocalStorage<CartItem[]>('shopping-cart', [])
-
-  const addToCart = (cartItem: CartItem) => {
-    const existingItem = cart.find((item) => item.id === cartItem.id)
-
-    if (existingItem) {
-      const newCart = Array.from(cart)
-
-      newCart.splice(
-        cart.findIndex((item) => item.id === cartItem.id),
-        1
-      )
-
-      setCart([
-        ...newCart,
-        { ...cartItem, amount: existingItem.amount + cartItem.amount },
-      ])
-    } else {
-      setCart([...cart, cartItem])
-    }
-  }
-
-  const removeFromCart = (id: string) => {
-    const newCart = Array.from(cart)
-
-    newCart.splice(
-      cart.findIndex((item) => item.id === id),
-      1
-    )
-
-    setCart(newCart)
-  }
-
   return (
-    <ShoppingCartProvider value={{ cart, setCart, addToCart, removeFromCart }}>
+    <ShoppingCartProvider>
       <TinaProvider cms={cms}>
         <TinacmsGithubProvider
           onLogin={onLogin}
