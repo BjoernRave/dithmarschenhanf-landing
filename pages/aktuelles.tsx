@@ -78,7 +78,9 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
               'content-block': {
                 label: 'Text',
                 key: 'content-block',
-
+                defaultItem: {
+                  content: '',
+                },
                 fields: [
                   { name: 'content', label: 'Content', component: 'markdown' },
                 ],
@@ -86,6 +88,9 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
               'image-block': {
                 label: 'Bild',
                 key: 'image-block',
+                defaultItem: {
+                  content: '',
+                },
                 fields: [
                   {
                     name: 'image',

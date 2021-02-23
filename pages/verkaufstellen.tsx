@@ -51,15 +51,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
-          <TextBlock>
-            Klabautermann, <br /> Zingelstraße 16, <br /> 25704 Meldorf <br />{' '}
-            <a
-              href='https://www.klabautermann-meldorf.de/'
-              target='_blank'
-              rel='noreferrer'>
-              Website
-            </a>
-          </TextBlock>
+
           <TextBlock>
             Gemüsehof Krogmann, <br /> Hauptstraße 64, <br /> 25704 Nindorf{' '}
             <br />
@@ -78,6 +70,16 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Friedrichskoog <br />
             <a
               href='https://www.altfelder-hofladen.de'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
+          <TextBlock>
+            Schäferei Bährs, <br /> Neufelderkoog 25, <br /> 25724 Neufelderkoog{' '}
+            <br />{' '}
+            <a
+              href='https://www.hof-baehrs.de/'
               target='_blank'
               rel='noreferrer'>
               Website

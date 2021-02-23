@@ -27,7 +27,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
     baseRepoFullName: process.env.REPO_FULL_NAME,
   })
 
-  const mediaStore = new NextGithubMediaStore(githubClient)
+  const mediaStore = new NextGithubMediaStore(githubClient as any)
 
   const [cms] = useState(
     new TinaCMS({
