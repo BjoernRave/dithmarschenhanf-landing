@@ -30,6 +30,7 @@ const ImageGallery: FC<Props> = ({ photos }) => {
             src={image.src}
             height={image.height * 200}
             width={image.width * 200}
+            alt='Dithmarschen'
           />
         </ImageWrapper>
       ))}
