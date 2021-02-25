@@ -1,46 +1,38 @@
-import React, { FC, useCallback, useState } from 'react'
-import Carousel, { Modal, ModalGateway } from 'react-images'
-import Gallery from 'react-photo-gallery'
+import Image from 'next/image'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 
 const ImageGalleryWrapper = styled.div`
+  columns: 6 300px;
+  column-gap: 1rem;
   img {
     border-radius: 10px !important;
   }
 `
 
+const ImageWrapper = styled.div`
+  color: white;
+  margin: 0 1rem 1rem 0;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: system-ui;
+  font-weight: 900;
+  font-size: 2rem;
+`
+
 const ImageGallery: FC<Props> = ({ photos }) => {
-  const [currentImage, setCurrentImage] = useState(0)
-  const [viewerIsOpen, setViewerIsOpen] = useState(false)
-
-  const openLightbox = useCallback((event, { photo, index }) => {
-    setCurrentImage(index)
-    setViewerIsOpen(true)
-  }, [])
-
-  const closeLightbox = () => {
-    setCurrentImage(0)
-    setViewerIsOpen(false)
-  }
-  console.log('photos', photos)
   return (
     <ImageGalleryWrapper>
-      <Gallery margin={10} photos={photos} onClick={openLightbox} />
-      <ModalGateway>
-        {viewerIsOpen ? (
-          <Modal onClose={closeLightbox}>
-            <Carousel
-              currentIndex={currentImage}
-              views={photos.map((x) => ({
-                ...x,
-                srcset: x.srcSet,
-                alt: 'Dithmarschen Bild',
-                caption: x.title,
-              }))}
-            />
-          </Modal>
-        ) : null}
-      </ModalGateway>
+      {photos.map((image) => (
+        <ImageWrapper>
+          <Image
+            src={image.src}
+            height={image.height * 200}
+            width={image.width * 200}
+          />
+        </ImageWrapper>
+      ))}
     </ImageGalleryWrapper>
   )
 }
