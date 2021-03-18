@@ -85,6 +85,16 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Hofgenuss Meinert, <br /> Kleine Kirchreihe 1, <br /> 25377 Kollmar{' '}
+            <br />{' '}
+            <a
+              href='https://hofgenuss-meinert.de/'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>
