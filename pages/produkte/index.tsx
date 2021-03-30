@@ -64,7 +64,7 @@ const Products: NextPage<Props> = ({ listedProducts }) => {
       return { ...prev, [next.name]: [...prev[next.name], next] }
     }
   }, {})
-
+  console.log('listedProducts', listedProducts)
   return (
     <>
       <Title>Produkte</Title>
