@@ -4,6 +4,11 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "",
+          "_template": "image-block",
+          "image": "/uploads/IMG-20210331-WA0032.jpg"
+        },
+        {
           "content": "\ndas wird die Hanffläche 2021",
           "_template": "content-block"
         },
