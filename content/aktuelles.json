@@ -9,6 +9,10 @@
         },
         {
           "content": "",
+          "_template": "image-block"
+        },
+        {
+          "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210331-WA0032.jpg"
         },
