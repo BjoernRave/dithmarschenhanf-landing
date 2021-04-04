@@ -5,7 +5,8 @@
       "items": [
         {
           "content": "",
-          "_template": "image-block"
+          "_template": "image-block",
+          "image": "/uploads/Feld 2021.jpg"
         },
         {
           "content": "",
