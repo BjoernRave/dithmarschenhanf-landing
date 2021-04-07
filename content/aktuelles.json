@@ -4,6 +4,10 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "\nund einmal geeggt aber nun ist wieder Wintereinbruch...",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block"
         },
