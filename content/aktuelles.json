@@ -8,6 +8,10 @@
           "_template": "image-block"
         },
         {
+          "content": "",
+          "_template": "image-block"
+        },
+        {
           "content": "\ngepfügt",
           "_template": "content-block"
         },
