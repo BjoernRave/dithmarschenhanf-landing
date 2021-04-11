@@ -95,6 +95,11 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Markttreff Delve <br />
+            Zum Sportplatz 1, <br />
+            25788 Delve <br />{' '}
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>
