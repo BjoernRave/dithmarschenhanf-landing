@@ -8,13 +8,13 @@
           "_template": "image-block"
         },
         {
+          "content": "und das Säen",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210421-WA0019 (2).jpg"
-        },
-        {
-          "content": "\nund die Aufsaat",
-          "_template": "content-block"
         },
         {
           "content": "",
