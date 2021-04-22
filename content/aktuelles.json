@@ -4,13 +4,13 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "und das Säen",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210421-WA0018 (2).jpg"
-        },
-        {
-          "content": "und das Säen",
-          "_template": "content-block"
         },
         {
           "content": "",
