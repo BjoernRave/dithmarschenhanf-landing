@@ -5,13 +5,13 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "und die Kleinen kämpfen sich durch, auch wenn gefühlt grad Oktober ist..",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210429-WA0028.jpg"
-        },
-        {
-          "content": "und die Kleinen kämpfen sich durch, auch wenn gefühlt grad Oktober ist..",
-          "_template": "content-block"
         },
         {
           "content": "",
