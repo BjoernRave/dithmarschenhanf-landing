@@ -4,6 +4,10 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "",
+          "_template": "image-block"
+        },
+        {
           "content": "\nnach einigen Anlaufschwierigkeiten gedeiht der Hanf nun gut",
           "_template": "content-block"
         },
