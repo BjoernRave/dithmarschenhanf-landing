@@ -154,7 +154,7 @@ export const getStaticProps: GetStaticProps = async function ({
   const fileRelativePath = 'content/aktuelles.json'
   if (preview) {
     return getGithubPreviewProps({
-      ...previewData,
+      ...(typeof previewData === 'object' && previewData),
       fileRelativePath,
       parse: parseJson,
     })
