@@ -13,6 +13,7 @@
     "@stripe/stripe-js": "^1.16.0",
     "@styled-icons/boxicons-regular": "^10.37.0",
     "@styled-icons/boxicons-solid": "^10.37.0",
+    "@tinacms/fields": "^0.43.3",
     "@urql/exchange-multipart-fetch": "^0.1.13",
     "embla-carousel": "^4.5.3",
     "graphql": "^15.5.1",
