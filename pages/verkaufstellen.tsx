@@ -100,6 +100,14 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Zum Sportplatz 1, <br />
             25788 Delve <br />{' '}
           </TextBlock>
+          <TextBlock>
+            Die Diele <br />
+            Hauptstr. 62 <br />
+            25596 Wacken <br />{' '}
+            <a href='https://diele-wacken.de/' target='_blank' rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>
