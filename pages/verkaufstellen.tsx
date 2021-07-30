@@ -45,6 +45,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
           <TextBlock>
             Kleine Auszeit, <br /> Steinstraße 3, <br /> 25709 Marne <br />{' '}
             <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
               href='http://kleine-auszeit-marne.de'
               target='_blank'
               rel='noreferrer'>
@@ -56,6 +57,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Gemüsehof Krogmann, <br /> Hauptstraße 64, <br /> 25704 Nindorf{' '}
             <br />
             <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
               href='https://www.hof-krogmann.de'
               target='_blank'
               rel='noreferrer'>
@@ -69,6 +71,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Altfelder Hofladen, <br /> Altfelderweg 56, <br /> 25718
             Friedrichskoog <br />
             <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
               href='https://www.altfelder-hofladen.de'
               target='_blank'
               rel='noreferrer'>
@@ -89,6 +92,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Hofgenuss Meinert, <br /> Kleine Kirchreihe 1, <br /> 25377 Kollmar{' '}
             <br />{' '}
             <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
               href='https://hofgenuss-meinert.de/'
               target='_blank'
               rel='noreferrer'>
@@ -104,7 +108,11 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Die Diele <br />
             Hauptstr. 62 <br />
             25596 Wacken <br />{' '}
-            <a href='https://diele-wacken.de/' target='_blank' rel='noreferrer'>
+            <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
+              href='https://diele-wacken.de/'
+              target='_blank'
+              rel='noreferrer'>
               Website
             </a>
           </TextBlock>
