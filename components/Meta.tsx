@@ -21,10 +21,6 @@ const Meta: FC = () => {
 
         <title>{title}</title>
 
-        <link
-          href='https://fonts.googleapis.com/css?family=Roboto&display=swap'
-          rel='stylesheet'
-        />
         {/* <script type='application/ld+json'>
           {
             ({

@@ -114,16 +114,24 @@ const Footer: FC<Props> = (props) => {
 
         <ItemSection>
           <Link href='/versand'>
-            <FooterLink>Versand</FooterLink>
+            <a>
+              <FooterLink>Versand</FooterLink>
+            </a>
           </Link>
           <Link href='/agb'>
-            <FooterLink>Allgemeine Geschäftsbedingungen</FooterLink>
+            <a>
+              <FooterLink>Allgemeine Geschäftsbedingungen</FooterLink>
+            </a>
           </Link>
           <Link href='/datenschutz'>
-            <FooterLink>Datenschutzerklärung</FooterLink>
+            <a>
+              <FooterLink>Datenschutzerklärung</FooterLink>
+            </a>
           </Link>
           <Link href='/impressum'>
-            <FooterLink>Impressum</FooterLink>
+            <a>
+              <FooterLink>Impressum</FooterLink>
+            </a>
           </Link>
         </ItemSection>
       </Content>

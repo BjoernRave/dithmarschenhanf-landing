@@ -25,7 +25,7 @@ const ImageGallery: FC<Props> = ({ photos }) => {
   return (
     <ImageGalleryWrapper>
       {photos.map((image) => (
-        <ImageWrapper>
+        <ImageWrapper key={image.src}>
           <Image
             src={image.src}
             height={image.height * 200}

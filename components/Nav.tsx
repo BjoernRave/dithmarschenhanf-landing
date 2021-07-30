@@ -132,23 +132,35 @@ const Nav: FC<Props> = ({}) => {
   const Navigation = () => (
     <>
       <Link href='/verkaufstellen'>
-        <NavItem>Verkaufsstellen</NavItem>
+        <a>
+          <NavItem>Verkaufsstellen</NavItem>
+        </a>
       </Link>
       <Link href='/produkte'>
-        <NavItem>Produkte</NavItem>
+        <a>
+          <NavItem>Produkte</NavItem>
+        </a>
       </Link>
       <Link href='/aktuelles'>
-        <NavItem>Aktuelles</NavItem>
+        <a>
+          <NavItem>Aktuelles</NavItem>
+        </a>
       </Link>
       <Link href='/wir'>
-        <NavItem>Über Uns</NavItem>
+        <a>
+          <NavItem>Über Uns</NavItem>
+        </a>
       </Link>
 
       <Link href='/galerie'>
-        <NavItem>Galerie</NavItem>
+        <a>
+          <NavItem>Galerie</NavItem>
+        </a>
       </Link>
       <Link href='/warumhanf'>
-        <NavItem>Warum Hanf?</NavItem>
+        <a>
+          <NavItem>Warum Hanf?</NavItem>
+        </a>
       </Link>
       <ExLink href=' mailto:info@dithmarschenhanf.de'>
         <NavItem>Kontakt</NavItem>
@@ -161,29 +173,35 @@ const Nav: FC<Props> = ({}) => {
       <Headroom>
         <NavWrapper>
           <Link href='/'>
-            <Logo src='/logo.png' alt='Dithmarschenhanf Logo' />
+            <a>
+              <Logo src='/logo.png' alt='Dithmarschenhanf Logo' />
+            </a>
           </Link>
           <Actions>
             <Navigation />
             <Link href='/einkaufswagen'>
-              <ShoppingCart>
-                <ShoppingBag size={30} />
-                <ShoppingCartAmount>
-                  {' '}
-                  {cart.reduce((prev, next) => prev + next.amount, 0)}
-                </ShoppingCartAmount>
-              </ShoppingCart>
+              <a>
+                <ShoppingCart>
+                  <ShoppingBag size={30} />
+                  <ShoppingCartAmount>
+                    {' '}
+                    {cart.reduce((prev, next) => prev + next.amount, 0)}
+                  </ShoppingCartAmount>
+                </ShoppingCart>
+              </a>
             </Link>
           </Actions>
           <MobileMenu>
             <Link href='/einkaufswagen'>
-              <ShoppingCart>
-                <ShoppingBag size={30} />
-                <ShoppingCartAmount>
-                  {' '}
-                  {cart.reduce((prev, next) => prev + next.amount, 0)}
-                </ShoppingCartAmount>
-              </ShoppingCart>
+              <a>
+                <ShoppingCart>
+                  <ShoppingBag size={30} />
+                  <ShoppingCartAmount>
+                    {' '}
+                    {cart.reduce((prev, next) => prev + next.amount, 0)}
+                  </ShoppingCartAmount>
+                </ShoppingCart>
+              </a>
             </Link>
 
             <MenuButton>

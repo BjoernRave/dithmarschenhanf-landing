@@ -58,7 +58,7 @@ const Warumhanf: NextPage<Props> = ({ file }) => {
     <PageWrapper>
       <Title>{data.title}</Title>
       {data.advantages.map((advantage) => (
-        <SectionWrapper>
+        <SectionWrapper key={advantage.title}>
           <SectionTitle>{advantage.title}</SectionTitle>
           <Description>
             <ReactMarkdown source={advantage.description} />

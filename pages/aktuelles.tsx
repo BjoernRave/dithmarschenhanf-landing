@@ -125,7 +125,7 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
           <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
           {entry.items?.map((item, innerInd) => {
             if (item._template === 'image-block' && item.image) {
-              return <Image key={innerInd} src={item.image} />
+              return <Image alt={entry.title} key={innerInd} src={item.image} />
             }
             if (item._template === 'content-block') {
               return (

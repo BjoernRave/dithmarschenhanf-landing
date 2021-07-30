@@ -17,7 +17,10 @@ td {
   padding: 5px;
 }
 
-
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
 
 `

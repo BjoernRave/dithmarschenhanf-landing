@@ -38,6 +38,10 @@ export default class MyDocument extends Document {
     return (
       <Html lang='de-DE'>
         <Head>
+          <link
+            href='https://fonts.googleapis.com/css?family=Roboto&display=swap'
+            rel='stylesheet'
+          />
           <script
             async
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_ID}`}
