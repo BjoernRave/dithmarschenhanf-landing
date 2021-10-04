@@ -116,6 +116,30 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Lütt Wellness-Stuv <br />
+            Kampweg 48 <br />
+            25715 Eddelak <br />{' '}
+            <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
+              href='http://www.luett-wellness-stuv.de/'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
+          <TextBlock>
+            Hofladen Alte Mühle <br />
+            Bundesstrasse 5 Nr 3 <br />
+            25693 Trennewurth <br />{' '}
+            <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
+              href='https://www.hofladen-altemuehle.de'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>

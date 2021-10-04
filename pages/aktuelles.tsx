@@ -122,7 +122,9 @@ const Aktuelles: NextPage<Props> = ({ file }) => {
       {data?.entries?.map((entry, ind) => (
         <Entry key={ind}>
           <EntryTitle>{entry.title}</EntryTitle>
-          <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
+          {entry.createdAt && (
+            <EntryDate>{formatDate(entry.createdAt)}</EntryDate>
+          )}
           {entry.items?.map((item, innerInd) => {
             if (item._template === 'image-block' && item.image) {
               return <Image alt={entry.title} key={innerInd} src={item.image} />
