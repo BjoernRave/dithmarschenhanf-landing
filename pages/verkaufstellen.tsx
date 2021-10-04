@@ -82,6 +82,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
             Schäferei Bährs, <br /> Neufelderkoog 25, <br /> 25724 Neufelderkoog{' '}
             <br />{' '}
             <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
               href='https://www.hof-baehrs.de/'
               target='_blank'
               rel='noreferrer'>
