@@ -4,11 +4,6 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
-          "content": "",
-          "_template": "image-block",
-          "image": "/uploads/pi4j-rpi-4b-pinout.png"
-        },
-        {
           "content": "\nDer Trocknungsraum ist hergerichtet und die Blütenernte kann beginnen",
           "_template": "content-block"
         },
