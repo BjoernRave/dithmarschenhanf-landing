@@ -20,17 +20,17 @@ Router.events.on('routeChangeComplete', (url) => {
 })
 
 const MyApp = ({ Component, pageProps, router }: AppProps) => {
-  const githubClient = new GithubClient({
-    proxy: '/api/proxy-github',
-    authCallbackRoute: '/api/create-github-access-token',
-    clientId: process.env.GITHUB_CLIENT_ID,
-    baseRepoFullName: process.env.REPO_FULL_NAME,
-  })
+  const [cms] = useState(() => {
+    const githubClient = new GithubClient({
+      proxy: '/api/proxy-github',
+      authCallbackRoute: '/api/create-github-access-token',
+      clientId: process.env.GITHUB_CLIENT_ID,
+      baseRepoFullName: process.env.REPO_FULL_NAME,
+    })
 
-  const mediaStore = new NextGithubMediaStore(githubClient as any)
+    const mediaStore = new NextGithubMediaStore(githubClient as any)
 
-  const [cms] = useState(
-    new TinaCMS({
+    return new TinaCMS({
       media: mediaStore,
       apis: {
         github: githubClient,
@@ -39,7 +39,7 @@ const MyApp = ({ Component, pageProps, router }: AppProps) => {
       sidebar: pageProps.preview,
       toolbar: pageProps.preview,
     })
-  )
+  })
 
   return (
     <ShoppingCartProvider>
