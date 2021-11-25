@@ -67,17 +67,7 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
           <TextBlock>
             Heider Naturkost, <br /> Markt 7, <br /> 25746 Heide <br />
           </TextBlock>
-          <TextBlock>
-            Altfelder Hofladen, <br /> Altfelderweg 56, <br /> 25718
-            Friedrichskoog <br />
-            <a
-              style={{ color: '#0645ad', textDecoration: 'underline' }}
-              href='https://www.altfelder-hofladen.de'
-              target='_blank'
-              rel='noreferrer'>
-              Website
-            </a>
-          </TextBlock>
+
           <TextBlock>
             Schäferei Bährs, <br /> Neufelderkoog 25, <br /> 25724 Neufelderkoog{' '}
             <br />{' '}
