@@ -5,6 +5,11 @@
       "items": [
         {
           "content": "",
+          "_template": "image-block",
+          "image": "/uploads/IMG-20210421-WA0019 (2).jpg"
+        },
+        {
+          "content": "",
           "_template": "image-block"
         },
         {
