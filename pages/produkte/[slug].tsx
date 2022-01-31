@@ -341,6 +341,8 @@ export async function getStaticProps({ params }) {
     .query(GET_PRODUCT, { slug: params.slug })
     .toPromise()
 
+  console.log('response', response)
+
   return {
     props: { product: response?.data?.listedProduct as any },
     revalidate: 1,
@@ -351,6 +353,8 @@ export async function getStaticPaths() {
   const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
 
   const response = await client.query(GET_PRODUCTS).toPromise()
+
+  console.log('response', response)
 
   const paths = response.data?.listedProducts.map((product) => ({
     params: { slug: product.slug },

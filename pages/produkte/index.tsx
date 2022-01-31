@@ -72,9 +72,8 @@ const Products: NextPage<Props> = ({ listedProducts }) => {
       <ProductsWrapper>
         {groupedProducts ? (
           Object.keys(groupedProducts).map((groupedProduct) => {
-            const { name, slug, images, id } = groupedProducts[
-              groupedProduct
-            ][0]
+            const { name, slug, images, id } =
+              groupedProducts[groupedProduct][0]
 
             return (
               <Link key={id} href={`/produkte/${slug}`}>
@@ -110,6 +109,8 @@ export async function getStaticProps() {
   const client = new Client({ url: `${process.env.API_URL}/api/graphql` })
 
   const response = await client.query(GET_PRODUCTS).toPromise()
+
+  console.log('response', response)
 
   return {
     props: {
