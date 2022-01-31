@@ -4,13 +4,13 @@
       "title": "ein neues Hanfjahr",
       "items": [
         {
+          "content": "\nDer Trocknungsraum ist hergerichtet und die Blütenernte kann beginnen",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210421-WA0019 (2).jpg"
-        },
-        {
-          "content": "\nDer Trocknungsraum ist hergerichtet und die Blütenernte kann beginnen",
-          "_template": "content-block"
         },
         {
           "content": "",
