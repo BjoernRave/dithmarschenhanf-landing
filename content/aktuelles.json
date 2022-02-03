@@ -5,6 +5,10 @@
       "items": [
         {
           "content": "",
+          "_template": "content-block"
+        },
+        {
+          "content": "",
           "_template": "image-block",
           "image": "/uploads/IMG-20210826-WA0048.jpg"
         },
