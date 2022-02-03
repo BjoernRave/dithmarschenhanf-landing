@@ -5,10 +5,6 @@
       "items": [
         {
           "content": "",
-          "_template": "image-block"
-        },
-        {
-          "content": "",
           "_template": "content-block"
         },
         {
