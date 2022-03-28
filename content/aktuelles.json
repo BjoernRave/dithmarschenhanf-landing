@@ -4,6 +4,10 @@
       "title": "2022 es geht weiter",
       "items": [
         {
+          "content": "Im Märzen der Bauer...\n\nWir bereiten das Hanffeld 2022 voller Vorfreude vor",
+          "_template": "content-block"
+        },
+        {
           "content": "",
           "_template": "image-block"
         }
