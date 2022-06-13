@@ -131,6 +131,18 @@ const VerkaufsStellen: NextPage<Props> = ({}) => {
               Website
             </a>
           </TextBlock>
+          <TextBlock>
+            Kohllosseum <br />
+            Bahnhofstraße 20 <br />
+            25764 Wesselburen <br />{' '}
+            <a
+              style={{ color: '#0645ad', textDecoration: 'underline' }}
+              href='https://www.kohlosseum.de/'
+              target='_blank'
+              rel='noreferrer'>
+              Website
+            </a>
+          </TextBlock>
         </TextWrapper>
       </VerkaufsStellenWrapper>
     </PageWrapper>
